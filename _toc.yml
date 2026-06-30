@@ -5,6 +5,7 @@ parts:
     chapters:
       - file: chapters/foreword
       - file: chapters/00_intro_setup
+      - file: chapters/glossary
   - caption: Course
     chapters:
       - file: chapters/01_statistics_refresher

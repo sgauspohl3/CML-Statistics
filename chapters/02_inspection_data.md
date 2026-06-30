@@ -88,6 +88,61 @@ Match the statistical method to the reporting convention. Applying mean-based re
 Eliminating growth (thicker) readings in IDMS is a form of **truncation**. Including them reduces variance, excluding them increases it. This generally biases corrosion rate estimates upward.
 ```
 
+### Worked example: computing the CV of a TML
+
+Suppose at a single TML we take five UT readings:
+
+| Reading | Thickness (in) |
+|--|--|
+| 1 | 0.286 |
+| 2 | 0.291 |
+| 3 | 0.288 |
+| 4 | 0.282 |
+| 5 | 0.293 |
+
+**Step 1 — Compute the mean:**
+
+$$\bar{x} = \frac{0.286 + 0.291 + 0.288 + 0.282 + 0.293}{5} = 0.288$$
+
+**Step 2 — Compute the sample standard deviation:**
+
+$$s = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n}(x_i - \bar{x})^2}$$
+
+The squared deviations:
+
+| $x_i$ | $x_i - \bar{x}$ | $(x_i - \bar{x})^2$ |
+|--|--|--|
+| 0.286 | -0.002 | 0.000004 |
+| 0.291 | +0.003 | 0.000009 |
+| 0.288 | 0.000 | 0.000000 |
+| 0.282 | -0.006 | 0.000036 |
+| 0.293 | +0.005 | 0.000025 |
+
+Sum = 0.000074. So:
+
+$$s = \sqrt{\frac{0.000074}{4}} = \sqrt{0.0000185} \approx 0.0043$$
+
+**Step 3 — Compute CV:**
+
+$$\text{CV} = \frac{s}{\bar{x}} = \frac{0.0043}{0.288} \approx 0.015 = 1.5\%$$
+
+**Step 4 — Compare against thresholds:**
+
+- CV = 1.5% — well below the 10% rule of thumb. ✓ Pass.
+- Maximum deviation: 0.006" — below the ±0.030" flag. ✓ Pass.
+- Maximum % deviation: 2.1% — below the ±10% flag. ✓ Pass.
+
+This TML is acceptable. If CV had exceeded 10%, the inspector would investigate: localized pitting, calibration issues, or improper probe placement.
+
+```python
+import numpy as np
+readings = np.array([0.286, 0.291, 0.288, 0.282, 0.293])
+m = readings.mean()
+s = readings.std(ddof=1)
+cv = s / m
+print(f"Mean: {m:.4f}, SD: {s:.4f}, CV: {cv:.1%}")
+```
+
 ## CML allocation
 
 ### Approaches
@@ -170,9 +225,9 @@ UT Grid and UT Scan provide intermediate options — area coverage with quantita
 
 A 0.5" transducer on a 6" × 6" CML with a known 0.5" pit:
 
-$$\text{POD} \approx 1.1\% \text{ per single reading}$$
+$$\text{POD} \approx \frac{\text{transducer area}}{\text{CML area}} = \frac{\pi (0.25)^2}{36} \approx 0.55\%$$
 
-Most of the surface is never sampled — motivating grid inspection and adequate sample size.
+per single placement. Most of the surface is never sampled — this is what motivates **grid inspection** and **adequate sample size**.
 
 ### Inspection effectiveness categories (API RP 581)
 
@@ -203,6 +258,61 @@ $$\text{CR} = \frac{t_{\text{prev}} - t_{\text{curr}}}{\Delta \text{years}} \qua
 
 - **Short Term (STCR)** — last two readings; detects recent acceleration.
 - **Long Term (LTCR)** — baseline to current; stable estimate for planning.
+
+### Worked example: computing STCR and LTCR
+
+A 6" SCH40 elbow has the following inspection history:
+
+| Reading | Date | Thickness (in) |
+|--|--|--|
+| 1 (baseline) | 2008-03-15 | 0.280 |
+| 2 | 2013-04-02 | 0.265 |
+| 3 | 2018-05-10 | 0.247 |
+| 4 | 2023-06-20 | 0.228 |
+
+**Long-term corrosion rate** (baseline to current):
+
+$$\text{LTCR} = \frac{t_1 - t_4}{\Delta t_{1\to4}} = \frac{0.280 - 0.228}{2023.5 - 2008.2} = \frac{0.052}{15.3} \approx 0.0034 \text{ in/yr} = 3.4 \text{ mpy}$$
+
+**Short-term corrosion rate** (last two readings):
+
+$$\text{STCR} = \frac{t_3 - t_4}{\Delta t_{3\to4}} = \frac{0.247 - 0.228}{2023.5 - 2018.4} = \frac{0.019}{5.1} \approx 0.0037 \text{ in/yr} = 3.7 \text{ mpy}$$
+
+**Compare:**
+
+$$\frac{\text{STCR}}{\text{LTCR}} = \frac{3.7}{3.4} = 1.09 = 109\%$$
+
+This is below the 150% flag, so no immediate concern about acceleration. Both rates indicate the elbow has been corroding steadily at ~3.5 mpy over its life.
+
+**Remaining life** to a $t_{\min}$ of 0.180:
+
+$$\text{RL} = \frac{t_{\text{curr}} - t_{\min}}{\text{CR}} = \frac{0.228 - 0.180}{0.0034} \approx 14 \text{ years}$$
+
+Per API 570, the next inspection is set to no later than half the remaining life:
+
+$$\text{Next inspection} \le \frac{14}{2} = 7 \text{ years}$$
+
+```python
+import pandas as pd
+
+readings = pd.DataFrame({
+    'date': pd.to_datetime(['2008-03-15', '2013-04-02', '2018-05-10', '2023-06-20']),
+    'thickness': [0.280, 0.265, 0.247, 0.228]
+})
+readings['years'] = (readings['date'] - readings['date'].iloc[0]).dt.days / 365.25
+
+# LTCR: baseline to current
+ltcr = (readings['thickness'].iloc[0] - readings['thickness'].iloc[-1]) / \
+       (readings['years'].iloc[-1] - readings['years'].iloc[0])
+
+# STCR: last two readings
+stcr = (readings['thickness'].iloc[-2] - readings['thickness'].iloc[-1]) / \
+       (readings['years'].iloc[-1] - readings['years'].iloc[-2])
+
+print(f"LTCR: {ltcr*1000:.1f} mpy")
+print(f"STCR: {stcr*1000:.1f} mpy")
+print(f"STCR/LTCR: {stcr/ltcr:.0%}")
+```
 
 ### Data quality flags
 

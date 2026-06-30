@@ -22,6 +22,35 @@ Although a statistical analysis can be performed on any circuit, the results may
 **Neither API 570 nor API 574 prescribe concrete methodologies of statistical analysis.** They contain loose verbiage allowing it, insisting on documentation and caution. The methodology is up to the analyst.
 ```
 
+## Exchangeability
+
+Before any pooled analysis, the CMLs in a group must be **exchangeable**. This is the central assumption that justifies treating them as draws from a common distribution.
+
+```{epigraph}
+A set of random variables is exchangeable if their joint distribution is unchanged by any permutation of their labels.
+```
+
+In plain terms: if you relabeled CML-007 as CML-042 and vice versa, would the analysis still be valid? If yes, they're exchangeable. If no — for example because CML-007 sits in a high-velocity zone and CML-042 is in a dead leg — they're not, and forcing them into the same population corrupts both.
+
+### Why exchangeability matters
+
+A frequentist fit to a non-exchangeable population produces a multi-modal distribution that no parametric family captures well. The Bayesian hierarchical models in chapter 4 require exchangeability *within each level* of the hierarchy — the CMLs are exchangeable *given* their feature type, but the feature types themselves are not exchangeable with each other.
+
+### Practical check
+
+Group your CMLs by:
+
+- Material and heat treatment
+- Process exposure (fluid composition, phase, temperature)
+- Active damage mechanism
+- Geometry and flow regime
+
+Within each resulting group, the CMLs should be exchangeable. The 88-CML example circuit in chapters 3a and 4a groups by feature (NPS × schedule × component type), which is a reasonable first cut.
+
+```{warning}
+**Exchangeability is a modeling assumption, not a property of the data.** You're stating that the CMLs in a group are similar enough to share a common distribution. If that statement is wrong, all downstream inference is wrong.
+```
+
 ## The frequentist workflow
 
 ```
@@ -93,6 +122,74 @@ Two main targets:
 
 ```{note}
 **You generally cannot fit until after clustering.** Mixing populations produces multi-modal distributions that no single parametric family fits well.
+```
+
+## Why Gamma (not Normal) for corrosion rates
+
+The frequentist analysis in chapter 3a fits **Gamma** to corrosion rates and **Normal** to current thickness. Why the asymmetry?
+
+### Physical reasoning
+
+Corrosion rates have three properties that rule out the Normal:
+
+1. **Strictly positive.** A real corrosion rate cannot be negative — negative rates in your dataset are measurement noise, not signal. The Normal distribution puts probability mass below zero, which is nonphysical.
+
+2. **Right-skewed.** Most CMLs in a circuit corrode at a modest rate; a few corrode much faster due to local geometry, deposits, or flow-induced shear. The distribution has a long right tail.
+
+3. **Bounded modes near zero.** Even in heavily corroding circuits, the most common rate tends to be relatively small, with the higher rates as rare outliers.
+
+The Gamma distribution has all three:
+
+- Support $(0, \infty)$.
+- Naturally right-skewed (skewness $= 2/\sqrt{\alpha}$).
+- Mode at $(\alpha - 1)\beta$ for $\alpha > 1$, typically near zero for inspection data.
+
+### Why Normal is fine for thickness
+
+Current thickness, in contrast:
+
+- Is bounded by $t_{\text{nom}}$ above and $t_{\min}$ below, so it can't go negative in practice.
+- Reflects the cumulative effect of many small corrosion events over decades, which by the CLT tends toward symmetry.
+- Has measurement noise that is approximately Normal.
+
+So Normal works for thickness *most of the time*. The exception is heavily corroded features where thickness becomes skewed toward $t_{\min}$ — chapter 3a shows this happens with 6" SCH40 FIT in the example, and a Skew-Normal or GEV fits better.
+
+```{note}
+**The fit follows the physics.** When a distribution choice doesn't work, ask what physical property of the data the candidate distribution is failing to capture. Negative values, hard bounds, skewness, and tail behavior are the usual culprits.
+```
+
+## Method of Moments for Gamma — full derivation
+
+The MoM estimators for the Gamma are simple enough to derive by hand.
+
+The Gamma distribution with shape $\alpha$ and scale $\theta$ has:
+
+$$E[X] = \alpha\theta \qquad \text{Var}(X) = \alpha\theta^2$$
+
+**Step 1 — Express the parameters in terms of moments.**
+
+Divide variance by mean:
+
+$$\frac{\text{Var}(X)}{E[X]} = \frac{\alpha\theta^2}{\alpha\theta} = \theta$$
+
+So:
+
+$$\theta = \frac{\text{Var}(X)}{E[X]}$$
+
+And from $E[X] = \alpha\theta$:
+
+$$\alpha = \frac{E[X]}{\theta} = \frac{E[X]^2}{\text{Var}(X)}$$
+
+**Step 2 — Replace population moments with sample moments.**
+
+$$\hat\theta = \frac{s^2}{\bar{x}} \qquad \hat\alpha = \frac{\bar{x}^2}{s^2}$$
+
+That's it. Two summary statistics ($\bar{x}$ and $s^2$) give you both Gamma parameters. The whole derivation hinges on the convenient observation that variance/mean cleanly isolates $\theta$.
+
+This is why MoM is fast and computationally simple — no optimization required, just compute two numbers from the data and divide.
+
+```{warning}
+MoM doesn't guarantee a sensible result if the data is small or contaminated. For Gamma, sample variance must be positive (always is for $n \ge 2$ with distinct values), but the resulting $\hat\alpha$ can be unreasonably small if the data has a lot of zeros or near-zeros. Use MoM as a **starting estimate**, then refine with MLE.
 ```
 
 ## Determine remaining life

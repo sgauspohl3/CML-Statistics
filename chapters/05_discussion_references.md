@@ -75,7 +75,75 @@ There's rarely one right answer. Knowing statistics doesn't give you the answer 
 5. **Cross-check.** Run a frequentist analysis as a sanity check on a Bayesian one (and vice versa). Disagreement is informative.
 6. **Engage the SMEs.** Statistical analysis is a tool that supports engineering judgment, not a replacement for it.
 
-## References
+## Common mistakes — an appendix
+
+A field guide to errors I've seen in CML analyses, both my own and others'. Useful as a checklist when reviewing someone else's work.
+
+### Mistake 1 — Dropping growth readings without flagging the truncation
+
+The most common silent error. An inspector or IDMS quietly discards readings thicker than the previous one, on the grounds that "wall doesn't grow." The dataset then contains only intervals where thickness went down, which is **truncation** (chapter 1).
+
+The consequence: corrosion rate estimates are biased upward, often by 20-40%. Remaining life estimates are correspondingly too short. The circuit looks worse than it is.
+
+**The fix:** include growth readings. The mean corrosion rate including growth intervals is the unbiased estimate. If you want to model only "true" corrosion, do it explicitly with a censored or mixture model — not by deleting data.
+
+### Mistake 2 — Mean-based regression on a dataset of minima
+
+A subtler version of the same problem. If the IDMS only stores the minimum reading per CML inspection (rather than the average of several readings), you have a sample of order statistics — not raw thicknesses. Applying mean-based regression methods to this sample gives systematically biased results.
+
+**The fix:** match the statistical method to the reporting convention. Either record average readings and use mean-based methods, or record minima and use extreme value methods (Gumbel, GEV) designed for order statistics.
+
+### Mistake 3 — Forcing a single distribution on a multi-modal circuit
+
+A circuit with three pipe sizes and two component types has six sub-populations. Forcing one Normal (or one Gamma) onto the combined data produces a multi-modal fit that no parametric family captures well. KS p-values come back terrible. The analyst increases the model complexity, when the right move is to cluster first and fit second.
+
+**The fix:** cluster by feature before fitting. If the clustered sub-populations still don't fit, *then* reach for a richer distribution. Chapter 3a shows the pattern.
+
+### Mistake 4 — Applying worst-case scenarios globally
+
+Frequentist remaining-life analyses often produce a "worst $t$ × worst CR" scenario for each feature. Applying this to every CML in the feature group is over-conservative — most CMLs are nowhere near the worst-case combination. Doing this across a circuit produces retirement schedules with dozens of CMLs flagged for replacement, the program loses credibility with operations, and people stop trusting the analysis.
+
+**The fix:** apply worst-case scenarios only where physically justified — reducers before pumps, locations with known aggressive damage mechanisms, anywhere with corroborating evidence. Use mean-case scenarios elsewhere. Better still, use a Bayesian per-CML analysis (chapter 4) that gives a tailored answer for each location.
+
+### Mistake 5 — Treating credible intervals as confidence intervals (and vice versa)
+
+A 95% **credible** interval (Bayesian) does say "there's a 95% probability the true value lies in this interval" — *given the prior and model*. A 95% **confidence** interval (frequentist) does NOT say this. It says "if we repeated the procedure, ~95% of intervals would contain the true value."
+
+These are different statements with different practical implications. Confusing them in a report can mislead the audience badly.
+
+**The fix:** know which you're reporting. If you used a Bayesian method, call it a credible interval. If you used a frequentist method, call it a confidence interval. If audience confusion is likely, briefly explain the distinction in the report.
+
+### Mistake 6 — Reporting MCMC results without convergence diagnostics
+
+A Bayesian analysis without R̂, ESS, or divergence counts is not trustworthy. Untreated convergence failures produce confidently wrong posteriors — the chains agree with each other but disagree with the truth, because they're all stuck in the same wrong region.
+
+**The fix:** always report R̂ (target < 1.01), ESS (target > 400 per parameter), and divergence count (target zero). If divergences appear, fix them (non-centered parameterization, tighter priors, more warm-up) before publishing the result.
+
+### Mistake 7 — Ignoring exchangeability when pooling
+
+Hierarchical models assume the units being pooled are exchangeable. If you pool CMLs across different damage mechanisms — say, sulfidic corrosion with chloride SCC — you're forcing the model to find a common distribution for two physically distinct processes. The result is a posterior that fits neither well.
+
+**The fix:** group by exchangeable units. CMLs within the same feature type, same process exposure, and same damage mechanism are exchangeable. CMLs across these boundaries are not.
+
+### Mistake 8 — Confusing statistical significance with practical significance
+
+A finding can be statistically significant ($p < 0.05$) and practically irrelevant (effect size 0.001 mpy). A finding can be statistically non-significant ($p = 0.12$) and practically critical (effect size 5 mpy, but only 6 data points). The p-value is about evidence strength, not effect magnitude.
+
+**The fix:** always report effect sizes alongside p-values. In inspection work, the practical question is "how does this change remaining life?" — answer that, not just whether the change is significant.
+
+### Mistake 9 — Over-trusting fitted distributions in the tails
+
+Most fitting methods optimize for the bulk of the data. A Normal fit might pass a KS test but still wildly underpredict the probability of an extreme observation. In inspection, the extreme is exactly what you care about — the thinnest CML, the highest corrosion rate.
+
+**The fix:** look at Q-Q plots, which emphasize the tails. If the tail behavior is bad, try a heavier-tailed distribution (t, GEV, skew-Normal) or fall back on order-statistic methods.
+
+### Mistake 10 — Treating the analysis as the answer
+
+The deepest mistake. A statistical analysis is an input to a decision, not the decision itself. The output of the chapter 4a Bayesian model is a per-CML posterior — what to *do* with that posterior (replace now, inspect again in 5 years, accept current state) depends on consequence, risk tolerance, and engineering judgment.
+
+**The fix:** see the note on Bayesian decision theory at the end of chapter 4. The posterior is not the final answer; it's the input to whatever decision actually needs to be made.
+
+
 
 ### API standards
 

@@ -50,15 +50,6 @@ Key principles:
 The goal of statistical analysis is to **move risks from unknowns to knowns** using prior knowledge and data.
 ```
 
-## Probability and statistics primer
-
-Four interlocking domains, all built on the foundation of the **sample**:
-
-- **Descriptive statistics** — summarize what's in front of you.
-- **Probability** — the language of uncertainty.
-- **Inferential statistics** — reason from samples to populations.
-- **Predictive statistics** — model future behavior.
-
 ## Samples and populations
 
 - **Population** — every member of the group of interest. Usually impractical to measure in full.
@@ -99,6 +90,12 @@ $$\bar{X}_n \xrightarrow{p} \mu \;\; \text{as} \;\; n \to \infty$$
 
 More data = more reliable estimates (in expectation).
 
+```{image} ../images/lln.png
+:alt: Law of large numbers
+:width: 600px
+:align: center
+```
+
 ## Central Limit Theorem
 
 The **sample mean** is approximately Normal — *regardless of the population distribution* — provided the population has finite variance:
@@ -107,8 +104,16 @@ $$\bar{X}_n \;\dot\sim\; \mathcal{N}\!\left(\mu, \frac{\sigma^2}{n}\right)$$
 
 This is the foundation for classical inference: z-tests, t-tests, confidence intervals.
 
-```{note}
-Read left → right with increasing $n$: at $n=2$ the sampling distribution is still very skewed and the Normal overlay fits poorly. By $n=30$ it is tight, centered on $\mu$, and well-approximated by the Normal.
+```{image} ../images/clt.png
+:alt: CLT — sampling distribution of the mean
+:width: 700px
+:align: center
+```
+
+Read left → right with increasing $n$: at $n=2$ the sampling distribution of the mean is still very skewed and a Normal overlay fits poorly. By $n=50$ it is tight, centered on $\mu$, and well-approximated by the Normal — even though the underlying distribution (Exponential) is heavily skewed.
+
+```{important}
+The CLT is *not* a statement about the data — it's a statement about the **sample mean**. Your raw data can be wildly non-normal; the means of repeated samples will still tend toward normality.
 ```
 
 ## Descriptive statistics
@@ -119,25 +124,125 @@ Read left → right with increasing $n$: at $n=2$ the sampling distribution is s
 - **Median** — robust to outliers. Always at the 50th percentile.
 - **Mode** — value(s) with highest frequency. The only summary for categorical data.
 
+```{image} ../images/central_tendency.png
+:alt: Central tendency on a skewed sample
+:width: 500px
+:align: center
+```
+
+On a skewed sample, the three measures separate. The mean is pulled by the long right tail, while the median sits at the 50th percentile regardless. The mode is the most common value.
+
 ### Measures of variability
 
 - **Variance and standard deviation** — average distance from the mean. Most common spread statistic. Sensitive to outliers.
 - **Range** — entire spread including outliers. Very sensitive to outliers.
 - **Interquartile range (IQR)** — Q3 minus Q1. Robust to outliers.
 
-### Shape of distributions
+For a sample with $n$ observations:
 
-**Skewness** — distribution asymmetry:
+$$s^2 = \frac{1}{n-1}\sum_{i=1}^{n}(x_i - \bar{x})^2 \qquad s = \sqrt{s^2}$$
 
-- **Left-skewed** — long left tail; mean < median.
-- **Symmetric** — skew ≈ 0; mean ≈ median.
-- **Right-skewed** — long right tail; mean > median.
+The denominator $n-1$ (rather than $n$) is **Bessel's correction**, which produces an unbiased estimator of the population variance.
 
-**Kurtosis** — tail weight:
+```{image} ../images/variability.png
+:alt: Variability comparison
+:width: 600px
+:align: center
+```
 
-- **Leptokurtic** — heavy tails, sharp peak.
-- **Mesokurtic** — normal-like tails.
-- **Platykurtic** — light tails, flat peak.
+Two distributions with the same mean but different spread. The wider $\sigma=12$ distribution has the same center but covers much more ground — the boxplot underneath shows the contrast in IQR clearly.
+
+### Coefficient of variation (CV)
+
+Standard deviation in absolute units depends on the scale of the variable. To compare spread across variables on different scales, normalize:
+
+$$\text{CV} = \frac{s}{\bar{x}}$$
+
+CV is unitless, often reported as a percentage. It's particularly useful in inspection work where pipe thickness varies by component size — a $\pm$ 0.030" variation is a different fraction of nominal for a 4" SCH40 pipe than for a 24" SCH80.
+
+```{note}
+**Rule of thumb in CML work:** A CV < 10% within a TML is generally acceptable. Higher CV suggests localized corrosion, measurement issues, or improper grouping.
+```
+
+### Shape: skewness
+
+Skewness measures **asymmetry**:
+
+$$g_1 = \frac{1}{n}\sum_{i=1}^{n}\left(\frac{x_i - \bar{x}}{s}\right)^3$$
+
+- **Left-skewed** (negative skew) — long left tail; **mean < median**. Example: age at death.
+- **Symmetric** — skew ≈ 0; mean ≈ median. Example: heights.
+- **Right-skewed** (positive skew) — long right tail; **mean > median**. Example: incomes, corrosion rates.
+
+```{image} ../images/skew.png
+:alt: Skew of distributions
+:width: 650px
+:align: center
+```
+
+Note where the mean (dashed line) sits relative to the median (solid line) in each case. The position of mean relative to median is a quick visual check for skew direction.
+
+### Shape: kurtosis
+
+Kurtosis measures **tail weight** — how often extreme values appear:
+
+$$g_2 = \frac{1}{n}\sum_{i=1}^{n}\left(\frac{x_i - \bar{x}}{s}\right)^4 - 3$$
+
+- **Leptokurtic** — heavy tails, sharp peak. Example: financial returns, t-distribution with low df.
+- **Mesokurtic** — normal-like tails. Example: many natural phenomena.
+- **Platykurtic** — light tails, flat peak. Example: uniform distribution.
+
+```{image} ../images/kurtosis.png
+:alt: Kurtosis of distributions
+:width: 650px
+:align: center
+```
+
+Heavy-tailed distributions produce extreme outliers far more often than a Normal would predict. This matters in reliability work — a thickness reading 5σ below the fitted mean is almost impossible under a Normal model, but could be a one-in-a-thousand event under a t-distribution.
+
+## Expectation, variance, and moments
+
+For a random variable $X$, the **expectation** (mean) is
+
+$$E[X] = \sum_x x \, p(x) \quad \text{(discrete)} \qquad E[X] = \int x \, f(x)\, dx \quad \text{(continuous)}$$
+
+The **variance** is
+
+$$\text{Var}(X) = E[(X - E[X])^2] = E[X^2] - E[X]^2$$
+
+These are the **first two moments** of the distribution. Higher moments give skew (3rd) and kurtosis (4th).
+
+### Linearity of expectation
+
+For any constants $a, b$ and random variables $X, Y$:
+
+$$E[aX + bY] = a\,E[X] + b\,E[Y]$$
+
+Linearity holds **whether or not $X$ and $Y$ are independent** — this is what makes expectations easy to work with. Variance, in contrast, is not linear:
+
+$$\text{Var}(aX + bY) = a^2\,\text{Var}(X) + b^2\,\text{Var}(Y) + 2ab\,\text{Cov}(X, Y)$$
+
+If $X$ and $Y$ are independent, $\text{Cov}(X, Y) = 0$ and the cross-term vanishes.
+
+## Independence and covariance
+
+Two random variables $X$ and $Y$ are **independent** if knowing one tells you nothing about the other:
+
+$$p(X, Y) = p(X) \cdot p(Y)$$
+
+**Covariance** measures the direction of joint variation:
+
+$$\text{Cov}(X, Y) = E[(X - E[X])(Y - E[Y])]$$
+
+**Correlation** is the unitless version, scaled to $[-1, 1]$:
+
+$$\rho_{X,Y} = \frac{\text{Cov}(X, Y)}{\sigma_X \sigma_Y}$$
+
+```{warning}
+**Independence implies zero correlation, but zero correlation does NOT imply independence.** Correlation only captures linear relationships. Two variables can be perfectly dependent but uncorrelated (e.g., $Y = X^2$ when $X$ is symmetric around zero).
+```
+
+Independence matters for inspection data because most statistical methods assume observations are independent. CML readings on the same circuit are often *not* independent — they share environment, material, and operating history. This is one of the motivations for the hierarchical Bayesian models in chapter 4.
 
 ## Plotting data
 
@@ -168,6 +273,12 @@ plt.show()
 **Bin size matters.** Too few bins hides structure; too many adds noise. Try a few before drawing conclusions.
 ```
 
+```{image} ../images/bin_count.png
+:alt: Effect of bin count
+:width: 800px
+:align: center
+```
+
 ### Empirical CDF (ECDF)
 
 Proportion of data ≤ x.
@@ -177,59 +288,60 @@ Proportion of data ≤ x.
 - Less intuitive shape representation, but ideal for comparing distributions.
 
 ```python
-import pandas as pd
-import numpy as np
 import seaborn as sns
-
-np.random.seed(42)
-dist1 = np.random.normal(loc=50, scale=10, size=500)
-dist2 = np.random.normal(loc=60, scale=15, size=500)
-
-df = pd.DataFrame({
-    'value': np.concatenate([dist1, dist2]),
-    'distribution': ['Dist 1 (μ=50, σ=10)'] * 500 + ['Dist 2 (μ=60, σ=15)'] * 500
-})
-
-sns.ecdfplot(data=df, x='value', hue='distribution', linewidth=2.5)
-plt.show()
+sns.ecdfplot(data, color='steelblue', linewidth=2.5)
 ```
+
+```{image} ../images/ecdf.png
+:alt: Empirical CDF
+:width: 600px
+:align: center
+```
+
+The horizontal lines at 25%, 50%, and 75% make it easy to read off the quartiles directly from the plot. To compare two distributions, overlay their ECDFs:
+
+```{image} ../images/ecdf_compare.png
+:alt: ECDF comparison
+:width: 600px
+:align: center
+```
+
+Differences in shape, shift, and spread all show up in one view.
 
 ### Probability plots
 
 Check normality (or fit to other distributions) by visually checking linearity.
 
 ```python
-import numpy as np
-import matplotlib.pyplot as plt
 import pingouin as pg
-
-np.random.seed(42)
-data = np.random.normal(loc=50, scale=10, size=100)
-
-fig, ax = plt.subplots(figsize=(7, 7))
-pg.qqplot(data, dist='norm', confidence=0.95, ax=ax)
-plt.show()
+pg.qqplot(data, dist='norm', confidence=0.95)
 ```
 
-Try different distributions, or cluster the data, if fit is not good.
+```{image} ../images/qq_norm.png
+:alt: Normal probability plot
+:width: 500px
+:align: center
+```
+
+A good fit produces a straight line along the diagonal. Systematic curvature suggests the candidate distribution doesn't match — try a different one, or look for sub-populations that should be clustered separately.
 
 ## Probability
 
 ### Core concept
 
-Describes the likelihood of an event occurring. In inspection, it represents the chance that a given thickness value or corrosion rate occurs within the circuit population.
+Probability describes the likelihood of an event occurring. In inspection, it represents the chance that a given thickness value or corrosion rate occurs within the circuit population.
 
 ### Frequentist definition
 
-$P(A)$ is the limit of the fraction of outcomes in $A$ over $n$ total outcomes as $n \to \infty$.
+$P(A)$ is the limit of the fraction of outcomes in $A$ over $n$ total outcomes as $n \to \infty$. *Long-run frequency interpretation.*
 
 ### Kolmogorov's three axioms
 
 Probabilities are valid measures of likelihood if they satisfy:
 
-1. Probabilities are bounded between 0 and 1.
-2. The sample space has total probability 1.
-3. For disjoint events, probabilities add.
+1. $P(A) \ge 0$ for any event $A$.
+2. $P(\Omega) = 1$ — something must happen.
+3. For disjoint events: $P(A \cup B) = P(A) + P(B)$.
 
 ### Probability rules
 
@@ -238,6 +350,41 @@ Probabilities are valid measures of likelihood if they satisfy:
 - **Multiplication (independent):** $P(A \cap B) = P(A) \cdot P(B)$
 - **Conditional:** $P(A \mid B) = P(A \cap B) / P(B)$
 - **Law of total probability:** $P(A) = \sum_i P(A \mid B_i) P(B_i)$
+
+### Bayes' theorem
+
+The single most important formula in modern statistics:
+
+$$P(A \mid B) = \frac{P(B \mid A)\,P(A)}{P(B)}$$
+
+It tells you how to *update* your belief about $A$ after observing $B$. The prior $P(A)$ becomes the posterior $P(A \mid B)$, mediated by the likelihood $P(B \mid A)$.
+
+#### A worked example: medical testing
+
+Suppose a disease affects 1 in 1,000 people. A diagnostic test has:
+
+- 99% sensitivity: $P(\text{positive} \mid \text{disease}) = 0.99$
+- 95% specificity: $P(\text{negative} \mid \text{no disease}) = 0.95$, so $P(\text{positive} \mid \text{no disease}) = 0.05$
+
+A patient tests positive. What's the probability they have the disease?
+
+Apply Bayes' theorem:
+
+$$P(\text{disease} \mid +) = \frac{P(+ \mid \text{disease}) \, P(\text{disease})}{P(+)}$$
+
+The numerator is straightforward: $0.99 \times 0.001 = 0.00099$.
+
+The denominator uses the law of total probability:
+
+$$P(+) = P(+ \mid \text{D}) P(\text{D}) + P(+ \mid \text{no D}) P(\text{no D}) = 0.99 \times 0.001 + 0.05 \times 0.999 = 0.05094$$
+
+So:
+
+$$P(\text{disease} \mid +) = \frac{0.00099}{0.05094} \approx 0.019 \approx 2\%$$
+
+**Despite a positive result from a 99%-sensitive test, the probability the patient is actually sick is only about 2%.** The low base rate (1 in 1,000) dominates the calculation. This is the **base rate fallacy**, and it's the most common error people make in interpreting test results.
+
+The same logic applies to inspection: a single low thickness reading at a randomly chosen CML doesn't tell you much if your prior belief is that most of the circuit is fine. You need to update on the base rate of corroding CMLs, not just the reading itself.
 
 ## Probability distributions
 
@@ -252,69 +399,347 @@ A **probability distribution** describes the likelihood of different outcomes in
 
 | Variable type | Support | Distributions |
 |--|--|--|
-| Discrete | Finite | Binomial, Bernoulli |
+| Discrete | Finite | Uniform, Binomial, Bernoulli |
 | Discrete | Infinite | Poisson |
 | Continuous | Bounded | Uniform, Beta |
-| Continuous | Positive | Gamma, Lognormal, Weibull |
-| Continuous | Infinite | Normal, Logistic, Gumbel |
+| Continuous | Positive | Half-Normal, Lognormal, Exponential, Gamma, Weibull |
+| Continuous | Infinite | Normal, Logistic |
 
-### Discrete: Uniform, Binomial, Bernoulli, Poisson
+The rest of this chapter walks through each in turn.
 
-```{note}
-For each distribution: parameters, support, PMF, CDF, mean, variance. Add the formal definitions in production; this wireframe stub keeps the high-level descriptions only.
+## Discrete distributions
+
+### Discrete Uniform
+
+All discrete outcomes equally likely. Used as an uninformative prior in Bayesian work.
+
+| | |
+|--|--|
+| **Parameters** | $a$ (lower), $b$ (upper), both integers |
+| **Support** | $x \in \{a, a+1, \ldots, b\}$ |
+| **PMF** | $P(X = x) = \dfrac{1}{b - a + 1}$ |
+| **CDF** | $F(x) = \dfrac{\lfloor x \rfloor - a + 1}{b - a + 1}$ |
+| **Mean** | $\dfrac{a + b}{2}$ |
+| **Variance** | $\dfrac{(b - a + 1)^2 - 1}{12}$ |
+
+*Example: rolling a fair die — $a = 1$, $b = 6$.*
+
+```{image} ../images/dist_uniform_discrete.png
+:alt: Discrete uniform distribution
+:width: 500px
+:align: center
 ```
 
-- **Discrete Uniform** — all discrete outcomes equally likely (dice roll). Commonly used as an uninformative prior in Bayesian analysis.
-- **Binomial** — number of successes in a fixed number of independent trials. *Example: probability of detection.*
-- **Bernoulli** — outcomes of a single experiment. Sum of iid Bernoullis is Binomial.
-- **Poisson** — number of events in a fixed interval of time (or other interval).
+### Bernoulli
 
-### Continuous: Uniform, Normal, Half-Normal, Lognormal, Beta, Exponential, Gamma, Weibull
+The outcomes of a **single trial** with two outcomes (success/failure). The atom from which the Binomial is built.
 
-- **Uniform** — all outcomes equally likely on a continuous interval. Common Bayesian uninformative prior.
-- **Normal** — symmetric bell curve; other distributions converge to it (CLT).
-- **Half-Normal** — folded normal, strictly positive. Common for error measurement.
-- **Lognormal** — log of the variable is normal. Positive only. Used for growth.
-- **Beta** — flexible, bounded on $[0, 1]$. Conjugate prior for Bernoulli and Binomial.
-- **Exponential** — time between events, constant-rate. Memoryless.
-- **Gamma** — flexible right-skewed, positive. Generalizes the exponential.
-- **Weibull** — most flexible time-to-failure distribution. Shape parameter $k$ determines failure behavior.
+| | |
+|--|--|
+| **Parameters** | $p \in [0, 1]$ |
+| **Support** | $x \in \{0, 1\}$ |
+| **PMF** | $P(X = x) = p^x (1-p)^{1-x}$ |
+| **CDF** | $F(x) = \begin{cases} 0 & x < 0 \\ 1-p & 0 \le x < 1 \\ 1 & x \ge 1 \end{cases}$ |
+| **Mean** | $p$ |
+| **Variance** | $p(1-p)$ |
+
+*Example: a single inspection POD trial — pit detected or not detected.*
+
+```{image} ../images/dist_bernoulli.png
+:alt: Bernoulli distribution
+:width: 500px
+:align: center
+```
+
+### Binomial
+
+Number of successes in $n$ independent Bernoulli trials.
+
+| | |
+|--|--|
+| **Parameters** | $n$ (trials), $p \in [0, 1]$ (success probability) |
+| **Support** | $x \in \{0, 1, \ldots, n\}$ |
+| **PMF** | $P(X = x) = \binom{n}{x} p^x (1-p)^{n-x}$ |
+| **Mean** | $np$ |
+| **Variance** | $np(1-p)$ |
+
+*Example: defective fittings in a batch of 100, where each has a 2% defect rate.*
+
+```{image} ../images/dist_binomial.png
+:alt: Binomial distribution
+:width: 600px
+:align: center
+```
+
+### Poisson
+
+Number of events in a fixed interval, given a constant average rate. Limit of Binomial as $n \to \infty$, $p \to 0$, with $np = \lambda$ fixed.
+
+| | |
+|--|--|
+| **Parameters** | $\lambda > 0$ (mean rate) |
+| **Support** | $x \in \{0, 1, 2, \ldots\}$ |
+| **PMF** | $P(X = x) = \dfrac{\lambda^x e^{-\lambda}}{x!}$ |
+| **Mean** | $\lambda$ |
+| **Variance** | $\lambda$ |
+
+The fact that mean equals variance is the distinctive Poisson property — useful for sanity-checking whether count data is actually Poisson.
+
+*Example: equipment failures per year, leaks per mile of pipe, defects per unit area.*
+
+```{image} ../images/dist_poisson.png
+:alt: Poisson distribution
+:width: 600px
+:align: center
+```
+
+## Continuous distributions
+
+### Continuous Uniform
+
+All values in $[a, b]$ equally likely.
+
+| | |
+|--|--|
+| **Parameters** | $a < b$ (real) |
+| **Support** | $x \in [a, b]$ |
+| **PDF** | $f(x) = \dfrac{1}{b - a}$ |
+| **CDF** | $F(x) = \dfrac{x - a}{b - a}$ |
+| **Mean** | $\dfrac{a + b}{2}$ |
+| **Variance** | $\dfrac{(b - a)^2}{12}$ |
+
+*Example: noise injected uniformly in a range; "no prior information" Bayesian prior.*
+
+```{image} ../images/dist_uniform_continuous.png
+:alt: Continuous uniform distribution
+:width: 600px
+:align: center
+```
+
+### Normal
+
+The bell curve — appears wherever many small effects add up (Central Limit Theorem).
+
+| | |
+|--|--|
+| **Parameters** | $\mu$ (mean), $\sigma > 0$ (std) |
+| **Support** | $x \in (-\infty, \infty)$ |
+| **PDF** | $f(x) = \dfrac{1}{\sigma\sqrt{2\pi}}\exp\!\left(-\dfrac{(x-\mu)^2}{2\sigma^2}\right)$ |
+| **Mean** | $\mu$ |
+| **Variance** | $\sigma^2$ |
+
+68–95–99.7 rule: ~68% of the mass within $\pm1\sigma$, ~95% within $\pm 2\sigma$, ~99.7% within $\pm 3\sigma$.
+
+*Example: measurement errors, heights, sums of many small random effects.*
+
+```{image} ../images/dist_normal.png
+:alt: Normal distribution
+:width: 650px
+:align: center
+```
+
+### Half-Normal
+
+Folded Normal — absolute value of a zero-centered Normal. Strictly positive.
+
+| | |
+|--|--|
+| **Parameters** | $\sigma > 0$ |
+| **Support** | $x \in [0, \infty)$ |
+| **PDF** | $f(x) = \dfrac{\sqrt{2}}{\sigma\sqrt{\pi}}\exp\!\left(-\dfrac{x^2}{2\sigma^2}\right)$ |
+| **Mean** | $\sigma\sqrt{2/\pi}$ |
+| **Variance** | $\sigma^2(1 - 2/\pi)$ |
+
+*Example: measurement error magnitudes, scale parameters in Bayesian models.*
+
+```{image} ../images/dist_halfnormal.png
+:alt: Half-Normal distribution
+:width: 650px
+:align: center
+```
+
+### Log-Normal
+
+$\log X$ is Normal. Strictly positive, right-skewed.
+
+| | |
+|--|--|
+| **Parameters** | $\mu$, $\sigma > 0$ (of the log) |
+| **Support** | $x \in (0, \infty)$ |
+| **PDF** | $f(x) = \dfrac{1}{x\sigma\sqrt{2\pi}}\exp\!\left(-\dfrac{(\ln x - \mu)^2}{2\sigma^2}\right)$ |
+| **Mean** | $\exp\!\left(\mu + \sigma^2/2\right)$ |
+| **Variance** | $\left[\exp(\sigma^2) - 1\right] \exp(2\mu + \sigma^2)$ |
+
+*Example: rainfall amounts, financial returns, biological growth.*
+
+```{image} ../images/dist_lognormal.png
+:alt: Log-Normal distribution
+:width: 650px
+:align: center
+```
+
+### Beta
+
+Flexible distribution on $[0, 1]$. The **conjugate prior** for the Bernoulli and Binomial — see chapter 4.
+
+| | |
+|--|--|
+| **Parameters** | $\alpha > 0$, $\beta > 0$ |
+| **Support** | $x \in [0, 1]$ |
+| **PDF** | $f(x) = \dfrac{x^{\alpha-1}(1-x)^{\beta-1}}{B(\alpha, \beta)}$ |
+| **Mean** | $\dfrac{\alpha}{\alpha + \beta}$ |
+| **Variance** | $\dfrac{\alpha\beta}{(\alpha+\beta)^2(\alpha+\beta+1)}$ |
+
+where $B(\alpha, \beta) = \frac{\Gamma(\alpha)\Gamma(\beta)}{\Gamma(\alpha + \beta)}$ is the beta function.
+
+Shape changes dramatically with parameters: $\alpha = \beta = 1$ is uniform, $\alpha = \beta > 1$ is bell-shaped, $\alpha = \beta < 1$ is U-shaped, $\alpha \ne \beta$ is asymmetric.
+
+*Example: proportions, probabilities of success, prior on POD in inspection work.*
+
+```{image} ../images/dist_beta.png
+:alt: Beta distribution
+:width: 650px
+:align: center
+```
+
+### Exponential
+
+Time between events in a constant-rate Poisson process. **Memoryless** — the only continuous distribution with this property.
+
+| | |
+|--|--|
+| **Parameters** | $\lambda > 0$ (rate), or equivalently $\theta = 1/\lambda$ (scale) |
+| **Support** | $x \in [0, \infty)$ |
+| **PDF** | $f(x) = \lambda e^{-\lambda x}$ |
+| **CDF** | $F(x) = 1 - e^{-\lambda x}$ |
+| **Mean** | $1/\lambda$ |
+| **Variance** | $1/\lambda^2$ |
+
+The memoryless property: $P(X > s + t \mid X > s) = P(X > t)$. *A component that has survived 10 years is no more likely to fail next year than a brand new one* — useful as a null model for failures, since real systems usually wear out and depart from this.
+
+*Example: time between rare events; null model for failure times.*
+
+```{image} ../images/dist_exponential.png
+:alt: Exponential distribution
+:width: 650px
+:align: center
+```
+
+### Gamma
+
+Generalizes the Exponential — sum of $\alpha$ Exponentials. The Exponential is Gamma with $\alpha = 1$.
+
+| | |
+|--|--|
+| **Parameters** | $\alpha > 0$ (shape), $\beta > 0$ (scale), sometimes parameterized by rate $= 1/\beta$ |
+| **Support** | $x \in (0, \infty)$ |
+| **PDF** | $f(x) = \dfrac{x^{\alpha-1} e^{-x/\beta}}{\Gamma(\alpha)\beta^\alpha}$ |
+| **Mean** | $\alpha\beta$ |
+| **Variance** | $\alpha\beta^2$ |
+| **Mode** | $(\alpha - 1)\beta$ for $\alpha \ge 1$ |
+
+```{important}
+**Conventions vary.** NumPy and SciPy use `shape` and `scale` ($\alpha$, $\beta$). NumPyro and Stan use `concentration` and `rate` ($\alpha$, $1/\beta$). Always verify which the library expects.
+```
+
+*Example: corrosion rates (chapter 3), waiting times for $k$ events, claim sizes.*
+
+```{image} ../images/dist_gamma.png
+:alt: Gamma distribution
+:width: 650px
+:align: center
+```
+
+### Weibull
+
+Most flexible distribution for **time-to-failure** modeling. Shape parameter $\beta$ determines failure behavior over time.
+
+| | |
+|--|--|
+| **Parameters** | $\beta > 0$ (shape), $\eta > 0$ (scale) |
+| **Support** | $x \in [0, \infty)$ |
+| **PDF** | $f(x) = \dfrac{\beta}{\eta}\!\left(\dfrac{x}{\eta}\right)^{\beta-1} \exp\!\left[-\!\left(\dfrac{x}{\eta}\right)^{\beta}\right]$ |
+| **CDF** | $F(x) = 1 - \exp\!\left[-\!\left(\dfrac{x}{\eta}\right)^{\beta}\right]$ |
+| **Mean** | $\eta\,\Gamma(1 + 1/\beta)$ |
+| **Variance** | $\eta^2 \left[\Gamma(1 + 2/\beta) - \Gamma(1 + 1/\beta)^2\right]$ |
+
+Hazard rate behavior:
+
+- $\beta < 1$ — decreasing hazard (infant mortality).
+- $\beta = 1$ — constant hazard (reduces to Exponential).
+- $\beta > 1$ — increasing hazard (wear-out).
+
+*Example: bearing failures, fatigue life, wind speeds.*
+
+```{image} ../images/dist_weibull.png
+:alt: Weibull distribution
+:width: 650px
+:align: center
+```
 
 ## Relationships between distributions
 
 Distributions form a connected web. Key relationships:
 
-- Normal ↔ Beta, Exponential, Half-Normal, Lognormal
-- Bernoulli → Binomial → Poisson
-- Exponential → Gamma → Weibull → Gumbel
-- Normal → Cauchy, Student's t, Chi-Squared
+- **Binomial → Normal** (de Moivre–Laplace): for large $n$, $\text{Binomial}(n,p) \approx \mathcal{N}(np, np(1-p))$.
+- **Binomial → Poisson**: large $n$, small $p$, fixed $np = \lambda$.
+- **Poisson ↔ Exponential**: Poisson counts in time correspond to Exponential inter-arrival times.
+- **Sum of $k$ Exponentials** = Gamma($k$, $1/\lambda$).
+- **Exponential = Gamma**($\alpha = 1$) **= Weibull**($\beta = 1$).
+- **Sum of independent Normals** is Normal.
 
-Transforms, sums/convolutions, limits, and special cases all link these. Transformed distributions may be used as **conjugate priors** for Bayesian analysis, and related distributions can aid in fitting.
+```{note}
+Transformed distributions are often used as **conjugate priors** for Bayesian analysis. Related distributions can aid in fitting if a simple model fails.
+```
 
 ## Choosing the right distribution
 
-Selecting the correct distribution dictates the performance of inferences and predictions. Consider:
+Selecting the correct distribution dictates the performance of inferences and predictions:
 
 - **Data type** — discrete vs. continuous.
-- **Support / range** — $[0,1]$ (Beta), $[0, \infty)$ (Exp/Lognormal/Gamma), $(-\infty, \infty)$ (Normal).
-- **Shape** — symmetric (Normal), right-skewed (Lognormal/Exp), U-shaped (Beta with $\alpha, \beta < 1$).
-- **Measurement generation** — counts (Poisson/Binomial), times (Exp/Gamma), growth (Lognormal).
+- **Support / range** — $[0,1]$ (Beta), $[0, \infty)$ (Exponential/Gamma/Weibull/Lognormal), $(-\infty, \infty)$ (Normal).
+- **Shape** — symmetric (Normal), right-skewed (Gamma/Lognormal), U-shaped (Beta with $\alpha, \beta < 1$).
+- **Mechanism** — counts (Poisson/Binomial), times (Exponential/Gamma), growth (Lognormal).
 
 | Scenario | Distribution |
 |--|--|
 | Counts in fixed trials | Binomial |
 | Counts over time/space | Poisson |
 | Time between events | Exponential |
-| Positive, right-skewed measurements | Lognormal |
+| Positive, right-skewed measurements | Lognormal, Gamma |
 | Symmetric measurements | Normal |
 | Proportions/probabilities | Beta |
+| Time to failure | Weibull |
 
 ## Fitting distributions
 
 ### Method of Moments (MoM)
 
-Express the distribution moments as functions and solve using sample moments.
+Express the distribution moments as functions of the parameters and solve using the sample moments.
 
+For a Gamma($\alpha, \beta$): mean = $\alpha\beta$, variance = $\alpha\beta^2$. Solving:
+
+$$\hat{\beta} = \frac{s^2}{\bar{x}}, \qquad \hat{\alpha} = \frac{\bar{x}}{\hat{\beta}} = \frac{\bar{x}^2}{s^2}$$
+
+```python
+import numpy as np
+from scipy.stats import gamma
+
+data = np.random.gamma(shape=3, scale=2, size=500)
+m = data.mean()
+v = data.var(ddof=1)
+alpha_hat = m**2 / v
+beta_hat = v / m
+print(f"MoM: α = {alpha_hat:.2f}, β = {beta_hat:.2f}  (true: 3, 2)")
+```
+
+```{image} ../images/mom_gamma.png
+:alt: MoM fit to Gamma
+:width: 600px
+:align: center
+```
+
+**Properties:**
 - Not always practical or analytically possible.
 - Quick and computationally simple.
 - Generally the poorest estimator.
@@ -322,18 +747,88 @@ Express the distribution moments as functions and solve using sample moments.
 
 ### Least Squares Estimation (LSE)
 
-Linearize the distribution equation and use least squares to find parameters of the line of best fit.
+Linearize the distribution and use least squares.
 
-1. **Transform** the data (e.g., Bernard's approximation for $F$, with $a = 0.3$).
-2. **Perform regression** on the linearized form.
-3. **Solve** for the original parameters from the regression coefficients.
+For the Weibull, the CDF is $F(x) = 1 - \exp[-(x/\eta)^\beta]$. Taking $\ln$ twice:
+
+$$\ln[-\ln(1 - F)] = \beta \ln(x) - \beta \ln(\eta)$$
+
+This is linear in $\ln(x)$ with slope $\beta$ and intercept $-\beta\ln(\eta)$. Use Benard's approximation $\hat{F}_i = (i - 0.3)/(n + 0.4)$ for plotting positions.
+
+```python
+import numpy as np
+
+data = np.array([25, 43, 53, 65, 76, 86, 95, 115, 132, 150])
+n = len(data)
+i = np.arange(1, n + 1)
+F_i = (i - 0.3) / (n + 0.4)
+
+X = np.log(np.sort(data))
+Y = np.log(-np.log(1 - F_i))
+coeffs = np.polyfit(X, Y, 1)
+beta_hat = coeffs[0]
+eta_hat = np.exp(-coeffs[1] / beta_hat)
+```
+
+```{image} ../images/lse_weibull.png
+:alt: LSE fit to Weibull
+:width: 500px
+:align: center
+```
+
+**Properties:**
+- Works when the distribution can be linearized.
+- Provides an R² for fit assessment.
+- For linear regression with normal errors, **LSE = MLE**.
 
 ### Maximum Likelihood Estimation (MLE)
 
 Choose the parameters that make the observed data most probable under the assumed distribution.
 
-- Asymptotically efficient.
+$$\hat\theta_{\text{MLE}} = \arg\max_\theta \prod_{i=1}^{n} f(x_i;\theta) = \arg\max_\theta \sum_{i=1}^{n}\log f(x_i;\theta)$$
+
+```python
+from scipy.stats import weibull_min
+
+c_mle, _, scale_mle = weibull_min.fit(data, floc=0)
+print(f"MLE: β = {c_mle:.2f}, η = {scale_mle:.1f}")
+```
+
+```{image} ../images/mle_weibull.png
+:alt: MLE fit to Weibull
+:width: 600px
+:align: center
+```
+
+**Properties:**
+- Asymptotically efficient — for large $n$, no unbiased estimator has lower variance.
 - Workhorse for most modern statistical models.
+- Numerical optimization required for most distributions.
+
+## Properties of estimators
+
+What makes one estimator better than another? Four criteria:
+
+- **Unbiased:** $E[\hat\theta] = \theta$. On average, hits the true value.
+- **Consistent:** $\hat\theta \to \theta$ as $n \to \infty$. Converges to truth with enough data.
+- **Efficient:** lowest variance among unbiased estimators.
+- **Robust:** not overly sensitive to outliers or assumption violations.
+
+### Bias-variance tradeoff
+
+The mean squared error of any estimator decomposes:
+
+$$\text{MSE} = \text{Bias}^2 + \text{Variance}$$
+
+```{image} ../images/bias_variance.png
+:alt: Bias-variance tradeoff
+:width: 700px
+:align: center
+```
+
+A slightly biased estimator with much lower variance often produces better overall predictions than an unbiased high-variance one. This is the foundation behind regularization, ridge regression, shrinkage estimators, and most of modern machine learning.
+
+In CML work, a hierarchical Bayesian model deliberately introduces bias by pulling individual CML estimates toward a population mean — accepting bias to gain enormous variance reductions on data-poor CMLs.
 
 ## Goodness of fit
 
@@ -344,6 +839,18 @@ Compare an empirical distribution against the theoretical one. P-P and Q-Q plots
 | **Compares** | Empirical CDF vs. theoretical CDF | Empirical quantiles vs. theoretical quantiles |
 | **Emphasizes** | Center of the distribution | Tails — extreme values, outliers |
 | **Use for** | Detecting overall shape mismatch, location/scale shifts | Detecting tail behavior |
+
+```{image} ../images/pp_plot.png
+:alt: P-P Plot
+:width: 600px
+:align: center
+```
+
+```{image} ../images/qq_plot.png
+:alt: Q-Q Plot
+:width: 600px
+:align: center
+```
 
 ### Statistical tests
 
@@ -365,6 +872,10 @@ $k$ = parameters, $n$ = sample size, $\hat{L}$ = maximum likelihood. BIC penaliz
 
 A 95% CI means: if we repeated the procedure many times, ~95% of the intervals would contain the true $\mu$.
 
+```{warning}
+**Confidence intervals are about the procedure, not the parameter.** A specific 95% CI does NOT mean "there's a 95% probability the true value lies in this interval." That's a Bayesian credible interval — a different concept covered in chapter 4.
+```
+
 | Method | Strengths | Weakness |
 |--|--|--|
 | **Standard error (t)** | Fast, simple; uses Student's t with $n-1$ df. | Assumes symmetric, normal-shaped likelihood. Poor for small $n$ or skewed parameters. |
@@ -372,13 +883,22 @@ A 95% CI means: if we repeated the procedure many times, ~95% of the intervals w
 | **Profile likelihood** | Honors actual shape of the likelihood; reliable for small $n$, skewed/bounded parameters. | More computation — evaluate likelihood across a grid. |
 | **Bootstrap** | Distribution-free; works for any estimator. | Computationally heavy; quality depends on sample representativeness. |
 
+### Bootstrap
+
 ```python
-# Bootstrap example
 B = 10000
 boot_means = [rng.choice(data, size=len(data), replace=True).mean()
               for _ in range(B)]
 lo, hi = np.percentile(boot_means, [2.5, 97.5])
 ```
+
+```{image} ../images/bootstrap_ci.png
+:alt: Bootstrap CI
+:width: 600px
+:align: center
+```
+
+The bootstrap distribution of the estimator. Take the 2.5% and 97.5% percentiles to form the 95% CI.
 
 ## Hypothesis testing
 
@@ -437,6 +957,12 @@ Value is bounded but not exact.
 
 Observations outside a range are **completely missing** — e.g. eliminating thickness readings that show growth.
 
+```{image} ../images/censoring_truncation.png
+:alt: Censoring vs truncation
+:width: 800px
+:align: center
+```
+
 ```{important}
-The key difference: **censored data contributes partial information; truncated data is missing entirely.** Ignoring either produces biased estimates.
+The key difference: **censored data contributes partial information; truncated data is missing entirely.** Ignoring either produces biased estimates. In CML work, dropping "growth" readings (readings thicker than the previous one) is a form of truncation that biases corrosion rate estimates upward — see chapter 2.
 ```

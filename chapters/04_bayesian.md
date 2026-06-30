@@ -63,6 +63,57 @@ How $p(H \mid E)$ is computed depends on model complexity:
 | **Numerical** | Low dimension (≤ 2 parameters). | Evaluate the evidence integral on a grid and normalize. `scipy.integrate.quad / dblquad`. |
 | **MCMC** | Multi-parameter, hierarchical models. | Sample directly from the posterior — no closed form needed. NUTS (NumPyro, PyMC, Stan); JAGS (Gibbs). |
 
+## A worked conjugate update — Beta-Binomial
+
+The simplest closed-form Bayesian update, and a useful intuition pump.
+
+### Setup
+
+Imagine we want to estimate the **detection probability** $\theta$ of an inspection technique. Before testing, we have a weak prior belief: maybe somewhere in the middle, but we're not sure. Model this as a $\text{Beta}(2, 2)$ prior:
+
+- Mean: $\alpha/(\alpha+\beta) = 2/4 = 0.5$
+- Mode: near 0.5
+- Width: moderate
+
+We then run 10 trials and observe 7 successes. The likelihood is Binomial:
+
+$$P(7 \mid 10, \theta) = \binom{10}{7} \theta^7 (1-\theta)^3$$
+
+### The update
+
+The Beta is the **conjugate prior** for the Binomial — meaning posterior is also Beta, with a beautifully simple update rule:
+
+$$\text{Beta}(\alpha, \beta) + \text{Binomial}(s \text{ successes}, f \text{ failures}) \implies \text{Beta}(\alpha + s, \beta + f)$$
+
+So our $\text{Beta}(2, 2)$ prior plus 7 successes and 3 failures gives:
+
+$$\text{Beta}(2 + 7, 2 + 3) = \text{Beta}(9, 5)$$
+
+- Posterior mean: $9/14 \approx 0.64$
+- Posterior mode: $(9-1)/(9+5-2) = 8/12 \approx 0.67$
+- Much narrower than the prior — the data dominates.
+
+```{image} ../images/conjugate_beta_binomial.png
+:alt: Beta-Binomial conjugate update
+:width: 700px
+:align: center
+```
+
+The visualization shows all three pieces: the wide prior, the likelihood (scaled for overlay), and the posterior — a weighted compromise. Notice that the posterior peak sits between the prior peak (0.5) and the data's maximum likelihood estimate (0.7), closer to the data because we had 10 observations and only 4 "pseudo-observations" worth of prior.
+
+### Why this matters
+
+The mechanics are clean: $\alpha$ and $\beta$ are interpretable as **pseudo-counts of successes and failures**. A $\text{Beta}(2, 2)$ prior is equivalent to having seen 1 prior success and 1 prior failure (the +1 in each parameter comes from the symmetry to a uniform). Real data accumulates on top of those pseudo-counts.
+
+This intuition extends. Most conjugate pairs work the same way — pick a prior that summarizes your domain knowledge as if it were data, then let the actual data update it.
+
+```{note}
+**When does conjugacy still matter?** In production work, MCMC handles complex models, but conjugate updates are useful for:
+- Setting priors with interpretable strength (e.g., "I have prior beliefs worth about 5 observations").
+- Sanity-checking model components before running MCMC on the full hierarchical structure.
+- Online updates where speed matters.
+```
+
 ## Markov Chain Monte Carlo
 
 ### Simplified MCMC
@@ -119,6 +170,37 @@ Sample parameters from the prior, then sample data through the likelihood. Tells
 
 **Use to:** catch absurd implications; calibrate priors with domain experts.
 
+#### Prior predictive check on the SWS feed model
+
+Before running MCMC on the example circuit, ask: what does the model predict if we just sample from the priors?
+
+The model has:
+
+- $T_0 \sim \text{Normal}(\mu_{\text{nom}}, \sigma_{\text{nom}})$ per CML — centered on nominal thickness for that feature.
+- $C_r \sim \text{Gamma}(\alpha=4.2, \beta=6.25\times10^{-4})$ — implies mean ≈ 2.6 mpy, SD ≈ 1.3 mpy.
+- $\sigma \sim \text{HalfNormal}(0.03)$ — measurement noise.
+
+Sampling 1000 prior predictive trajectories and looking at the implied thickness at $t = 30$ years:
+
+- Predicted thickness range: roughly $t_{\text{nom}} - 0.10$ to $t_{\text{nom}} + 0.02$ inches.
+- 95% of trajectories above 0.18".
+- No trajectory predicts impossibly negative thickness — Gamma prior on $C_r$ prevents it.
+
+Compare against what's plausible. For a 6" SCH40 fitting with $t_{\text{nom}} = 0.28$" and $t_{\min} = 0.18$":
+
+- A CML reaching $t_{\min}$ within 30 years would have $C_r \approx 0.0033 = 3.3$ mpy.
+- Our prior puts ~30% mass above 3 mpy — slightly aggressive but defensible.
+
+This is the check. If the prior predictive said every CML would reach $t_{\min}$ in 5 years, the prior is too aggressive. If it said no CML would lose 5 mils in 50 years, too tight. The current priors are reasonable.
+
+```python
+# Pseudocode for the check
+prior_samples = sample_from_priors(n=1000)
+prior_predictive_y = simulate_observations(prior_samples)
+plot_distribution(prior_predictive_y)
+# Compare against domain knowledge: t_nom, t_min, typical mpy
+```
+
 ### Posterior predictive
 
 $$p(\tilde Y \mid Y) = \int p(\tilde Y \mid \theta) \, p(\theta \mid Y) \, d\theta$$
@@ -152,6 +234,45 @@ If the sampler didn't converge, every downstream conclusion is suspect. **Check 
 | **Rank plots** | If chains agree, ranks of draws across chains should be ~uniform per bin. | Stair-step rank histograms → chains exploring different regions. |
 | **Divergences (HMC)** | Symptoms of pathological posterior geometry. Don't ignore — even a few signal trouble. | Funnel posteriors in hierarchical models — reparameterize. |
 
+## The funnel pathology and reparameterization
+
+The most common geometric pathology in hierarchical Bayesian models is **Neal's funnel** — a posterior shape that looks like a narrow horn opening into a wide bell.
+
+```{image} ../images/funnel.png
+:alt: Neal's funnel
+:width: 600px
+:align: center
+```
+
+It happens because hierarchical models have parameters at multiple scales: a group-level standard deviation $\tau$ and individual-level deviations $\eta_i$. Their joint posterior looks like a funnel — when $\tau$ is small, the $\eta_i$ are tightly constrained near zero (narrow neck); when $\tau$ is large, they spread out (wide mouth).
+
+NUTS struggles in this geometry. The step size that works at the wide end is too large for the narrow end (rejections + divergences), and the step size that works at the narrow end is too small for the wide end (autocorrelation).
+
+### The fix: non-centered parameterization
+
+Instead of:
+
+$$\eta_i \sim \text{Normal}(\mu, \tau)$$
+
+write:
+
+$$\eta_i^* \sim \text{Normal}(0, 1) \qquad \eta_i = \mu + \tau \cdot \eta_i^*$$
+
+The standardized $\eta_i^*$ are independent of $\tau$, so the posterior geometry becomes a well-behaved cylinder instead of a funnel. The reparameterization is mathematically equivalent — same posterior, different sampling geometry.
+
+```python
+# Centered (often diverges in NumPyro)
+eta = numpyro.sample("eta", dist.Normal(mu, tau))
+
+# Non-centered (well-behaved)
+eta_std = numpyro.sample("eta_std", dist.Normal(0, 1))
+eta = numpyro.deterministic("eta", mu + tau * eta_std)
+```
+
+```{tip}
+**Rule of thumb:** if your hierarchical model has divergences, reach for non-centered parameterization first. It fixes the funnel pathology more often than any other single change.
+```
+
 ## Comparing models
 
 Estimate each model's out-of-sample predictive accuracy and combine when it helps.
@@ -166,17 +287,64 @@ Estimate each model's out-of-sample predictive accuracy and combine when it help
 
 ## Pooling
 
-When groups are present in data, **pooling** may be beneficial.
+When groups are present in data, **pooling** decisions are one of the most consequential modeling choices you make. There are three approaches.
 
-| Approach | Description | Drawback |
-|--|--|--|
-| **Unpooled** | Fit each group separately. No information shared. | High variance in small groups. |
-| **Pooled** | One set of parameters for everyone. Group identity ignored. | High bias when groups truly differ. |
-| **Partial pooling** | Hierarchical priors share information across groups via a higher level. **Best of both worlds — most real problems live here.** | More complex model specification. |
+### Unpooled (no pooling)
+
+Fit each group separately. No information shared.
+
+$$\theta_g \sim \text{independent prior} \quad \text{for each group } g$$
+
+**When it works:** plenty of data per group; you genuinely believe the groups don't share structure.
+
+**Failure mode:** data-poor groups have wide credible intervals dominated by the prior. With $n=2$ readings on a CML, the unpooled posterior is barely better than the prior.
+
+### Pooled (complete pooling)
+
+One set of parameters for everyone. Group identity ignored.
+
+$$\theta \sim \text{prior} \quad \text{(shared)}$$
+
+**When it works:** the groups are truly identical, or you have no reason to suspect they differ.
+
+**Failure mode:** if groups *do* differ, you're forcing them all to look the same. Real corrosive zones get masked by the average of the whole circuit.
+
+### Partial pooling (hierarchical)
+
+The middle ground. Each group has its own parameter, but those parameters are drawn from a shared distribution whose own parameters are also estimated.
+
+$$\mu, \tau \sim \text{hyperprior}$$
+$$\theta_g \sim \text{Normal}(\mu, \tau) \quad \text{for each group } g$$
+
+The data tells the model how similar the groups are, via $\tau$. Small $\tau$ → groups are nearly identical → behaves like complete pooling. Large $\tau$ → groups are very different → behaves like no pooling.
+
+### The shrinkage effect
+
+```{image} ../images/pooling.png
+:alt: Pooling comparison
+:width: 800px
+:align: center
+```
+
+This is the central insight of hierarchical modeling. Look at the figure:
+
+- **Unpooled (left):** small groups (G1, G3, G4 with n=2-6) have wide error bars and individual estimates that scatter. The estimate for G1 sits at ~7 with a CI ranging from ~6 to ~8 — wide and not very informative.
+- **Pooled (middle):** every group gets the same point estimate at the overall mean. This works for G5 and G6 (close to truth) but fails for G1 and G4 (truth is far from the pool mean).
+- **Partial pooling (right):** estimates for small groups are **shrunk toward the pooled mean** — but only as much as the data warrants. G5 and G6 (large $n$) barely move from their unpooled estimates. G1 and G4 (small $n$) get pulled substantially toward the population mean.
+
+### Why partial pooling shines in CML work
+
+Real piping circuits have wildly uneven sampling:
+
+- A few well-instrumented CMLs with 50+ readings spanning decades.
+- Many CMLs with 3-5 readings.
+- Newly-installed CMLs with 1-2 readings.
 
 ```{important}
-**Partial pooling shines when some groups have lots of data and others have very little** — the data-rich groups inform priors that stabilize the data-poor ones. This is exactly the situation in most piping circuits: a few CMLs have decades of readings; many CMLs have just two or three.
+**Partial pooling shines exactly when some groups have lots of data and others have very little** — the data-rich groups inform priors that stabilize the data-poor ones. A newly-installed CML inherits its baseline expectation from the rest of the circuit, instead of having to be estimated from its own two data points.
 ```
+
+The Bayesian example in chapter 4a uses partial pooling on per-CML corrosion rates. The shrinkage stabilizes the data-poor CMLs without forcing them to match the data-rich ones — a balance frequentist methods can only awkwardly approximate.
 
 ## Hierarchical partial-pooled model
 
@@ -268,4 +436,50 @@ mcmc.run(random.PRNGKey(0), t, T0_prior_mean, y=y)
 - PyMC uses a `with` block; NumPyro defines a plain function.
 - Gamma parameters: PyMC takes (α, β); NumPyro takes (concentration, rate) — same call here.
 - Parallel chains: NumPyro requires `set_host_device_count` before any JAX operation.
+```
+
+## Beyond the basic model
+
+The model used in chapter 4a is a Normal-Gamma hierarchical model — simple, fast, and good enough for most CML circuits. But the Bayesian toolkit has more to offer when the data demands it.
+
+### Categorical and Dirichlet distributions
+
+Some inspection data is categorical, not numerical: damage mechanism class, root cause category, corrosion morphology type. The **Categorical** distribution handles single categorical outcomes, and the **Dirichlet** is its multi-category conjugate prior (generalization of the Beta to more than two outcomes).
+
+*When you'd reach for it:* modeling the probability distribution over damage mechanisms in a circuit, or learning the mix of "general" / "pitting" / "MIC" corrosion patterns from a labeled dataset.
+
+### Bayesian Additive Regression Trees (BART)
+
+When the relationship between predictors and outcomes is unknown and possibly non-linear, **BART** offers a flexible nonparametric Bayesian approach. It fits a sum of weak decision trees with priors on tree depth and leaf values.
+
+*When you'd reach for it:* if you suspect corrosion rate depends on a combination of process variables (temperature, sulfur content, velocity) in a complicated way that no simple parametric model captures.
+
+### Time series models
+
+Time series methods (autoregressive models, state-space models, Gaussian processes) become relevant when:
+
+- Inspection cadence is fine-grained enough to detect time trends.
+- Process upsets cause step-changes in corrosion rate.
+- You want to forecast future thickness, not just estimate average rate.
+
+The linear-trend model in chapter 4a is effectively a degenerate time series — it assumes a single constant rate. Real data sometimes shows acceleration, deceleration, or seasonality that a richer time series model would capture.
+
+```{note}
+These are **mentions, not recommendations.** For most CML programs, the basic hierarchical model in chapter 4a is the right tool. Reach for these extensions only when the basic model demonstrably fails — diagnosed via posterior predictive checks that fail in specific, interpretable ways.
+```
+
+## A note on Bayesian decision theory
+
+This course focuses on **inference** — figuring out the distribution of parameters from data. But once you have a posterior, you often have to make a **decision**: replace this CML now, schedule the next inspection, choose between maintenance strategies.
+
+Bayesian **decision theory** formalizes this. You specify a *utility function* (or equivalently a *loss function*) that encodes the consequences of each possible action under each possible world state. Then you choose the action that maximizes expected utility, integrated over the posterior:
+
+$$a^* = \arg\max_a \int U(a, \theta) \, p(\theta \mid Y) \, d\theta$$
+
+For CML work, this would mean weighing the cost of replacement against the probability and consequence of leak, weighted by the posterior on corrosion rate.
+
+```{note}
+**This course doesn't go further into decision theory** — it's a substantial subject on its own. But know that the posterior is *not the final answer*; it's the input to whatever decision you actually need to make. Treating the posterior as the deliverable, rather than as the input to a decision, is a common gap in practice.
+
+For further reading: *Bayesian Modeling and Computation in Python* (Martin, Kumar, Lao) chapter on decision-theoretic concepts, and the broader literature on risk-based inspection (API RP 580/581) for the inspection-specific framing.
 ```
