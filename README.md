@@ -39,7 +39,7 @@ To add a new chapter:
    git add .
    git commit -m "initial book"
    git branch -M main
-   git remote add origin https://github.com/YOUR_USERNAME/intro-statistics.git
+   git remote add origin https://github.com/sgauspohl3/CML-Statistics.git
    git push -u origin main
    ```
 
@@ -50,7 +50,7 @@ To add a new chapter:
 The included `.github/workflows/deploy.yml` rebuilds and publishes the site on every push to `main`. After a successful run, visit:
 
 ```
-https://YOUR_USERNAME.github.io/intro-statistics/
+https://github.com/sgauspohl3/CML-Statistics.git
 ```
 
 ## Switching code blocks to executable notebooks
