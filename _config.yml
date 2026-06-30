@@ -58,7 +58,7 @@ html:
 
 # Information about where the book exists on the web
 repository:
-  url: https://github.com/YOUR_USERNAME/intro-statistics
+  url: https://github.com/sgauspohl3/CML-Statistics.git
   path_to_book: ""
   branch: main
 
