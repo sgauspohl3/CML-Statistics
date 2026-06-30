@@ -2,7 +2,7 @@
 
 A Jupyter Book of undergraduate statistics notes.
 
-**Live site:** https://YOUR_USERNAME.github.io/intro-statistics/ *(after you deploy)*
+**Live site:** https://github.com/sgauspohl3/CML-Statistics.git *(after you deploy)*
 
 ## Build locally
 
