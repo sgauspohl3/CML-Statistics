@@ -1,27 +1,40 @@
-# Introduction to Statistics
+# CML Statistical Analysis
 
-Welcome. These notes accompany an undergraduate course in statistics. The aim is not to memorize formulas but to learn to **reason under uncertainty** — to know which tool to reach for, and what its assumptions are.
+A practical course on statistical analysis of Corrosion Monitoring Location (CML) data for mechanical integrity engineers.
 
-The book is organized into five parts:
+These notes accompany the *CML Statistical Analysis* training session at the API Inspection and Mechanical Integrity Summit. The aim is to teach **just enough statistics** to apply it responsibly to inspection data — and then to walk through the actual workflow end-to-end on a real piping circuit, twice: once with frequentist methods, once with Bayesian.
 
-1. **Foundations** — why statistics exists, what it means to practice it responsibly, and a useful framework for thinking about what we know and don't know.
-2. **Descriptive Statistics** — how to summarize and visualize data.
-3. **Probability** — the language of uncertainty: rules, random variables, and the distributions that show up everywhere.
-4. **Inferential Statistics** — how to use samples to learn about populations, fit models, and test ideas.
-5. **Other Topics** — p-values, error types, and the realities of incomplete data.
+## How this book is organized
 
-Each chapter mixes intuition, mathematics, and runnable Python. The code uses standard libraries (`numpy`, `scipy`, `matplotlib`); you can copy any block into a notebook and run it.
-
-```{tip}
-Use the sidebar to navigate. The right-hand panel shows section anchors within the current page. Click the GitHub icon to suggest edits.
+```{epigraph}
+Statistics without understanding leads to misuse; practice without theory leads to blind application.
 ```
 
-## How to read
+Six chapters, balanced 50/50 between theory and applied practice:
 
-If this is your first encounter with statistics, read straight through. If you're reviewing, the sidebar lets you jump directly to any topic. The summary chapter at the end stitches the big ideas back together.
+1. **Introduction and Setup** — what to expect, prerequisites, learning objectives, and getting your Python environment running.
+2. **Statistics Refresher** — descriptive statistics, probability, distributions, inference, hypothesis testing, censoring/truncation.
+3. **Inspection Data and Analysis** — CML taxonomy, sampling, variability, inspection techniques, probability of detection, and basic IDMS analysis.
+4. **Frequentist Statistical Analysis** — the classical workflow: data cleanup, EDA, clustering, distribution fitting, remaining life. With a full worked example on an SWS feed circuit.
+5. **Bayesian Statistical Analysis** — Bayes' theorem, MCMC, hierarchical pooling, NumPyro workflow, diagnostics. With the same SWS feed circuit reanalyzed Bayesian.
+6. **Discussion and References** — comparing approaches, when to use which, and where to read further.
 
-## A note on tone
+## Prerequisites
 
-Statistics is sometimes taught as a sequence of recipes. That misses the point. The best statisticians are skeptics — of their own data, their own assumptions, and other people's claims. These notes try to teach that habit alongside the techniques.
+This book assumes foundational knowledge of:
 
-> *"There are three kinds of lies: lies, damned lies, and statistics."* — popularized by Mark Twain
+- Refining and/or chemical processes
+- Process equipment
+- Inspection techniques
+- Math (algebra, basic calculus helps)
+- Computer usage
+
+## Learning objectives
+
+By the end you should be able to:
+
+- Understand the basic statistical concepts used in CML analysis
+- Use basic Python to conduct analysis
+- Evaluate a circuit using frequentist methods
+- Evaluate a circuit using Bayesian methods
+- Read and critically evaluate a CML statistical analysis someone else has produced
