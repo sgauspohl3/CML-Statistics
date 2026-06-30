@@ -1,0 +1,49 @@
+format: jb-book
+root: intro
+parts:
+  - caption: Foundations
+    chapters:
+      - file: chapters/01_introduction
+      - file: chapters/02_responsible_statistics
+      - file: chapters/03_rumsfeld_matrix
+  - caption: Descriptive Statistics
+    chapters:
+      - file: chapters/04_descriptive_stats
+        sections:
+          - file: chapters/04a_central_tendency
+          - file: chapters/04b_variability
+          - file: chapters/04c_shape
+          - file: chapters/04d_plotting
+  - caption: Probability
+    chapters:
+      - file: chapters/05_probability
+        sections:
+          - file: chapters/05a_definitions
+          - file: chapters/05b_rules
+          - file: chapters/05c_random_variables
+          - file: chapters/05d_discrete_distributions
+          - file: chapters/05e_continuous_distributions
+          - file: chapters/05f_relationships
+  - caption: Inferential Statistics
+    chapters:
+      - file: chapters/06_inference
+        sections:
+          - file: chapters/06a_sampling
+          - file: chapters/06b_lln_clt
+          - file: chapters/06c_fitting
+          - file: chapters/06d_estimators
+          - file: chapters/06e_confidence_intervals
+          - file: chapters/06f_gof
+          - file: chapters/06g_hypothesis_testing
+          - file: chapters/06h_anova
+  - caption: Other Topics
+    chapters:
+      - file: chapters/07_other
+        sections:
+          - file: chapters/07a_pvalues
+          - file: chapters/07b_errors
+          - file: chapters/07c_censored_truncated
+  - caption: Back Matter
+    chapters:
+      - file: chapters/summary
+      - file: chapters/references

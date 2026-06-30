@@ -1,0 +1,70 @@
+# Book settings
+title: Introduction to Statistics
+author: Samuel
+logo: ""
+copyright: "2026"
+
+# Force re-execution of notebooks on each build.
+execute:
+  execute_notebooks: "off"  # set to "auto" once you add .ipynb files
+
+# Parse and render settings
+parse:
+  myst_enable_extensions:
+    - amsmath
+    - colon_fence
+    - deflist
+    - dollarmath
+    - html_image
+    - linkify
+    - replacements
+    - smartquotes
+    - substitution
+    - tasklist
+
+# Math rendering
+sphinx:
+  config:
+    mathjax3_config:
+      tex:
+        macros:
+          "N": "\\mathbb{N}"
+          "R": "\\mathbb{R}"
+          "E": "\\mathbb{E}"
+    html_theme_options:
+      use_repository_button: true
+      use_issues_button: true
+      use_edit_page_button: true
+      repository_url: https://github.com/YOUR_USERNAME/intro-statistics
+      path_to_docs: ""
+      home_page_in_toc: true
+      show_navbar_depth: 2
+      show_toc_level: 2
+
+# Bibliography
+bibtex_bibfiles:
+  - references.bib
+
+# HTML-specific settings
+html:
+  favicon: ""
+  use_edit_page_button: true
+  use_repository_button: true
+  use_issues_button: true
+  home_page_in_navbar: true
+  baseurl: ""
+  comments:
+    hypothesis: false
+
+# Information about where the book exists on the web
+repository:
+  url: https://github.com/YOUR_USERNAME/intro-statistics
+  path_to_book: ""
+  branch: main
+
+# LaTeX/PDF output
+latex:
+  latex_engine: pdflatex
+  use_jupyterbook_latex: true
+  latex_documents:
+    targetname: book.tex
