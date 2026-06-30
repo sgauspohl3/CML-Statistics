@@ -1,4 +1,4 @@
-# 1. Introduction and Setup
+# Introduction and Setup
 
 ## About this class
 

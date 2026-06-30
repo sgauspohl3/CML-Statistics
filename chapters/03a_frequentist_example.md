@@ -1,4 +1,4 @@
-# 4a. Example — Frequentist CML Analysis
+# 3a. Example — Frequentist CML Analysis
 
 A complete walkthrough of the frequentist workflow on a real piping circuit.
 
@@ -14,7 +14,7 @@ A complete walkthrough of the frequentist workflow on a real piping circuit.
 - **ISOs** — placeholder for piping isometric drawings.
 
 ```{note}
-The same circuit is reanalyzed in chapter 5a using Bayesian methods. Comparing the two endings is the punchline of the course.
+The same circuit is reanalyzed in chapter 4a using Bayesian methods. Comparing the two endings is the punchline of the course.
 ```
 
 ## Data cleanup

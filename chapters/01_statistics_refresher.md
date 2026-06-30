@@ -1,4 +1,4 @@
-# 2. Statistics Refresher
+# 1. Statistics Refresher
 
 ## Statistics introduction
 

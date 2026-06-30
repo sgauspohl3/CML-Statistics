@@ -1,4 +1,4 @@
-# 3. Inspection Data and Analysis
+# 2. Inspection Data and Analysis
 
 ## Inspection basics
 
