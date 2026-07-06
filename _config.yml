@@ -39,7 +39,7 @@ sphinx:
       path_to_docs: ""
       home_page_in_toc: false
       show_navbar_depth: 2
-      show_toc_level: 3
+      show_toc_level: 2
 
 # Bibliography
 bibtex_bibfiles:
