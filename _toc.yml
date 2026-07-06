@@ -1,7 +1,7 @@
 format: jb-book
 root: intro
 parts:
-#  - caption: Preface
+  - caption: Preface
     chapters:
       - file: chapters/foreword
       - file: chapters/00_intro_setup

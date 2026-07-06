@@ -39,6 +39,12 @@ Key principles:
 
 > *Know what you know, and know what you do not know.*
 
+```{image} ../images/rumsfeld.png
+:alt: Rumsfeld Matrix
+:width: 600px
+:align: center
+```
+
 |                 | **Aware** | **Unaware** |
 |-----------------|-----------|-------------|
 | **Known** | **Known knowns** — we are aware and we understand them. *Ex: observed corrosion of known damage mechanisms.* | **Unknown knowns** — we know what could happen, but have not observed it. *Ex: a damage mechanism we know exists but have not yet detected.* |
