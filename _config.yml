@@ -37,9 +37,9 @@ sphinx:
       use_edit_page_button: true
       repository_url: https://github.com/sgauspohl3/CML-Statistics.git
       path_to_docs: ""
-      home_page_in_toc: true
+      home_page_in_toc: false
       show_navbar_depth: 2
-      show_toc_level: 2
+      show_toc_level: 1
 
 # Bibliography
 bibtex_bibfiles:

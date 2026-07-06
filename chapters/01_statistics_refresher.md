@@ -51,6 +51,7 @@ Key principles:
 
 The goal of statistical analysis is to **move risks from unknowns to knowns** using prior knowledge and data.
 ```
+If you want to know how many whales are in the ocean (population), and you decide to figure this out by sampling with a bucket, you might shockingly discover that there are no whales in the ocean (if you trust your sampling). You have absence of evidence. Obviously, this is an extreme example, and you know that whales exist in the ocean. You have an unknown known; something you have not observed, but know is possible. This is also a demonstration of poor measurement or sampling technique as it would be impossible to fit even a baby whale in a bucket (how big is the biggest bucket?). Real sampling for population of whales is actually challenging with a combination of aerial sightings, acoustic surveys, and physical counting and marking. The absence of evidence is not evidence of absence.
 
 ## Samples and populations
 
