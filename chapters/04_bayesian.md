@@ -1,4 +1,4 @@
-# 4. Bayesian Statistical Analysis
+# Bayesian Statistical Analysis
 
 ## End-to-end Bayesian workflow
 

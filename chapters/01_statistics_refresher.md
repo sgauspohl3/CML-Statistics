@@ -1,4 +1,4 @@
-# 1. Statistics Refresher
+# Statistics Refresher
 
 ## Statistics introduction
 
@@ -114,6 +114,13 @@ This is the foundation for classical inference: z-tests, t-tests, confidence int
 ```
 
 Read left → right with increasing $n$: at $n=2$ the sampling distribution of the mean is still very skewed and a Normal overlay fits poorly. By $n=50$ it is tight, centered on $\mu$, and well-approximated by the Normal — even though the underlying distribution (Exponential) is heavily skewed.
+
+```{raw} html
+<iframe src="../_static/clt_exponential_demo.html"
+        width="100%" height="720"
+        style="border:1px solid #ddd; border-radius:8px;">
+</iframe>
+```
 
 ```{important}
 The CLT is *not* a statement about the data — it's a statement about the **sample mean**. Your raw data can be wildly non-normal; the means of repeated samples will still tend toward normality.

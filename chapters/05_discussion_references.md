@@ -1,4 +1,4 @@
-# 5. Discussion and References
+# Discussion and References
 
 ## Comparing the two approaches
 

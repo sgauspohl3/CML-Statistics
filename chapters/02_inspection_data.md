@@ -1,4 +1,4 @@
-# 2. Inspection Data and Analysis
+# Inspection Data and Analysis
 
 ## Inspection basics
 
@@ -141,6 +141,30 @@ m = readings.mean()
 s = readings.std(ddof=1)
 cv = s / m
 print(f"Mean: {m:.4f}, SD: {s:.4f}, CV: {cv:.1%}")
+```
+
+```{exercise}
+:label: cv-exercise
+
+For a CML with the following five readings, compute the CV and decide whether it passes the 10% threshold.
+
+| Reading | Thickness (in) |
+|--|--|
+| 1 | 0.245 |
+| 2 | 0.242 |
+| 3 | 0.248 |
+| 4 | 0.240 |
+| 5 | 0.243 |
+```
+
+```{solution} cv-exercise
+:class: dropdown
+
+Mean: $\bar{x} = 0.2436$
+
+Sample SD: $s = \sqrt{\frac{1}{4}\sum(x_i - \bar{x})^2} \approx 0.00305$
+
+CV: $s/\bar{x} \approx 1.25\%$ — well below 10%. **Pass.**
 ```
 
 ## CML allocation

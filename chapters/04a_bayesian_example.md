@@ -1,4 +1,4 @@
-# 4a. Example — Bayesian CML Analysis
+# Example — Bayesian CML Analysis
 
 The same SWS feed circuit from chapter 3a, now analyzed Bayesian.
 

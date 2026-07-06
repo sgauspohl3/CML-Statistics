@@ -24,6 +24,8 @@ parse:
 
 # Math rendering
 sphinx:
+  extra_extensions:
+    - sphinx_exercise
   config:
     mathjax3_config:
       tex:
@@ -31,6 +33,7 @@ sphinx:
           "N": "\\mathbb{N}"
           "R": "\\mathbb{R}"
           "E": "\\mathbb{E}"
+    html_static_path: ['data', 'images', 'widgets']
     html_theme_options:
       use_repository_button: true
       use_issues_button: true
@@ -40,6 +43,8 @@ sphinx:
       home_page_in_toc: false
       show_navbar_depth: 2
       show_toc_level: 1
+    numfig: true
+    numfig_secnum_depth: 2
 
 # Bibliography
 bibtex_bibfiles:

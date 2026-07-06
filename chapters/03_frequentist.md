@@ -1,4 +1,4 @@
-# 3. Frequentist Statistical Analysis
+# Frequentist Statistical Analysis
 
 ## API standards allowing statistical analysis
 
