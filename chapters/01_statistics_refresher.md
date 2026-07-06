@@ -45,10 +45,6 @@ Key principles:
 :align: center
 ```
 
-|                 | **Aware** | **Unaware** |
-|-----------------|-----------|-------------|
-| **Known** | **Known knowns** — we are aware and we understand them. *Ex: observed corrosion of known damage mechanisms.* | **Unknown knowns** — we know what could happen, but have not observed it. *Ex: a damage mechanism we know exists but have not yet detected.* |
-| **Unknown** | **Known unknowns** — we are aware, but do not fully understand. *Ex: observed corrosion of an unknown or misattributed damage mechanism.* | **Unknown unknowns** — we are not aware, and we do not have prior knowledge. *Ex: corrosion that is completely unexpected and unobserved.* |
 
 ```{important}
 **Unknown unknowns are unknowable by definition.** No statistical method can detect or quantify a risk never observed or conceived. The only mitigation is to inspect everything in every way — which is impractical.
