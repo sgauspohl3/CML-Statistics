@@ -186,4 +186,6 @@ A.C. Gysbers, *Recording Thickness Data During Thickness Monitoring Inspections*
 
 Course developed by Samuel Gauspohl (Accenture, Industry X) for the API Inspection and Mechanical Integrity Summit.
 
-Contact: samuel.gauspohl@accenture.com
+Linkedin: www.linkedin.com/in/samuel-gauspohl
+
+<!--Contact: samuel.gauspohl@accenture.com-->

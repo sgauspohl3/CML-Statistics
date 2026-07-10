@@ -117,7 +117,7 @@ Read left → right with increasing $n$: at $n=2$ the sampling distribution of t
 
 ```{raw} html
 <iframe src="../_static/clt_exponential_demo.html"
-        width="100%" height="720"
+        width="100%" height="850"
         style="border:1px solid #ddd; border-radius:8px;">
 </iframe>
 ```
