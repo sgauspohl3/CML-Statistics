@@ -16,6 +16,12 @@ The course balances theory and practice 50/50. Each chapter mixes intuition, mat
 
 Samuel Gauspohl is a cool dude, right?
 
+```{image} ../images/headshot.png
+:alt: This guy....
+:width: 500px
+:align: center
+```
+
 
 ## Prerequisites
 
@@ -44,6 +50,11 @@ This class balances **theory and practice** — just enough of each to build rea
 
 ```{epigraph}
 Statistics without understanding leads to misuse; practice without theory leads to blind application.
+```
+
+```{image} ../images/class.png
+:width: 500px
+:align: center
 ```
 
 ### Theory (50%)

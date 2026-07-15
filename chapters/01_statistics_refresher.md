@@ -59,6 +59,12 @@ If you want to know how many whales are in the ocean (population), and you decid
 - **Sample** — a subset chosen to represent the population; what is actually measured.
 - **Variable** — the characteristic recorded for each sample (thickness, height, failure time).
 
+```{image} ../images/population2.png
+:alt: Population, Variable, and Sample
+:width: 700px
+:align: center
+```
+
 ### Notation: parameters vs. statistics
 
 | | Population (parameter) | Sample (statistic) |
@@ -417,6 +423,12 @@ A **probability distribution** describes the likelihood of different outcomes in
 
 The rest of this chapter walks through each in turn.
 
+```{image} ../images/distribution-summary.png
+:alt: Distributions
+:width: 700px
+:align: center
+```
+
 ## Discrete distributions
 
 ### Discrete Uniform
@@ -702,6 +714,12 @@ Distributions form a connected web. Key relationships:
 Transformed distributions are often used as **conjugate priors** for Bayesian analysis. Related distributions can aid in fitting if a simple model fails.
 ```
 
+```{image} ../images/distribution-relationship.png
+:alt: Relationship Between Select Distributions
+:width: 700px
+:align: center
+```
+
 ## Choosing the right distribution
 
 Selecting the correct distribution dictates the performance of inferences and predictions:
@@ -945,6 +963,18 @@ Common misreadings:
 
 - **Type I (false positive)** — claim an effect that isn't real. Controlled by $\alpha$.
 - **Type II (false negative)** — miss a real effect. Aim for power $1 - \beta \ge 0.80$.
+
+```{image} ../images/error-types2.png
+:alt: Error Types
+:width: 700px
+:align: center
+```
+
+```{image} ../images/error-types.png
+:alt: Error Types
+:width: 700px
+:align: center
+```
 
 ### What you actually want vs. what p gives you
 

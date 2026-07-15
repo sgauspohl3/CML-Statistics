@@ -53,20 +53,10 @@ Within each resulting group, the CMLs should be exchangeable. The 88-CML example
 
 ## The frequentist workflow
 
-```
-Start
-  ↓
-Compile / Clean Data
-  ↓
-Exploratory Data Analysis (EDA)
-  ↓
-Fit Distribution to Data
-  ↓
-Test
-  ↓
-Accept / Reject
-  ↓
-End
+```{image} ../images/flow-frequentist.png
+:alt: Frequentist Workflow
+:width: 700px
+:align: center
 ```
 
 Each step is iterative — testing a poor fit may send you back to clustering, cleaning, or even data collection.
@@ -96,6 +86,12 @@ Standard EDA artifacts on inspection data:
 - Boxplots of corrosion rate by feature.
 - Short-term vs. long-term corrosion rate comparison.
 
+```{image} ../images/eda-scatter.png
+:alt: EDA Scatterplot
+:width: 700px
+:align: center
+```
+
 ## Feature clustering and distribution fitting
 
 ### Grouping criteria
@@ -104,6 +100,13 @@ Standard EDA artifacts on inspection data:
 |--|--|
 | Thickness measurements | NPS, schedule, component type, replacements |
 | Corrosion rates | NPS, component type, zone, orientation, outliers |
+
+
+```{image} ../images/4-STD-FIT_violin.png
+:alt: Comparative Violin Plots
+:width: 700px
+:align: center
+```
 
 ### Distribution fitting
 

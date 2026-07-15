@@ -2,20 +2,10 @@
 
 ## End-to-end Bayesian workflow
 
-```
-Define Model (priors + likelihood)
-  ↓
-Prior Predictive Checks
-  ↓
-Sample (MCMC)
-  ↓
-Diagnose (R̂, ESS, divergences)
-  ↓
-Posterior Predictive Checks
-  ↓
-Model Comparison / Averaging
-  ↓
-Communicate Results
+```{image} ../images/flow-bayesian.png
+:alt: Bayesian Workflow
+:width: 700px
+:align: center
 ```
 
 Each box is iterative — failed diagnostics or bad posterior predictive checks send you back to model definition.
@@ -123,6 +113,12 @@ This intuition extends. Most conjugate pairs work the same way — pick a prior 
 - Diverging chains require redesign.
 - Posterior estimated from the final cumulative sample of the Markov chain.
 - Generally **impossible to solve analytically** — that's why we sample.
+
+```{image} ../images/mcmc.png
+:alt: Random Walk
+:width: 700px
+:align: center
+```
 
 ### Not all MCMC is the same
 

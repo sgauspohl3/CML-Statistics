@@ -34,17 +34,10 @@ Group by:
 
 ### CML & TML hierarchy
 
-```
-Piping Circuit
-├── Line 1
-│   ├── CML1
-│   │   ├── TML1 → MP1, MP2, ...
-│   │   ├── TML2 → MP1, MP2, ...
-│   │   └── TML3 → MP1, MP2, ...
-│   └── CML2
-│       └── ...
-└── Line 2
-    └── ...
+```{image} ../images/cml-hierarchy.png
+:alt: Select Interpreter
+:width: 700px
+:align: center
 ```
 
 ### Why taxonomy matters
@@ -55,6 +48,12 @@ Reliable statistical analysis depends on understanding where data comes from. Pr
 - Detection of outliers and anomalies
 - Correct grouping of data for population analysis
 - Sub-population separation (NPS, component type)
+
+```{image} ../images/cml-types.png
+:alt: Select Interpreter
+:width: 700px
+:align: center
+```
 
 ### Data collection levels
 
@@ -194,6 +193,12 @@ Sampling must represent the actual corrosion behavior of the piping circuit.
 
 A major contribution to thickness data problems is variation at the examination point due to the entire measurement process.
 
+```{image} ../images/cml-variance.png
+:alt: CML Variance
+:width: 700px
+:align: center
+```
+
 ### Sources of variability
 
 - **Measurement method** — UT vs. RT.
@@ -238,12 +243,24 @@ UT Grid and UT Scan provide intermediate options — area coverage with quantita
 **Method → Data Quality → Analysis Validity.** The inspection method chosen determines baseline variability, the ability to detect localized damage, and the ability to size defects.
 ```
 
+```{image} ../images/cml-rt-variability.png
+:alt: RT Variability
+:width: 700px
+:align: center
+```
+
 ## Probability of detection
 
 ### Detection-limited vs. sizing-limited
 
 - **Detection-limited** — point measurement; single transducer footprint. Worst feature may never be touched. Geometric POD dominates.
 - **Sizing-limited** — full-coverage scan (PAUT C-scan, AUT). Feature is detected; measurement error is the dominant uncertainty.
+
+```{image} ../images/pod-replace.png
+:alt: POD
+:width: 700px
+:align: center
+```
 
 ### Geometric POD — a sobering example
 

@@ -10,6 +10,12 @@ Download Python and VS Code — or use the coding language and IDE of your choic
 2. Search for **Python** → click **Get** to install.
 3. Search for **Visual Studio Code** → click **Get** to install.
 
+```{image} ../images/microsoft-store.png
+:alt: Download Python and VS Code
+:width: 700px
+:align: center
+```
+
 ### Further guidance
 
 - [code.visualstudio.com/docs/languages/python](https://code.visualstudio.com/docs/languages/python)
@@ -18,6 +24,12 @@ Download Python and VS Code — or use the coding language and IDE of your choic
 ## VS Code layout
 
 Familiarize yourself with the layout of VS Code:
+
+```{image} ../images/vscode.png
+:alt: Visual Studio Code
+:width: 700px
+:align: center
+```
 
 1. **Menu Bar** — top navigation and commands
 2. **Tab Bar** — open file tabs at the top of the editor
@@ -28,6 +40,12 @@ Familiarize yourself with the layout of VS Code:
 ## Loading extensions
 
 Open VS Code → click the Extensions icon (Ctrl + Shift + X).
+
+```{image} ../images/extensions.png
+:alt: Extensions Panel
+:width: 700px
+:align: center
+```
 
 ### Required extensions
 
@@ -53,7 +71,25 @@ Then open your project folder: **File → Open Folder…**
 Create a virtual environment (`.venv`) for project-level dependency isolation.
 ```
 
+```{image} ../images/virtual-environment.png
+:alt: Virtual Environment
+:width: 700px
+:align: center
+```
+
+```{image} ../images/interpreter.png
+:alt: Select Interpreter
+:width: 700px
+:align: center
+```
+
 ## Install required libraries
+
+```{image} ../images/terminal.png
+:alt: Using the Terminal
+:width: 700px
+:align: center
+```
 
 Open Terminal in VS Code: **Terminal → New Terminal**. Then:
 
