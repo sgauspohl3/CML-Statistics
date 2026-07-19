@@ -34,7 +34,7 @@ In plain terms: if you relabeled CML-007 as CML-042 and vice versa, would the an
 
 ### Why exchangeability matters
 
-A frequentist fit to a non-exchangeable population produces a multi-modal distribution that no parametric family captures well. The Bayesian hierarchical models in chapter 4 require exchangeability *within each level* of the hierarchy — the CMLs are exchangeable *given* their feature type, but the feature types themselves are not exchangeable with each other.
+A frequentist fit to a non-exchangeable population produces a multi-modal distribution that no parametric family captures well. The Bayesian hierarchical models in chapter 5 require exchangeability *within each level* of the hierarchy — the CMLs are exchangeable *given* their feature type, but the feature types themselves are not exchangeable with each other.
 
 ### Practical check
 
@@ -53,10 +53,13 @@ Within each resulting group, the CMLs should be exchangeable. The 88-CML example
 
 ## The frequentist workflow
 
-```{image} ../images/flow-frequentist.png
+```{figure} ../images/flow-frequentist.png
+:name: flow-frequentist
 :alt: Frequentist Workflow
 :width: 700px
 :align: center
+
+General frequentist statistical workflow
 ```
 
 Each step is iterative — testing a poor fit may send you back to clustering, cleaning, or even data collection.
@@ -86,10 +89,13 @@ Standard EDA artifacts on inspection data:
 - Boxplots of corrosion rate by feature.
 - Short-term vs. long-term corrosion rate comparison.
 
-```{image} ../images/eda-scatter.png
+```{figure} ../images/eda-scatter.png
+:name: eda-scatter
 :alt: EDA Scatterplot
 :width: 700px
 :align: center
+
+The best place to start with analysis is with a scatterplot
 ```
 
 ## Feature clustering and distribution fitting
@@ -102,10 +108,13 @@ Standard EDA artifacts on inspection data:
 | Corrosion rates | NPS, component type, zone, orientation, outliers |
 
 
-```{image} ../images/4-STD-FIT_violin.png
+```{figure} ../images/4-STD-FIT_violin.png
+:name: violinplot
 :alt: Comparative Violin Plots
 :width: 700px
 :align: center
+
+Violin plots between first and last readings can show the distribution and where some measurement error may be occurring. 
 ```
 
 ### Distribution fitting
@@ -122,6 +131,7 @@ Two main targets:
 
 - Fit based on existing corrosion rates.
 - STCR, LTCR, rates from nominal.
+- Alternatively, rate between two selected points on distributions at two distinct points in time
 
 ```{note}
 **You generally cannot fit until after clustering.** Mixing populations produces multi-modal distributions that no single parametric family fits well.
@@ -129,7 +139,7 @@ Two main targets:
 
 ## Why Gamma (not Normal) for corrosion rates
 
-The frequentist analysis in chapter 3a fits **Gamma** to corrosion rates and **Normal** to current thickness. Why the asymmetry?
+The frequentist analysis in chapter 4 fits **Gamma** to corrosion rates and **Normal** to current thickness. Why?
 
 ### Physical reasoning
 
@@ -155,7 +165,7 @@ Current thickness, in contrast:
 - Reflects the cumulative effect of many small corrosion events over decades, which by the CLT tends toward symmetry.
 - Has measurement noise that is approximately Normal.
 
-So Normal works for thickness *most of the time*. The exception is heavily corroded features where thickness becomes skewed toward $t_{\min}$ — chapter 3a shows this happens with 6" SCH40 FIT in the example, and a Skew-Normal or GEV fits better.
+So Normal works for thickness *most of the time*. The exception is heavily corroded features where thickness becomes skewed toward $t_{\min}$ — chapter 4 shows this happens with 6" SCH40 FIT in the example, and a Skew-Normal or GEV fits better.
 
 ```{note}
 **The fit follows the physics.** When a distribution choice doesn't work, ask what physical property of the data the candidate distribution is failing to capture. Negative values, hard bounds, skewness, and tail behavior are the usual culprits.

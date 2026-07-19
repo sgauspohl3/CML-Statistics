@@ -1,7 +1,5 @@
 # CML Statistical Analysis Course
 
-**2026 API Inspection and Mechanical Integrity Summit**
-
 
 ## Abstract
 

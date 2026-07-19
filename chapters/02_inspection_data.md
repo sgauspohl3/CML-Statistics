@@ -12,6 +12,15 @@ The basic process of inspection and thickness data analysis follows a consistent
 
 The downstream statistical analyses are only as good as the upstream sampling and data collection.
 
+```{figure} ../images/flow-inspection.png
+:name: flow-inspection
+:alt: flow-inspection
+:width: 700px
+:align: center
+
+General flow of inspection data
+```
+
 ## Population and CML taxonomy
 
 ### Defining the population
@@ -27,17 +36,20 @@ Group by:
 - Flow regime & geometry
 
 ```{warning}
-**Over-group** → multi-modal data, inflated variance, masks aggressive segments.
+**Under-group** → multi-modal data, inflated variance, masks aggressive segments.
 
-**Under-group** → small $n$ per circuit, wide uncertainty, limits pooled methods.
+**Over-group** → small $n$ per circuit, wide uncertainty, limits pooled methods.
 ```
 
 ### CML & TML hierarchy
 
-```{image} ../images/cml-hierarchy.png
-:alt: Select Interpreter
+```{figure} ../images/cml-hierarchy.png
+:name: cml-hierarchy
+:alt: CML-hierarchy
 :width: 700px
 :align: center
+
+Hierarchy from Circuit to Measurement Point. System would be above circuit.
 ```
 
 ### Why taxonomy matters
@@ -49,11 +61,58 @@ Reliable statistical analysis depends on understanding where data comes from. Pr
 - Correct grouping of data for population analysis
 - Sub-population separation (NPS, component type)
 
-```{image} ../images/cml-types.png
-:alt: Select Interpreter
-:width: 700px
-:align: center
+::::{grid} 3
+:gutter: 2
+
+:::{grid-item}
+```{figure} ../images/cml-hierarchy2.png
+:name: cml-hierarchy2
+
+CML Hierarchy Visual
 ```
+:::
+
+:::{grid-item}
+```{figure} ../images/cml-taxonomy-azimuths.png
+:name: cml-taxonomy-azimuths
+
+Azimuths at clock positions
+```
+:::
+
+:::{grid-item}
+```{figure} ../images/cml-taxonomy-elbow-bands.png
+:name: cml-taxonomy-elbow-bands
+
+Common bands for an elbow
+```
+:::
+
+:::{grid-item}
+```{figure} ../images/cml-taxonomy-red-bands.png
+:name: cml-taxonomy-red-bands
+
+Common bands for a reducer
+```
+:::
+
+:::{grid-item}
+```{figure} ../images/cml-taxonomy-tees.png
+:name: cml-taxonomy-tees
+
+Types of tees
+```
+:::
+
+:::{grid-item}
+```{figure} ../images/cml-taxonomy-tee-bands.png
+:name: cml-taxonomy-tee-bands
+
+Common bands for a tee
+```
+:::
+
+::::
 
 ### Data collection levels
 
@@ -193,10 +252,13 @@ Sampling must represent the actual corrosion behavior of the piping circuit.
 
 A major contribution to thickness data problems is variation at the examination point due to the entire measurement process.
 
-```{image} ../images/cml-variance.png
+```{figure} ../images/cml-variance.png
+:name: cml-variance
 :alt: CML Variance
 :width: 700px
 :align: center
+
+Variance sources for a CML
 ```
 
 ### Sources of variability
@@ -243,10 +305,13 @@ UT Grid and UT Scan provide intermediate options — area coverage with quantita
 **Method → Data Quality → Analysis Validity.** The inspection method chosen determines baseline variability, the ability to detect localized damage, and the ability to size defects.
 ```
 
-```{image} ../images/cml-rt-variability.png
+```{figure} ../images/cml-rt-variability.png
+:name: cml-rt-variability
 :alt: RT Variability
 :width: 700px
 :align: center
+
+RT is great at capturing if corrosion is happening, but has high variability when it comes to measurement numbers
 ```
 
 ## Probability of detection
@@ -256,10 +321,13 @@ UT Grid and UT Scan provide intermediate options — area coverage with quantita
 - **Detection-limited** — point measurement; single transducer footprint. Worst feature may never be touched. Geometric POD dominates.
 - **Sizing-limited** — full-coverage scan (PAUT C-scan, AUT). Feature is detected; measurement error is the dominant uncertainty.
 
-```{image} ../images/pod-replace.png
+```{figure} ../images/pod-replace.png
+:name: pod-replace
 :alt: POD
 :width: 700px
 :align: center
+
+Probability of Detection of a damaged area
 ```
 
 ### Geometric POD — a sobering example

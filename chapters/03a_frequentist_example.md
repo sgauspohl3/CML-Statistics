@@ -13,24 +13,29 @@ A complete walkthrough of the frequentist workflow on a real piping circuit.
 - **P&ID** — placeholder for circuit P&ID.
 - **ISOs** — placeholder for piping isometric drawings.
 
-```{image} ../images/PFD.png
+```{figure} ../images/PFD.png
+:name: PFD1
 :alt: PFD for Example
 :width: 700px
 :align: center
+
+PFD of example
 ```
 
 
 
 ```{raw} html
    <iframe src="../_static/isometric_gallery.html"
-           width="100%" height="400"
+           width="100%" height="500"
            style="border:none;">
    </iframe>
 ```
 
 
+
+
 The dataset used in this example is available for download:
-[TR_596-example2.xlsx](../_static/TR_596-example2.xlsx)
+[TR_596-example2.xlsx](../_static/data/TR_596-example2.xlsx)
 
 ```{note}
 The same circuit is reanalyzed in chapter 4a using Bayesian methods. Comparing the two endings is the punchline of the course.
@@ -91,10 +96,13 @@ ax.legend(title='Feature', bbox_to_anchor=(1.02, 1), loc='upper left')
 plt.show()
 ```
 
-```{image} ../images/eda-scatter.png
+```{figure} ../images/eda-scatter.png
+:name: eda-scatter2
 :alt: EDA Scatterplot
 :width: 700px
 :align: center
+
+Scatterplot of all thickness readings
 ```
 
 ### Highest corrosion rate areas

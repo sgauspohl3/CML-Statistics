@@ -10,6 +10,7 @@ Samuel holds a BS degree in Materials Science and Engineering from Georgia Insti
 
 ```{figure} ../images/headshot.png
 :alt: This guy....
+:no-number:
 :width: 300px
 :align: center
 
@@ -22,6 +23,8 @@ This class is about democratizing statistics and CML analysis for mechanical int
 
 This course is focused primarily on the analysis aspect, and I do not want to go deep into the optimization, even though optimization is probably your end goal. Why? Well optimization is a discussion that all owner-operator mechanical integrity practitioners need to have about risk tolerance. Ultimately, this class cannot do the risk analysis for you, but it should give you some solid statistical background to bring actual insight to the risk discussion.
 
+As far as types of analysis goes, this is focused on thickness readings for a piping circuit. There are many types of statistical analyses in our line of work, but this course only focuses on the CMLs.
+
 ## Theory and Application
 
 This class balances **theory and practice** — just enough of each to build real understanding without overwhelming or over-simplifying.
@@ -32,6 +35,7 @@ Statistics without understanding leads to misuse; practice without theory leads 
 ```
 
 ```{figure} ../images/class.png
+:no-number:
 :width: 500px
 :align: center
 ```

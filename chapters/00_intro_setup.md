@@ -10,26 +10,30 @@ Download Python and VS Code — or use the coding language and IDE of your choic
 2. Search for **Python** → click **Get** to install.
 3. Search for **Visual Studio Code** → click **Get** to install.
 
-```{image} ../images/microsoft-store.png
+```{figure} ../images/microsoft-store.png
+:name: microsoft-store
 :alt: Download Python and VS Code
 :width: 700px
 :align: center
+
+Screenshots of download screen from Microsoft Store. It says "E for Everyone", but I don't think Python is really for everyone.
 ```
 
-### Further guidance
-
-- [code.visualstudio.com/docs/languages/python](https://code.visualstudio.com/docs/languages/python)
-- [code.visualstudio.com/docs/python/python-quick-start](https://code.visualstudio.com/docs/python/python-quick-start)
 
 ## VS Code layout
 
 Familiarize yourself with the layout of VS Code:
 
-```{image} ../images/vscode.png
+```{figure} ../images/vscode.png
+:name: vscodelayout
 :alt: Visual Studio Code
 :width: 700px
 :align: center
+
+Layout of VS Code
 ```
+
+<br><br>
 
 1. **Menu Bar** — top navigation and commands
 2. **Tab Bar** — open file tabs at the top of the editor
@@ -37,29 +41,46 @@ Familiarize yourself with the layout of VS Code:
 4. **Coding Window** — main code editor and viewing area
 5. **Panel** — integrated terminal, output, problems
 
-## Loading extensions
+## Loading Extensions
 
 Open VS Code → click the Extensions icon (Ctrl + Shift + X).
 
-```{image} ../images/extensions.png
+```{figure} ../images/extensions.png
+:name: extensions
 :alt: Extensions Panel
-:width: 700px
+:width: 400px
 :align: center
+
+Get extensions from the circled icon in the Side Bar
 ```
 
-### Required extensions
+### Required Extensions
 
 - Python
 - Python Environments
 - Python Debugger
 - Jupyter
 
-### Useful extensions
+### Useful Extensions
 
 - Pylance
 - Pylint
 
+
+## Open Project Folder
+
+You may want to create a folder for this project. If you work within a folder, you do not need to create absolute paths for files, and you will easily just be able to put files in the folder for your code to use, and any files you create can be downloaded into this folder as well. 
+
 Then open your project folder: **File → Open Folder…**
+
+```{figure} ../images/openfolder.png
+:name: openfolder
+:alt: Open Folder
+:width: 400px
+:align: center
+
+Get extensions from the circled icon in the Side Bar
+```
 
 ## Select Python interpreter
 
@@ -71,14 +92,16 @@ Then open your project folder: **File → Open Folder…**
 Create a virtual environment (`.venv`) for project-level dependency isolation.
 ```
 
-```{image} ../images/virtual-environment.png
+```{figure} ../images/virtual-environment.png
+:name: virtual-environment
 :alt: Virtual Environment
 :width: 700px
 :align: center
 ```
+<br><br>
 
-
-```{image} ../images/interpreter.png
+```{figure} ../images/interpreter.png
+:name: interpreter
 :alt: Select Interpreter
 :width: 700px
 :align: center
@@ -86,12 +109,15 @@ Create a virtual environment (`.venv`) for project-level dependency isolation.
 
 ## Install required libraries
 
-```{image} ../images/terminal.png
+```{figure} ../images/terminal.png
+:name: terminal
 :alt: Using the Terminal
-:width: 700px
+:width: 400px
 :align: center
-```
 
+Copy the code below into your terminal to install all the libraries used in this course
+```
+<br><br>
 
 Open Terminal in VS Code: **Terminal → New Terminal**. Then:
 
@@ -123,9 +149,18 @@ Prerequisites: Jupyter extension installed and Python interpreter selected.
 Use **Ctrl + Shift + P → Jupyter: Create New Jupyter Notebook** to start a blank notebook. Use Run All (double-arrow icon) or **Ctrl + Alt + Enter** to execute the full notebook.
 ```
 
+```{figure} ../images/jupyter.png
+:name: jupyter
+:alt: Jupyter
+:width: 400px
+:align: center
+
+Jupyter notebooks are easy to use when trying to analyze data
+```
+
 ## Key Python libraries
 
-### NumPy — the ndarray
+### NumPy
 
 A homogeneous, fixed-size N-dimensional array (1D vectors, 2D matrices, or higher). All elements share one dtype, which is what makes operations fast.
 
@@ -157,6 +192,9 @@ M[M > 5]        # boolean filter
 - Slice by label (`.loc`) or position (`.iloc`), filter with boolean masks, group-and-aggregate, merge tables.
 - One-line I/O for CSV, Excel, JSON, SQL, Parquet.
 
+Try the following in Pandas by downloading the file and placing in your project folder:
+[sales.csv](../_static/data/sales.csv)
+
 ```python
 import pandas as pd
 
@@ -170,6 +208,16 @@ west.groupby('product')['revenue'].sum()
 df['margin'] = (df['revenue'] - df['cost']) / df['revenue']
 df.pivot_table(index='region', columns='quarter', values='revenue', aggfunc='sum')
 ```
+
+```
+Quarter    Q1        Q2        Q3        Q4
+Region
+East      928.26   1054.39   1056.08   1142.29
+North     907.46   1136.85   1293.83   1415.43
+South     757.57   1134.60   1703.73   1268.56
+West     1207.81    690.77   1621.47    940.46
+```
+
 
 ### Matplotlib — figures and axes
 
@@ -189,17 +237,43 @@ ax.plot(x, y, label='sin(x)')
 ax.legend()
 plt.show()
 ```
+<br><br>
 
+```{figure} ../images/matplotlib-example1.png
+:name: matplotlib-example1
+:alt: matplotlib-example1
+:width: 400px
+:align: center
 
-## Resources for this course
+Your very first plot!
+```
 
-All materials are available on the course GitHub repository:
+<br><br>
 
-- Example data sets
-- Python scripts
-- Jupyter notebooks
+```python
+import matplotlib.pyplot as plt
+import numpy as np
 
-Ask your instructor for the repository URL.
+fig, axes = plt.subplots(2, 1, figsize=(3, 6))
+np.random.seed(42)
+data = np.random.normal(loc=1, scale=7, size=50)
+axes[0].hist(data, bins=30)
+axes[0].set_title('Histogram')
+axes[1].scatter(x, y, alpha=0.5, c='teal')
+axes[1].set_title('Scatter')
+fig.show()
+```
+<br><br>
+
+```{figure} ../images/matplotlib-example2.png
+:name: matplotlib-example2
+:alt: matplotlib-example2
+:width: 200px
+:align: center
+
+Your very second plot!
+```
+
 
 ### Additional references
 
