@@ -131,6 +131,7 @@ Two main targets:
 
 - Fit based on existing corrosion rates.
 - STCR, LTCR, rates from nominal.
+- Regression rates by cluster
 - Alternatively, rate between two selected points on distributions at two distinct points in time
 
 ```{note}

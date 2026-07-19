@@ -461,7 +461,7 @@ Time series methods (autoregressive models, state-space models, Gaussian process
 The linear-trend model in chapter 4a is effectively a degenerate time series — it assumes a single constant rate. Real data sometimes shows acceleration, deceleration, or seasonality that a richer time series model would capture.
 
 ```{note}
-These are **mentions, not recommendations.** For most CML programs, the basic hierarchical model in chapter 4a is the right tool. Reach for these extensions only when the basic model demonstrably fails — diagnosed via posterior predictive checks that fail in specific, interpretable ways.
+These are **mentions, not recommendations.** For most CML programs, the basic hierarchical model in chapter 6 is the right tool. Reach for these extensions only when the basic model demonstrably fails — diagnosed via posterior predictive checks that fail in specific, interpretable ways.
 ```
 
 ## A note on Bayesian decision theory

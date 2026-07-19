@@ -153,28 +153,12 @@ The deepest mistake. A statistical analysis is an input to a decision, not the d
 - **API RP 574** — Piping Inspection Practices for Piping System Components.
 - **API RP 580** — Risk-Based Inspection.
 - **API RP 581** — Risk-Based Inspection Methodology.
-- **API RP 653** — Tank Inspection, Repair, Alteration, and Reconstruction.
 
-### Gysbers Inspectioneering articles
-
-A.C. Gysbers, *A Discussion on the Piping Thickness Management Process*, Inspectioneering Journal:
-
-- Part 1 — Overview (Sep/Oct 2012)
-- Part 2 — Determining Corrosion Monitoring Locations (Nov/Dec 2012)
-- Part 3 — Data Collection with Ultrasonics and Radiography (Jan/Feb 2013)
-- Part 4 — Collecting Quality Thickness Data (May/Jun 2013)
-- Part 5 — Circuit Thickness Data Analysis (Sep/Oct 2013)
-
-A.C. Gysbers, *Recording Thickness Data During Thickness Monitoring Inspections*, Inspectioneering Journal (Sep/Oct 2015).
 
 ### Statistics texts
 
 ```{bibliography}
 ```
-
-### Patents
-
-- Sparago, US 12,007,227 B2 — relevant prior art for statistical CML analysis.
 
 ## Further reading
 

@@ -7,11 +7,12 @@ A complete walkthrough of the frequentist workflow on a real piping circuit.
 - Recently re-circuitized as the company switched from line-based to circuit-based inspections.
 - Primarily **4" and 6" SCH40 carbon steel piping**, with a few SCH80 and SBC.
 - Damage mechanisms of concern: **sour water corrosion (erosion)** and **ammonium bisulfide corrosion** in parts.
+- SBCs and drain lines have already been removed for your convenience. 
+
 
 ### Supporting documents
 
-- **P&ID** — placeholder for circuit P&ID.
-- **ISOs** — placeholder for piping isometric drawings.
+#### P&ID
 
 ```{figure} ../images/PFD.png
 :name: PFD1
@@ -22,7 +23,7 @@ A complete walkthrough of the frequentist workflow on a real piping circuit.
 PFD of example
 ```
 
-
+#### ISOs
 
 ```{raw} html
    <iframe src="../_static/isometric_gallery.html"
@@ -32,13 +33,11 @@ PFD of example
 ```
 
 
-
-
 The dataset used in this example is available for download:
-[TR_596-example2.xlsx](../_static/data/TR_596-example2.xlsx)
+<a href="../_static/TR_596-example2.xlsx" download>TR_596-example2.xlsx</a>
 
 ```{note}
-The same circuit is reanalyzed in chapter 4a using Bayesian methods. Comparing the two endings is the punchline of the course.
+The same circuit is reanalyzed in chapter 6 using Bayesian methods.
 ```
 
 ## Data cleanup

@@ -34,6 +34,8 @@ def thickness_model(t, cml, comp_type, nominal_t0_by_type,
     with numpyro.plate("obs", t.shape[0]):
         numpyro.sample("y", dist.Normal(T_t, sigma), obs=y)
 ```
+## Selecting Priors
+Where did we get the priors from? Good question.
 
 **Structure:**
 
@@ -41,6 +43,9 @@ def thickness_model(t, cml, comp_type, nominal_t0_by_type,
 - **$C_r$ per CML** — drawn from a Gamma prior shared across all CMLs (this is the "pool").
 - **$\sigma$** — measurement noise; Half-Normal.
 - **Likelihood** — observed thickness ~ Normal($T_0 - C_r \cdot t$, $\sigma$).
+
+## On Corrosion Rate Priors
+A good idea to have a library of corrosion rate distributions. When observing corrosion in your facility's IDMS system, attribute CMLs to certain damage mechanisms. Try to cluster and find fits for specific damage mechanisms at certain ranges of conditions. 
 
 ## Clustering by corrosion zones
 
@@ -51,6 +56,13 @@ If clustering by corrosion zone, consider **separating the circuit** because the
 
 The example below clusters only by feature.
 ```
+
+## Prior Predictive Checks
+
+NumPyro does not have built in prior predictive inference like PyMC or libraries outside of Python. The prior predictive check was ran in PyMC and the results are below:
+
+All of the priors look good, but variance might be a little low. 
+
 
 ## Running the model
 
@@ -134,5 +146,5 @@ Per-CML retirement schedule, sorted by lower HDI bound:
 
 The frequentist worst-case scenario suggested ~40 CMLs would retire by 2035. The Bayesian model, leveraging the same data plus engineering knowledge of nominal thicknesses and the population of corrosion rates, produces a much more nuanced — and credible — schedule.
 
-This is not because Bayesian methods are magic; it's because they let you encode prior knowledge and produce per-CML uncertainty rather than forcing you to pick one of four global scenarios.
+This is not because Bayesian methods are magic; it's because they let you encode prior knowledge and produce per-CML uncertainty rather than forcing you to pick one rate and one thickness.
 ```
