@@ -839,6 +839,172 @@ print(f"MLE: β = {c_mle:.2f}, η = {scale_mle:.1f}")
 :align: center
 ```
 
+## Exercises
+
+The following exercises use a heat exchanger tube wall-loss dataset — 451 tubes inspected on the same bundle, with wall loss reported in inches.
+
+**Download the dataset:** [EVA_HEX-example.xlsx](../_static/EVA_HEX-example.xlsx)
+
+Load it and extract column C (`wallloss (in)`) as your sample. Wall loss is a strictly positive, right-skewed quantity where the **maximum values** matter most — a classic setting for **extreme value analysis (EVA)** and the **Gumbel distribution**.
+
+The Gumbel (right-tailed, Type I extreme value) distribution has:
+
+$$f(x; \mu, \beta) = \frac{1}{\beta} \exp\!\left[-\frac{x-\mu}{\beta} - \exp\!\left(-\frac{x-\mu}{\beta}\right)\right]$$
+
+$$F(x; \mu, \beta) = \exp\!\left[-\exp\!\left(-\frac{x-\mu}{\beta}\right)\right]$$
+
+with location $\mu$ (mode of the distribution) and scale $\beta > 0$. Its mean is $\mu + \gamma\beta$ where $\gamma \approx 0.5772$ is the Euler–Mascheroni constant, and its variance is $\pi^2\beta^2/6$.
+
+````{exercise}
+:label: gumbel-mom
+
+Fit a Gumbel distribution to the wall-loss data using the **Method of Moments**.
+
+Recall that MoM sets sample moments equal to population moments and solves for the parameters. Given the mean and variance formulas above, derive $\hat\mu$ and $\hat\beta$ in terms of sample mean $\bar{x}$ and sample standard deviation $s$, then compute them.
+````
+
+````{solution} gumbel-mom
+:class: dropdown
+
+**Derivation.** From the population moments:
+
+$$E[X] = \mu + \gamma\beta \qquad \text{Var}(X) = \frac{\pi^2}{6}\beta^2$$
+
+Solve the second for $\beta$:
+
+$$\hat\beta = \frac{s\sqrt{6}}{\pi}$$
+
+Substitute into the first and solve for $\mu$:
+
+$$\hat\mu = \bar{x} - \gamma\hat\beta$$
+
+**Computation.** Loading the data:
+
+```python
+import pandas as pd
+import numpy as np
+
+df = pd.read_excel('EVA_HEX-example.xlsx')
+x = df['wallloss (in)'].values
+
+xbar = x.mean()            # 0.01485
+s    = x.std(ddof=1)       # 0.00288
+
+gamma = 0.5772156649
+beta_mom = s * np.sqrt(6) / np.pi     # 0.00224
+mu_mom   = xbar - gamma * beta_mom    # 0.01355
+```
+
+**Result:** $\hat\mu_{\text{MoM}} \approx 0.01355$, $\hat\beta_{\text{MoM}} \approx 0.00224$.
+````
+
+````{exercise}
+:label: gumbel-lse
+
+Fit the same Gumbel distribution using **Least-Squares Estimation** on the linearized CDF.
+
+Show that the Gumbel CDF can be linearized as
+
+$$-\ln(-\ln F(x)) = \frac{x - \mu}{\beta}$$
+
+so that regressing $x$ on $-\ln(-\ln \hat{F}_i)$ gives $\beta$ as the slope and $\mu$ as the intercept. Use Gringorten's plotting position $\hat{F}_i = (i - 0.44)/(n + 0.12)$ for the sorted data.
+
+Report both parameters and the $R^2$ of the fit.
+````
+
+````{solution} gumbel-lse
+:class: dropdown
+
+**Linearization.** Taking $\ln$ twice on the CDF:
+
+$$F(x) = \exp[-\exp(-(x-\mu)/\beta)] \implies -\ln(-\ln F) = \frac{x-\mu}{\beta}$$
+
+Rearranging: $x = \mu + \beta \cdot [-\ln(-\ln F)]$. So a plot of sorted $x$ against $y_i = -\ln(-\ln \hat{F}_i)$ is linear with slope $\beta$ and intercept $\mu$.
+
+**Computation.**
+
+```python
+n = len(x)
+x_sorted = np.sort(x)
+i = np.arange(1, n+1)
+F_hat = (i - 0.44) / (n + 0.12)          # Gringorten
+y = -np.log(-np.log(F_hat))
+
+slope, intercept = np.polyfit(y, x_sorted, 1)
+beta_lse = slope       # 0.00213
+mu_lse   = intercept   # 0.01362
+
+r2 = np.corrcoef(y, x_sorted)[0, 1] ** 2  # 0.89
+```
+
+**Result:** $\hat\mu_{\text{LSE}} \approx 0.01362$, $\hat\beta_{\text{LSE}} \approx 0.00213$, $R^2 \approx 0.89$.
+
+The moderate $R^2$ hints that the linearized fit isn't perfect — deviation from the reference line in the upper tail is common when the parent distribution has slightly different tail behavior than pure Gumbel.
+````
+
+````{exercise}
+:label: gumbel-mle
+
+Fit the Gumbel using **Maximum Likelihood Estimation** and compare all three estimates.
+
+Use `scipy.stats.gumbel_r.fit()` — no need to code the optimization by hand.
+
+Then compare:
+
+1. The three parameter pairs $(\hat\mu, \hat\beta)$ from MoM, LSE, and MLE.
+2. The predicted 99th percentile wall loss ($x$ such that $F(x) = 0.99$) under each fit.
+
+Discuss which fit you would use for a risk-based inspection decision.
+````
+
+````{solution} gumbel-mle
+:class: dropdown
+
+**MLE fit.**
+
+```python
+from scipy import stats
+mu_mle, beta_mle = stats.gumbel_r.fit(x)
+# mu_mle   = 0.01337
+# beta_mle = 0.00388
+```
+
+**Comparison of parameters.**
+
+| Method | $\hat\mu$ | $\hat\beta$ |
+|--|--|--|
+| MoM | 0.01355 | 0.00224 |
+| LSE | 0.01362 | 0.00213 |
+| MLE | 0.01337 | 0.00388 |
+
+**99th percentile prediction.**
+
+```python
+for name, mu, beta in [('MoM', mu_mom, beta_mom),
+                        ('LSE', mu_lse, beta_lse),
+                        ('MLE', mu_mle, beta_mle)]:
+    p99 = stats.gumbel_r.ppf(0.99, loc=mu, scale=beta)
+    print(f"{name}: {p99:.4f} in")
+```
+
+| Method | 99th percentile wall loss (in) |
+|--|--|
+| MoM | 0.0239 |
+| LSE | 0.0234 |
+| MLE | 0.0312 |
+
+**Discussion.**
+
+- MoM and LSE agree closely — they both use sample summaries (mean/variance for MoM, plotting-position CDF for LSE) that are dominated by the bulk of the data.
+- MLE finds a **wider $\beta$** because the likelihood weights every observation, and the observed maximum (0.029") sits well beyond what MoM/LSE would predict. MLE stretches $\beta$ to accommodate the tail.
+- The resulting 99th percentile predictions differ by about 30% between MoM/LSE and MLE.
+
+**For RBI decisions**, MLE is generally the right choice for extreme value work — it uses all the information in the sample rather than just the summary moments, and it's asymptotically efficient. The wider $\beta$ from MLE reflects the real tail heaviness in the data. A conservative RBI would use the MLE-based 99th percentile (0.031 in) rather than the MoM estimate (0.024 in).
+
+**Caveat:** the substantial difference between MoM/LSE and MLE tells you the data may not be exactly Gumbel. In practice, verify with a Gumbel Q-Q plot before trusting any of the three fits — the linearized LSE $R^2$ of 0.89 already hinted at some departure. If the tail departs, consider fitting a **GEV** (Generalized Extreme Value) distribution instead of forcing Gumbel.
+````
+
+
 **Properties:**
 - Asymptotically efficient — for large $n$, no unbiased estimator has lower variance.
 - Workhorse for most modern statistical models.

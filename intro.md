@@ -1,22 +1,8 @@
 # CML Statistical Analysis Course
 
+**2026 API Inspection and Mechanical Integrity Summit**
 
 
-*[Placeholder — replace with your own words.]*
+## Abstract
 
-API Inspection and Mechanical Integrity Summity 2026
-
-This book grew out of a training session I lead at the API Inspection and Mechanical Integrity Summit, and out of a frustration I've had for years with how statistical analysis of inspection data is usually taught and practiced.
-
-The frustration is this: most CML statistical analysis in industry is either a black box embedded in an IDMS, or a half-remembered application of techniques from a college statistics class. Neither produces engineers who can defend their numbers when an auditor asks how the retirement schedule was derived, or who can recognize when a method is being misapplied.
-
-This course is my attempt to close that gap. The structure deliberately mirrors how I think about the problem in practice:
-
-- Start with the statistical foundation — not as an exhaustive textbook, but as the working vocabulary an analyst actually needs.
-- Move into the realities of inspection data — CML allocation, measurement variability, sampling decisions — because the statistics is downstream of those choices.
-- Walk through a full frequentist analysis end-to-end on a real circuit, including the points where the methodology forces uncomfortable trade-offs.
-- Repeat the same analysis Bayesian, on the same circuit, with the same data — and show how the answers shift.
-
-I am not a statistician. I am a metallurgist who got tired of seeing inspection programs make poor decisions because the analysis layer was treated as a formality. If this course helps even a few engineers ask better questions of their data, it will have been worth the effort.
-
-— Samuel Gauspohl
+API standards allow for use of statistical methods to analyze CMLs to establish a representative corrosion rate, remaining life, or reinspection dates. However, other than some basic guardrails, no actual method is described and it is left up to the owner operator to decide on methodology and documentation. For a significant portion of a facility, standard CML analysis and point to point methods are simple and adequate. For complex circuits where the nature of corrosion has high impact or uncertainty, statistical analysis is a useful tool that, with the correct application and approach, can provide valuable insight into risk as well as gaps in the data. This training will cover two methods of CML statistical analysis. The first method is using simple statistics and distributions to understand wall thickness at discrete points in time. The basic statistical analysis requires simple filtering, establishing a distribution at each point in time, understanding the goodness of fit of the distribution, and comparing over time to draw conclusions on minimum remaining thickness as well as corrosion rate. The second method, Bayesian Analysis, is more complex and requires a broader understanding of statistics, distributions and their interactions. This training will cover building a hierarchical model, selecting statistical distributions, and how different aspects of inspection such as type of thickness measurement, inspection discipline, in addition to an endless possibility of potential factors can feed into a holistic statistical model that a computer can solve, as well as where some of these analyses may go wrong. This training will give several examples and provide Python code to work the examples. This training contains advanced level content that requires familiarity with statistics and statistical tools. It is targeted at inspectors and engineers who work with a large number of CMLs.

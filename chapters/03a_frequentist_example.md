@@ -19,9 +19,11 @@ A complete walkthrough of the frequentist workflow on a real piping circuit.
 :align: center
 ```
 
+
+
 ```{raw} html
    <iframe src="../_static/isometric_gallery.html"
-           width="100%" height="500"
+           width="100%" height="400"
            style="border:none;">
    </iframe>
 ```
