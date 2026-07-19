@@ -1,5 +1,7 @@
 # Statistics Refresher
 
+Remember your favorite class in high school and/or college? Well, luckily, this is not that class. In fact, I am really going to breeze through this section because neither myself or you guys *need* to be a statistician. We are engineers and inspectors who often assume pi equals 3. The concepts of the theory are important though, so bear with me. 
+
 ## Statistics introduction
 
 ### Why use statistics?
@@ -33,11 +35,14 @@ Key principles:
 - **Ethical and transparent** — share data, code, methods; understand and report biases or incomplete data.
 - **Quantify uncertainty** — understand confidence and error in estimates.
 - **Measured vs. inferred** — report what is observed vs. what is estimated or assumed.
-- **Document assumptions** — distributional assumptions, data cleaning, software versions, random seeds.
+- **Document assumptions** — distributional assumptions, data cleaning, software versions, etc...
 
 ## The Rumsfeld matrix
 
 > *Know what you know, and know what you do not know.*
+
+Remember this guy? Well the concept has been around for longer than him, but I remember watching the news when he said this, and thinking to myself, *"What?"*. When you really think about it though, it makes sense, and it really helps when predictions do not match reality. You can have a great model completely fall apart because of some random unknown that would have been impossible to guess.
+
 
 ```{image} ../images/rumsfeld.png
 :alt: Rumsfeld Matrix
@@ -47,11 +52,17 @@ Key principles:
 
 
 ```{important}
-**Unknown unknowns are unknowable by definition.** No statistical method can detect or quantify a risk never observed or conceived. The only mitigation is to inspect everything in every way — which is impractical.
+**Unknown unknowns are unknowable by definition.** No statistical method can detect or quantify a risk never observed or conceived. The only mitigation is to inspect everything in every way — which is impractical and impossible.
 
-The goal of statistical analysis is to **move risks from unknowns to knowns** using prior knowledge and data.
+The goal of statistical analysis is to **make inferences about some of the unknowns** using prior knowledge and the existing data.
 ```
+
 If you want to know how many whales are in the ocean (population), and you decide to figure this out by sampling with a bucket, you might shockingly discover that there are no whales in the ocean (if you trust your sampling). You have absence of evidence. Obviously, this is an extreme example, and you know that whales exist in the ocean. You have an unknown known; something you have not observed, but know is possible. This is also a demonstration of poor measurement or sampling technique as it would be impossible to fit even a baby whale in a bucket (how big is the biggest bucket?). Real sampling for population of whales is actually challenging with a combination of aerial sightings, acoustic surveys, and physical counting and marking. The absence of evidence is not evidence of absence.
+
+
+## Probability and Statistics Primer
+
+insert image of flowchart
 
 ## Samples and populations
 

@@ -2,7 +2,7 @@
 
 ## Coding quick start
 
-Download Python and VS Code — or use the coding language and IDE of your choice.
+Download Python and VS Code — or use the coding language and IDE of your choice. This class uses VS Code and Python, so examples will be harder to follow. I may publish this website with refactored code one day, but don't expect that anytime soon.
 
 ### Installation steps
 
@@ -77,6 +77,7 @@ Create a virtual environment (`.venv`) for project-level dependency isolation.
 :align: center
 ```
 
+
 ```{image} ../images/interpreter.png
 :alt: Select Interpreter
 :width: 700px
@@ -90,6 +91,7 @@ Create a virtual environment (`.venv`) for project-level dependency isolation.
 :width: 700px
 :align: center
 ```
+
 
 Open Terminal in VS Code: **Terminal → New Terminal**. Then:
 
@@ -106,6 +108,19 @@ pip install numpyro
 pip install xarray
 pip install arviz
 pip install bambi
+```
+
+## Using Jupyter Notebook in VS Code
+
+Prerequisites: Jupyter extension installed and Python interpreter selected.
+
+1. **Open notebook** — open or create a `.ipynb` file; VS Code opens it in the built-in Notebook Editor.
+2. **Select kernel** — click **Select Kernel** (top-right) → choose your Python environment or `.venv`.
+3. **Run cells** — click ▶ or press **Shift + Enter** to execute the current cell.
+4. **View outputs** — results, plots, and DataFrames display inline beneath each cell.
+
+```{tip}
+Use **Ctrl + Shift + P → Jupyter: Create New Jupyter Notebook** to start a blank notebook. Use Run All (double-arrow icon) or **Ctrl + Alt + Enter** to execute the full notebook.
 ```
 
 ## Key Python libraries
@@ -175,18 +190,6 @@ ax.legend()
 plt.show()
 ```
 
-## Using Jupyter Notebook in VS Code
-
-Prerequisites: Jupyter extension installed and Python interpreter selected.
-
-1. **Open notebook** — open or create a `.ipynb` file; VS Code opens it in the built-in Notebook Editor.
-2. **Select kernel** — click **Select Kernel** (top-right) → choose your Python environment or `.venv`.
-3. **Run cells** — click ▶ or press **Shift + Enter** to execute the current cell.
-4. **View outputs** — results, plots, and DataFrames display inline beneath each cell.
-
-```{tip}
-Use **Ctrl + Shift + P → Jupyter: Create New Jupyter Notebook** to start a blank notebook. Use Run All (double-arrow icon) or **Ctrl + Alt + Enter** to execute the full notebook.
-```
 
 ## Resources for this course
 

@@ -12,9 +12,7 @@ parts:
       - file: chapters/01_statistics_refresher
       - file: chapters/02_inspection_data
       - file: chapters/03_frequentist
-        sections:
-          - file: chapters/03a_frequentist_example
+      - file: chapters/03a_frequentist_example
       - file: chapters/04_bayesian
-        sections:
-          - file: chapters/04a_bayesian_example
+      - file: chapters/04a_bayesian_example
       - file: chapters/05_discussion_references

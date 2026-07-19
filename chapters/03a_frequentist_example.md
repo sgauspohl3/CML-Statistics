@@ -19,6 +19,14 @@ A complete walkthrough of the frequentist workflow on a real piping circuit.
 :align: center
 ```
 
+```{raw} html
+   <iframe src="../_static/isometric_gallery.html"
+           width="100%" height="500"
+           style="border:none;">
+   </iframe>
+```
+
+
 The dataset used in this example is available for download:
 [TR_596-example2.xlsx](../_static/TR_596-example2.xlsx)
 

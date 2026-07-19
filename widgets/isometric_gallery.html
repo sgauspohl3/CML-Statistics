@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Isometric Drawings</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
+<style>
+  html, body { margin: 0; padding: 12px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: transparent; }
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .gallery a {
+    display: block;
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+    overflow: hidden;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .gallery a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .gallery img { display: block; width: 100%; height: auto; }
+  .gallery .caption {
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #5a5a5a;
+    border-top: 1px solid #eee;
+    background: #fafafa;
+  }
+</style>
+</head>
+<body>
+
+<div class="gallery">
+  <a href="../_static/ISO_SWS-1.png" class="glightbox" data-gallery="isos" data-title="SWS-1">
+    <img src="../_static/ISO_SWS-1.png" alt="SWS-1">
+    <div class="caption">1. SWS-1</div>
+  </a>
+  <a href="../_static/ISO_SWS-2.png" class="glightbox" data-gallery="isos" data-title="SWS-2">
+    <img src="../_static/ISO_SWS-2.png" alt="SWS-2">
+    <div class="caption">2. SWS-2</div>
+  </a>
+  <a href="../_static/ISO_SWS-3.png" class="glightbox" data-gallery="isos" data-title="SWS-3">
+    <img src="../_static/ISO_SWS-3.png" alt="SWS-3">
+    <div class="caption">3. SWS-3</div>
+  </a>
+  <a href="../_static/ISO_SWS-4.png" class="glightbox" data-gallery="isos" data-title="SWS-4">
+    <img src="../_static/ISO_SWS-4.png" alt="SWS-4">
+    <div class="caption">4. SWS-4</div>
+  </a>
+  <a href="../_static/ISO_SWS-5.png" class="glightbox" data-gallery="isos" data-title="SWS-5">
+    <img src="../_static/ISO_SWS-5.png" alt="SWS-5">
+    <div class="caption">4. SWS-5</div>
+  </a>
+  <a href="../_static/ISO_SWS-6.png" class="glightbox" data-gallery="isos" data-title="SWS-6">
+    <img src="../_static/ISO_SWS-6.png" alt="SWS-6">
+    <div class="caption">4. SWS-6</div>
+  </a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+<script>
+  const lightbox = GLightbox({
+    selector: '.glightbox',
+    touchNavigation: true,
+    loop: true
+  });
+</script>
+
+</body>
+</html>

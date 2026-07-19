@@ -1,58 +1,37 @@
 # Introduction
 
-This class is about democratizing statistics and cml analysis for mechanical integrity practitioners
-
-A practical course on statistical analysis of Corrosion Monitoring Location (CML) data for mechanical integrity engineers.
-
-These notes accompany the *CML Statistical Analysis* training session at the API Inspection and Mechanical Integrity Summit. The aim is to teach **just enough statistics** to apply it responsibly to inspection data — and then to walk through the actual workflow end-to-end on a real piping circuit, twice: once with frequentist methods, once with Bayesian.
-
-```{epigraph}
-Statistics without understanding leads to misuse; practice without theory leads to blind application.
-```
-
-The course balances theory and practice 50/50. Each chapter mixes intuition, mathematics, and runnable Python — the front matter helps you get the Python environment in place, the course proper builds the statistical foundation, and the worked-example chapters apply that foundation to a real SWS feed circuit.
+Welcome to the 2026 API Inspection and Mechanical Integrity Summit! I am glad you decided to take my class, and I hope you can get something out of it. These notes will provide additional context, information, and examples to better understand the concepts presented in this course. It is not required, and all this information will be available after the course as well. 
 
 ## About the Author
 
-Samuel Gauspohl is a cool dude, right?
+Samuel Gauspohl has worked a variety of roles focusing on mechanical integrity and reliability at several refinery and petrochemical facilities in the capacities of both owner-operator engineer and consultant. He has developed ground-up mechanical integrity programs and led multiple employers/clients to world class performance. Focus areas include: PSM, mechanical integrity, risk-based inspection, fitness for service, corrosion and damage mechanism assessments, inspection, and NDE. 
 
-```{image} ../images/headshot.png
+Samuel holds a BS degree in Materials Science and Engineering from Georgia Institute of Technology and current API 510, API 570, API 580, and API 653 certifications.
+
+```{figure} ../images/headshot.png
 :alt: This guy....
-:width: 500px
+:width: 300px
 :align: center
+
+What a nerd...
 ```
 
+## About This Class
 
-## Prerequisites
+This class is about democratizing statistics and CML analysis for mechanical integrity practitioners. There are many companies offering solutions in regards to CML optimization. They all perform some sort of analysis to determine what CMLs should be inspected at whichever date. This class should allow you to perform similat analyses, or at the very least, understand enough of the analysis to ask the right questions and direct the analysis. 
 
-This book assumes foundational knowledge of:
+This course is focused primarily on the analysis aspect, and I do not want to go deep into the optimization, even though optimization is probably your end goal. Why? Well optimization is a discussion that all owner-operator mechanical integrity practitioners need to have about risk tolerance. Ultimately, this class cannot do the risk analysis for you, but it should give you some solid statistical background to bring actual insight to the risk discussion.
 
-- Refining and/or chemical processes
-- Process equipment
-- Inspection techniques
-- Math (algebra, basic calculus helps)
-- Computer usage
-
-## Learning objectives
-
-By the end you should be able to:
-
-- Understand the basic statistical concepts used in CML analysis
-- Use basic Python to conduct analysis
-- Evaluate a circuit using frequentist methods
-- Evaluate a circuit using Bayesian methods
-- Read and critically evaluate a CML statistical analysis someone else has produced
-
-
-## About this class
+## Theory and Application
 
 This class balances **theory and practice** — just enough of each to build real understanding without overwhelming or over-simplifying.
+
 
 ```{epigraph}
 Statistics without understanding leads to misuse; practice without theory leads to blind application.
 ```
 
-```{image} ../images/class.png
+```{figure} ../images/class.png
 :width: 500px
 :align: center
 ```
@@ -73,30 +52,35 @@ Statistics without understanding leads to misuse; practice without theory leads 
 
 ### Prerequisites
 
-Foundational knowledge of the following is assumed:
+This book assumes foundational knowledge of:
 
 - Refining and/or chemical processes
 - Process equipment
 - Inspection techniques
-- Math
-- Computer usage
+- Math (algebra, basic calculus helps)
+- Basic computer usage
 
 ### Learning objectives
 
-By the end of the class, you should be able to:
+By the end of this course you should be able to:
 
-- Understand basic statistical concepts used in CML analysis
-- Use basic Python programming to conduct analysis
+- Understand the basic statistical concepts
+- Use basic Python to conduct analysis
 - Evaluate a circuit using frequentist methods
 - Evaluate a circuit using Bayesian methods
-- Understand a CML statistical analysis given to you
+- Read and evaluate a CML statistical analysis someone else has produced
 
-## The answer to everything in statistics: *it depends*
 
-> *"What distribution should I fit?"* — Depends on the morphology, sample size, and goal.
+Pretty ambitious goals of this class, right? Well I'm an ambitious guy, so let's see how this goes. Strap in and enjoy the ride.
+
+## The answer to everything in statistics: *It Depends*
+
+This is going to be annoying, but 90% of the questions you may think about asking, especially when it comes to applying statistical concepts is, *it depends*. There is usually no one right answer, and there is usually more than one way to arrive at a similar answer. Analyses of the same data may lead to different answers. Knowing statistics doesn't *give* you the answer — it lets you **make more informed analyses** and pick better methods based on the available data or ask the right questions when receiving an analysis. 
+
+> *"What distribution should I fit?"* — It Depends.
 >
-> *"How many CMLs do I need?"* — Depends on the method, the variability, the risk you'll accept.
+> *"How many CMLs do I need?"* — It Depends.
 >
-> *"Bayesian or frequentist?"* — Depends on what you know going in, and what you'll do with the answer.
+> *"Bayesian or frequentist?"* — You guessed it... It Depends.
 
-There's rarely one right answer. Knowing statistics doesn't *give* you the answer — it lets you **ask better questions** and pick a better analysis for the situation.
+Hopefully you guys won't get too annoyed at me whenever I answer that, *it depends*. Maybe one of you guys can make a tally and see how many times I say it. I just said it 6 times, so there's a head start.
