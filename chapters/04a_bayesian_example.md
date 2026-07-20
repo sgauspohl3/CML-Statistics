@@ -6,10 +6,10 @@ A complete walkthrough of the Bayesian workflow on a real piping circuit. This i
 Please download the dataset used in this example and place in your project folder:
 <a href="../_static/TR_596-example2.xlsx" download>TR_596-example2.xlsx</a>
 
-<br><br>
+<br>
 
 The accompanying P&ID and Isometric drawings
-<a href="../_static/SWS-PID.pdf" download>SWS-PID.pdf</a>
+<a href="../_static/SWS-PID.pdf" download>SWS-PID.pdf</a><br>
 <a href="../_static/SWS-ISOs.pdf" download>SWS-ISOs.pdf</a>
 
 ```{note}
@@ -214,7 +214,7 @@ Forest plot of posterior corrosion rates by CML
 
 This looks a little busy, so let's separate by cluster.
 
-<br><br>
+<br>
 
 ```{figure} ../images/example-bhm-forest-cluster.png
 :name: example-bhm-forest-cluster
@@ -227,7 +227,7 @@ Global prior vs posterior for posterior corrosion rates by CML, separated by clu
 
 This is easy to read. Anything that we see with a higher than expected corrosion rate?
 
-<br><br>
+<br>
 
 ```{figure} ../images/example-bhm-trajectory.png
 :name: example-bhm-trajectory
@@ -279,8 +279,9 @@ This is not because Bayesian methods are magic; it's because they let you encode
 
 ## Try on Your Own
 
+
 ```{exercise}
-:label: cml-057-retirement
+:label: cml-057-retirement2
 
 What is the expected retirement date (lower HDI) of CML 057?
 ```

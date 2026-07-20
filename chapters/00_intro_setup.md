@@ -1,10 +1,10 @@
 # Setup
 
-## Coding quick start
+## Coding Quick Start
 
 Download Python and VS Code — or use the coding language and IDE of your choice. This class uses VS Code and Python, so examples will be harder to follow. I may publish this website with refactored code one day, but don't expect that anytime soon.
 
-### Installation steps
+### Installation Steps
 
 1. Open the Microsoft Store on your Windows machine.
 2. Search for **Python** → click **Get** to install.
@@ -20,7 +20,7 @@ Screenshots of download screen from Microsoft Store. It says "E for Everyone", b
 ```
 
 
-## VS Code layout
+## VS Code Layout
 
 Familiarize yourself with the layout of VS Code:
 
@@ -33,7 +33,7 @@ Familiarize yourself with the layout of VS Code:
 Layout of VS Code
 ```
 
-<br><br>
+<br>
 
 1. **Menu Bar** — top navigation and commands
 2. **Tab Bar** — open file tabs at the top of the editor
@@ -82,7 +82,7 @@ Then open your project folder: **File → Open Folder…**
 Get extensions from the circled icon in the Side Bar
 ```
 
-## Select Python interpreter
+## Select Python Interpreter
 
 1. Open the Command Palette: **Ctrl + Shift + P**
 2. Search for **Python: Select Interpreter** and press Enter.
@@ -98,7 +98,7 @@ Create a virtual environment (`.venv`) for project-level dependency isolation.
 :width: 700px
 :align: center
 ```
-<br><br>
+<br>
 
 ```{figure} ../images/interpreter.png
 :name: interpreter
@@ -107,7 +107,7 @@ Create a virtual environment (`.venv`) for project-level dependency isolation.
 :align: center
 ```
 
-## Install required libraries
+## Install Required Libraries
 
 ```{figure} ../images/terminal.png
 :name: terminal
@@ -117,7 +117,7 @@ Create a virtual environment (`.venv`) for project-level dependency isolation.
 
 Copy the code below into your terminal to install all the libraries used in this course
 ```
-<br><br>
+<br>
 
 Open Terminal in VS Code: **Terminal → New Terminal**. Then:
 
@@ -158,7 +158,7 @@ Use **Ctrl + Shift + P → Jupyter: Create New Jupyter Notebook** to start a bla
 Jupyter notebooks are easy to use when trying to analyze data
 ```
 
-## Key Python libraries
+## Key Python Libraries
 
 ### NumPy
 
@@ -193,7 +193,7 @@ M[M > 5]        # boolean filter
 - One-line I/O for CSV, Excel, JSON, SQL, Parquet.
 
 Try the following in Pandas by downloading the file and placing in your project folder:
-[sales.csv](../_static/data/sales.csv)
+<a href="../_static/sales.csv" download>sales.csv</a>
 
 ```python
 import pandas as pd
@@ -202,11 +202,11 @@ df = pd.read_csv('sales.csv')
 df.head()
 df.describe()
 
-west = df[df['region'] == 'West']
-west.groupby('product')['revenue'].sum()
+west = df[df['Region'] == 'West']
+west.groupby('Product')['Revenue'].sum()
 
-df['margin'] = (df['revenue'] - df['cost']) / df['revenue']
-df.pivot_table(index='region', columns='quarter', values='revenue', aggfunc='sum')
+df['Margin'] = (df['Revenue'] - df['Cost']) / df['Revenue']
+df.pivot_table(index='Region', columns='Quarter', values='Revenue', aggfunc='sum')
 ```
 
 ```
@@ -219,7 +219,7 @@ West     1207.81    690.77   1621.47    940.46
 ```
 
 
-### Matplotlib — figures and axes
+### Matplotlib — Figures and Axes
 
 - **Figure** — the whole canvas; holds one or more Axes.
 - **Axes** — the actual plot areas. This split is what lets you build multi-panel layouts.
@@ -237,7 +237,7 @@ ax.plot(x, y, label='sin(x)')
 ax.legend()
 plt.show()
 ```
-<br><br>
+<br>
 
 ```{figure} ../images/matplotlib-example1.png
 :name: matplotlib-example1
@@ -248,7 +248,7 @@ plt.show()
 Your very first plot!
 ```
 
-<br><br>
+<br>
 
 ```python
 import matplotlib.pyplot as plt
@@ -263,7 +263,7 @@ axes[1].scatter(x, y, alpha=0.5, c='teal')
 axes[1].set_title('Scatter')
 fig.show()
 ```
-<br><br>
+<br>
 
 ```{figure} ../images/matplotlib-example2.png
 :name: matplotlib-example2
@@ -287,7 +287,7 @@ Some common examples of software dependent variation are listed below:
 
 
 
-### Additional references
+### Additional Support
 
 - VS Code Python Docs — [code.visualstudio.com/docs/languages/python](https://code.visualstudio.com/docs/languages/python)
 - VS Code Python Quickstart — [code.visualstudio.com/docs/python/python-quick-start](https://code.visualstudio.com/docs/python/python-quick-start)

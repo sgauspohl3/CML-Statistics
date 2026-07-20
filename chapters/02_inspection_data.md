@@ -359,11 +359,11 @@ per single placement. Most of the surface is never sampled — this is what moti
 | D | Poorly Effective | 20–40% |
 | E | Ineffective | < 20% |
 
-## Basic analysis of thickness data
+## Basic Analysis of Thickness Data
 
 IDMS should be able to perform most basic analyses based on API standards.
 
-### Point-to-point vs. circuit analysis
+### Point-to-Point vs. Circuit Analysis
 
 | Aspect | Point-to-Point | Circuit |
 |--|--|--|
@@ -372,14 +372,14 @@ IDMS should be able to perform most basic analyses based on API standards.
 | Outlier detection | Limited | Better via probability plots |
 | Best for | Localized damage follow-up | General corrosion circuits |
 
-### Corrosion rates
+### Corrosion Rates
 
 $$\text{CR} = \frac{t_{\text{prev}} - t_{\text{curr}}}{\Delta \text{years}} \quad \text{(inches/year)}$$
 
 - **Short Term (STCR)** — last two readings; detects recent acceleration.
 - **Long Term (LTCR)** — baseline to current; stable estimate for planning.
 
-### Worked example: computing STCR and LTCR
+### Worked Example: Computing STCR and LTCR
 
 A 6" SCH40 elbow has the following inspection history:
 
@@ -434,7 +434,7 @@ print(f"STCR: {stcr*1000:.1f} mpy")
 print(f"STCR/LTCR: {stcr/ltcr:.0%}")
 ```
 
-### Data quality flags
+### Data Quality Flags
 
 - Average of test points within exam point > ±10% or ±0.030"
 - Current reading > 10% or > 0.020" from previous reading
@@ -442,7 +442,7 @@ print(f"STCR/LTCR: {stcr/ltcr:.0%}")
 - STCR / LTCR > 150% (N/A for rates < 5 mpy)
 - STCR > threshold (e.g., 15 mpy) — verify before acting
 
-### Limiting component and next inspection
+### Limiting Component and Next Inspection
 
 The **limiting component** is the CML with the shortest remaining life — it drives the interval for the whole circuit.
 

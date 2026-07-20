@@ -7,10 +7,10 @@ A complete walkthrough of the frequentist workflow on a real piping circuit.
 Please download the dataset used in this example and place in your project folder:
 <a href="../_static/TR_596-example2.xlsx" download>TR_596-example2.xlsx</a>
 
-<br><br>
+<br>
 
 The accompanying P&ID and Isometric drawings
-<a href="../_static/SWS-PID.pdf" download>SWS-PID.pdf</a>
+<a href="../_static/SWS-PID.pdf" download>SWS-PID.pdf</a><br>
 <a href="../_static/SWS-ISOs.pdf" download>SWS-ISOs.pdf</a>
 
 ```{note}
