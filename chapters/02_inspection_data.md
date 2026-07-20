@@ -1,16 +1,8 @@
 # Inspection Data and Analysis
 
-## Inspection basics
+## Inspection Basics
 
 The basic process of inspection and thickness data analysis follows a consistent sequence:
-
-1. **Equipment info** — component types, nominal thicknesses, baseline info.
-2. **CML selection** — damage mechanisms, representative locations, pipe size, accessibility.
-3. **Data collection** — UT spot, UT grid, RT scans, variability, detection capability.
-4. **Data analysis** — corrosion rate calculation, anomalies, outlier detection.
-5. **Decision** — remaining life, next inspection date, replacement planning.
-
-The downstream statistical analyses are only as good as the upstream sampling and data collection.
 
 ```{figure} ../images/flow-inspection.png
 :name: flow-inspection
@@ -21,9 +13,18 @@ The downstream statistical analyses are only as good as the upstream sampling an
 General flow of inspection data
 ```
 
-## Population and CML taxonomy
+1. **Equipment info** — component types, nominal thicknesses, baseline info.
+2. **CML selection** — damage mechanisms, representative locations, pipe size, accessibility.
+3. **Data collection** — UT spot, UT grid, RT scans, variability, detection capability.
+4. **Data analysis** — corrosion rate calculation, anomalies, outlier detection.
+5. **Decision** — remaining life, next inspection date, replacement planning.
 
-### Defining the population
+The downstream statistical analyses are only as good as the upstream sampling and data collection.
+
+
+## Population and CML Taxonomy
+
+### Defining the Population
 
 CMLs in a circuit must be **exchangeable** — similar enough to compare and infer effectively.
 
@@ -41,7 +42,7 @@ Group by:
 **Over-group** → small $n$ per circuit, wide uncertainty, limits pooled methods.
 ```
 
-### CML & TML hierarchy
+### CML & TML Hierarchy
 
 ```{figure} ../images/cml-hierarchy.png
 :name: cml-hierarchy
@@ -52,7 +53,7 @@ Group by:
 Hierarchy from Circuit to Measurement Point. System would be above circuit.
 ```
 
-### Why taxonomy matters
+### Why Taxonomy Matters
 
 Reliable statistical analysis depends on understanding where data comes from. Proper taxonomy enables:
 
@@ -114,16 +115,24 @@ Common bands for a tee
 
 ::::
 
-### Data collection levels
+#### Components
+
+Different components will have different measurements, and it is important to understand this when setting up CMLs in an IDMS software, as well as for analysis. Be consistent, use bands and clock positions that can easily be replicated and consistent. 
+
+#### Components that Vary in Size
+
+Some components, like reducing tees (or branch connections if you count them as tees) may have more than one size, and thus, more than one nominal and minimum thickness. There are a couple ways to handle it, but with most statistical methods, they would have to be separated. The way I manage, and the way it is handled in the examples is to create a new CML of the same name and append "X" to the CML. 
+
+### Data Collection Levels
 
 - **Circuit level** — piping circuit ID, CML identification.
 - **Component level** — pipe size (NPS), schedule (nominal thickness), component type.
 - **Measurement level** — test point locations, multiple readings per CML.
 - **Special programs** — injection/mix points, dead legs, high-risk zones.
 
-## Sampling and recording
+## Sampling and Recording
 
-### What is recorded matters
+### What is Recorded Matters
 
 | Recording method | Properties | Recommendation |
 |--|--|--|
@@ -135,7 +144,7 @@ Common bands for a tee
 Match the statistical method to the reporting convention. Applying mean-based regression to a dataset of minima produces systematically biased results.
 ```
 
-### Key objectives for effective sampling
+### Key Objectives for Effective Sampling
 
 - Multiple readings (MP) per TML.
 - Multiple TMLs per CML.
@@ -143,10 +152,10 @@ Match the statistical method to the reporting convention. Applying mean-based re
 - CV should be < 10% within TML.
 
 ```{warning}
-Eliminating growth (thicker) readings in IDMS is a form of **truncation**. Including them reduces variance, excluding them increases it. This generally biases corrosion rate estimates upward.
+Eliminating growth (thicker) readings in IDMS is a form of **truncation**. Including them reduces variance, excluding them increases it. This generally biases corrosion rate estimates upward. Depending on the distribution chosen (gamma), this may be desirable.
 ```
 
-### Worked example: computing the CV of a TML
+### Worked Example: Computing the CV of a TML
 
 Suppose at a single TML we take five UT readings:
 
@@ -225,7 +234,7 @@ Sample SD: $s = \sqrt{\frac{1}{4}\sum(x_i - \bar{x})^2} \approx 0.00305$
 CV: $s/\bar{x} \approx 1.25\%$ — well below 10%. **Pass.**
 ```
 
-## CML allocation
+## CML Allocation
 
 ### Approaches
 
@@ -238,7 +247,7 @@ CV: $s/\bar{x} \approx 1.25\%$ — well below 10%. **Pass.**
 Goal is NOT just data collection. Goal is to confirm damage mechanisms and detect risk before it leads to failure.
 ```
 
-### Biased vs. random sampling
+### Biased vs. Random Sampling
 
 Sampling must represent the actual corrosion behavior of the piping circuit.
 
@@ -248,7 +257,7 @@ Sampling must represent the actual corrosion behavior of the piping circuit.
 | Can underestimate risk | Captures critical damage |
 | No focus on worst-case | Targets high-risk locations |
 
-## Variability in inspection
+## Variability in Inspection
 
 A major contribution to thickness data problems is variation at the examination point due to the entire measurement process.
 
@@ -261,7 +270,7 @@ A major contribution to thickness data problems is variation at the examination 
 Variance sources for a CML
 ```
 
-### Sources of variability
+### Sources of Variability
 
 - **Measurement method** — UT vs. RT.
 - **Inspection approach** — spot vs. grid vs. scan.
@@ -270,7 +279,7 @@ Variance sources for a CML
 - **Local corrosion variation** — real non-uniform thinning.
 - **Temperature effects** — elevated temp UT doubles standard deviation.
 
-### Typical variability ranges
+### Typical Variability Ranges
 
 | Surface condition | Typical variability |
 |--|--|
@@ -278,7 +287,7 @@ Variance sources for a CML
 | Moderate field surface condition | ±10–20 mils |
 | Rough/corroded surface | ±20–50 mils (≈ 4 yr of corrosion at 5 mil/yr) |
 
-### Impact on analysis
+### Impact on Analysis
 
 High variability → noisy data → can hide:
 
@@ -287,9 +296,9 @@ High variability → noisy data → can hide:
 
 Typical CV at a single test point: **~10%** — for 6" SCH40 pipe, this is ± 0.030".
 
-## Inspection technique
+## Inspection Technique
 
-### UT vs. RT — measurement methods
+### UT vs. RT — Measurement Methods
 
 | Aspect | UT (Spot) | RT (Profile) |
 |--|--|--|
@@ -314,9 +323,11 @@ UT Grid and UT Scan provide intermediate options — area coverage with quantita
 RT is great at capturing if corrosion is happening, but has high variability when it comes to measurement numbers
 ```
 
-## Probability of detection
+## Probability of Detection
 
-### Detection-limited vs. sizing-limited
+This is important to be aware of, but this course will not delve too deep into this concept. 
+
+### Detection-Limited vs. Sizing-Limited
 
 - **Detection-limited** — point measurement; single transducer footprint. Worst feature may never be touched. Geometric POD dominates.
 - **Sizing-limited** — full-coverage scan (PAUT C-scan, AUT). Feature is detected; measurement error is the dominant uncertainty.
@@ -330,7 +341,7 @@ RT is great at capturing if corrosion is happening, but has high variability whe
 Probability of Detection of a damaged area
 ```
 
-### Geometric POD — a sobering example
+### Geometric POD — A Sobering Example
 
 A 0.5" transducer on a 6" × 6" CML with a known 0.5" pit:
 
@@ -338,7 +349,7 @@ $$\text{POD} \approx \frac{\text{transducer area}}{\text{CML area}} = \frac{\pi 
 
 per single placement. Most of the surface is never sampled — this is what motivates **grid inspection** and **adequate sample size**.
 
-### Inspection effectiveness categories (API RP 581)
+### Inspection Effectiveness Categories (API RP 581)
 
 | Category | Effectiveness | Confidence |
 |--|--|--|
@@ -440,3 +451,7 @@ $$\text{Remaining Life} = \frac{t_{\text{actual}} - t_{\text{required}}}{\text{C
 $$\text{Next Inspection} \le \tfrac{1}{2} \times \text{Remaining Life} \quad \text{(API 570)}$$
 
 Adjust based on risk class, data confidence, and variability (CV). **High CV → shorter interval.**
+
+### IDMS Analysis
+
+Most standard IDMS are capable of doing simple analyses like above. This class is not focused on what your IDMS can already do, but what more we can get out of the available data.

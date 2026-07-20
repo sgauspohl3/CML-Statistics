@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monte Carlo estimation of π</title>
+<style>
+  :root {
+    --surface-1: #ffffff;
+    --surface-2: #ffffff;
+    --border: #d0d0d0;
+    --text-primary: #1a1a1a;
+    --text-secondary: #5a5a5a;
+    --blue: #2a78d6;
+    --red: #e34948;
+    --gray: #888780;
+  }
+  html, body {
+    margin: 0;
+    padding: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: transparent;
+    color: var(--text-primary);
+  }
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 16px; align-items: center;
+    margin-bottom: 16px; padding: 12px 16px;
+    background: var(--surface-1); border-radius: 12px;
+    border: 0.5px solid var(--border);
+  }
+  .ctrl-group { display: flex; align-items: center; gap: 8px; }
+  .ctrl-group label { font-size: 13px; color: var(--text-secondary); white-space: nowrap; }
+  .ctrl-group span { font-size: 13px; font-weight: 500; min-width: 48px; color: var(--text-primary); text-align: right; }
+  .btn {
+    padding: 6px 14px; font-size: 13px; font-weight: 500;
+    background: transparent; color: var(--text-primary);
+    border: 0.5px solid var(--border); border-radius: 8px;
+    cursor: pointer; transition: background 0.12s;
+  }
+  .btn:hover { background: #f5f5f5; }
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .card {
+    background: var(--surface-2); border: 0.5px solid var(--border);
+    border-radius: 12px; padding: 12px 16px;
+  }
+  .card-title { font-size: 13px; font-weight: 500; color: var(--text-primary); margin-bottom: 4px; }
+  .card-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 10px; }
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 0.5px solid var(--border);
+  }
+  .stat { text-align: center; }
+  .stat-label { font-size: 11px; color: var(--text-secondary); }
+  .stat-value { font-size: 18px; font-weight: 500; margin-top: 2px; }
+  .stat-inside { color: var(--blue); }
+  .stat-outside { color: var(--red); }
+  #boxCanvas { display: block; width: 100%; aspect-ratio: 1; }
+  #convCanvas { display: block; width: 100%; height: 260px; }
+  @media (max-width: 640px) { .layout { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="controls">
+  <div class="ctrl-group">
+    <label>Number of points</label>
+    <input type="range" min="10" max="10000" value="500" step="10" id="n-slider" style="width:180px">
+    <span id="n-out">500</span>
+  </div>
+  <button class="btn" id="resample">Resample</button>
+</div>
+
+<div class="layout">
+  <div class="card">
+    <div class="card-title">Unit square with inscribed circle</div>
+    <div class="card-sub" id="box-sub">Points inside circle / total → π/4</div>
+    <canvas id="boxCanvas"></canvas>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">Inside</div>
+        <div class="stat-value stat-inside" id="stat-inside">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Outside</div>
+        <div class="stat-value stat-outside" id="stat-outside">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">π estimate</div>
+        <div class="stat-value" id="stat-pi">—</div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Convergence to π</div>
+    <div class="card-sub" id="conv-sub">Running estimate as points accumulate</div>
+    <canvas id="convCanvas"></canvas>
+    <div class="stats" style="grid-template-columns: 1fr 1fr;">
+      <div class="stat">
+        <div class="stat-label">True π</div>
+        <div class="stat-value">3.14159</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Error</div>
+        <div class="stat-value" id="stat-err">—</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const BLUE = '#2a78d6', RED = '#e34948', GRAY = '#888780', TARGET = '#1baf7a';
+const PI = Math.PI;
+
+const boxCanvas = document.getElementById('boxCanvas');
+const convCanvas = document.getElementById('convCanvas');
+const bctx = boxCanvas.getContext('2d');
+const cctx = convCanvas.getContext('2d');
+
+let points = [];  // {x, y, inside}
+let running = []; // running pi estimates
+
+function sizeCanvas(canvas, ctx) {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { w: rect.width, h: rect.height };
+}
+
+function generate(n) {
+  points = [];
+  running = [];
+  let insideCount = 0;
+  for (let i = 0; i < n; i++) {
+    const x = Math.random();
+    const y = Math.random();
+    // Unit square [0,1] x [0,1], inscribed circle centered at (0.5, 0.5) with r=0.5
+    const dx = x - 0.5, dy = y - 0.5;
+    const inside = (dx*dx + dy*dy) <= 0.25;
+    if (inside) insideCount++;
+    points.push({ x, y, inside });
+    // pi/4 = inside/total  =>  pi = 4 * inside / total
+    running.push(4 * insideCount / (i + 1));
+  }
+}
+
+function drawBox() {
+  const { w, h } = sizeCanvas(boxCanvas, bctx);
+  const size = Math.min(w, h);
+  const pad = 8;
+  const s = size - 2 * pad;
+  const ox = (w - s) / 2, oy = (h - s) / 2;
+
+  bctx.clearRect(0, 0, w, h);
+
+  // Square
+  bctx.strokeStyle = GRAY;
+  bctx.lineWidth = 1;
+  bctx.strokeRect(ox, oy, s, s);
+
+  // Circle
+  bctx.beginPath();
+  bctx.arc(ox + s/2, oy + s/2, s/2, 0, 2*PI);
+  bctx.strokeStyle = GRAY;
+  bctx.lineWidth = 1.5;
+  bctx.stroke();
+
+  // Points
+  const r = Math.max(1.2, Math.min(2.5, 200 / Math.sqrt(points.length)));
+  for (const p of points) {
+    bctx.fillStyle = p.inside ? BLUE + 'cc' : RED + 'cc';
+    bctx.beginPath();
+    bctx.arc(ox + p.x * s, oy + (1 - p.y) * s, r, 0, 2*PI);
+    bctx.fill();
+  }
+}
+
+function drawConvergence() {
+  const { w, h } = sizeCanvas(convCanvas, cctx);
+  const pad = { top: 12, right: 12, bottom: 26, left: 44 };
+  const pw = w - pad.left - pad.right;
+  const ph = h - pad.top - pad.bottom;
+
+  cctx.clearRect(0, 0, w, h);
+
+  const n = running.length;
+  if (n === 0) return;
+
+  // Y range: fixed window around pi for stability, but expand if any point is far
+  const yMin = 2.4, yMax = 4.0;
+  const yToPx = (y) => pad.top + ph * (1 - (y - yMin) / (yMax - yMin));
+
+  // X uses log scale for readability
+  const xMin = 1, xMax = Math.max(10, n);
+  const xToPx = (x) => pad.left + pw * (Math.log10(x) - Math.log10(xMin)) / (Math.log10(xMax) - Math.log10(xMin));
+
+  // Gridlines: horizontal at pi and integer values
+  cctx.strokeStyle = 'rgba(128,128,128,0.15)';
+  cctx.lineWidth = 1;
+  for (let y = 2.5; y <= 4.0; y += 0.5) {
+    cctx.beginPath();
+    cctx.moveTo(pad.left, yToPx(y));
+    cctx.lineTo(pad.left + pw, yToPx(y));
+    cctx.stroke();
+    cctx.fillStyle = GRAY;
+    cctx.font = '10px system-ui';
+    cctx.textAlign = 'right';
+    cctx.textBaseline = 'middle';
+    cctx.fillText(y.toFixed(1), pad.left - 6, yToPx(y));
+  }
+
+  // True pi reference
+  cctx.strokeStyle = TARGET;
+  cctx.lineWidth = 1.5;
+  cctx.setLineDash([4, 3]);
+  cctx.beginPath();
+  cctx.moveTo(pad.left, yToPx(PI));
+  cctx.lineTo(pad.left + pw, yToPx(PI));
+  cctx.stroke();
+  cctx.setLineDash([]);
+  cctx.fillStyle = TARGET;
+  cctx.font = '10px system-ui';
+  cctx.textAlign = 'left';
+  cctx.textBaseline = 'bottom';
+  cctx.fillText('π', pad.left + pw + 2, yToPx(PI));
+
+  // Running estimate line
+  cctx.strokeStyle = BLUE;
+  cctx.lineWidth = 1.5;
+  cctx.beginPath();
+  for (let i = 0; i < n; i++) {
+    const x = xToPx(i + 1);
+    const y = yToPx(Math.max(yMin, Math.min(yMax, running[i])));
+    if (i === 0) cctx.moveTo(x, y);
+    else cctx.lineTo(x, y);
+  }
+  cctx.stroke();
+
+  // X-axis ticks (log)
+  cctx.fillStyle = GRAY;
+  cctx.font = '10px system-ui';
+  cctx.textAlign = 'center';
+  cctx.textBaseline = 'top';
+  const tickVals = [1, 10, 100, 1000, 10000].filter(v => v <= xMax);
+  for (const v of tickVals) {
+    const x = xToPx(v);
+    cctx.beginPath();
+    cctx.moveTo(x, pad.top + ph);
+    cctx.lineTo(x, pad.top + ph + 3);
+    cctx.strokeStyle = GRAY;
+    cctx.stroke();
+    cctx.fillText(v.toString(), x, pad.top + ph + 5);
+  }
+
+  // Axis labels
+  cctx.fillStyle = GRAY;
+  cctx.font = '10px system-ui';
+  cctx.textAlign = 'center';
+  cctx.fillText('points (log scale)', pad.left + pw/2, h - 4);
+}
+
+function updateStats() {
+  const inside = points.filter(p => p.inside).length;
+  const outside = points.length - inside;
+  const piEst = points.length ? 4 * inside / points.length : 0;
+  const err = Math.abs(piEst - PI);
+
+  document.getElementById('stat-inside').textContent = inside;
+  document.getElementById('stat-outside').textContent = outside;
+  document.getElementById('stat-pi').textContent = piEst.toFixed(5);
+  document.getElementById('stat-err').textContent = err.toFixed(5);
+  document.getElementById('box-sub').textContent =
+    `${inside} inside / ${points.length} total → π ≈ 4 × ${inside}/${points.length}`;
+  document.getElementById('conv-sub').textContent =
+    `Running estimate over ${points.length.toLocaleString()} draws`;
+}
+
+function refresh(n) {
+  generate(n);
+  drawBox();
+  drawConvergence();
+  updateStats();
+}
+
+const nSlider = document.getElementById('n-slider');
+const nOut = document.getElementById('n-out');
+
+nSlider.addEventListener('input', () => {
+  nOut.textContent = nSlider.value;
+});
+nSlider.addEventListener('change', () => {
+  refresh(+nSlider.value);
+});
+document.getElementById('resample').addEventListener('click', () => {
+  refresh(+nSlider.value);
+});
+
+// initial run
+refresh(+nSlider.value);
+window.addEventListener('resize', () => { drawBox(); drawConvergence(); });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Partial pooling — shrinkage</title>
+<style>
+  :root {
+    --surface-1: #ffffff;
+    --surface-2: #ffffff;
+    --border: #d0d0d0;
+    --text-primary: #1a1a1a;
+    --text-secondary: #5a5a5a;
+  }
+  html, body {
+    margin: 0;
+    padding: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: transparent;
+    color: var(--text-primary);
+  }
+  .controls {
+    padding: 12px 16px;
+    background: var(--surface-1);
+    border-radius: 12px;
+    border: 0.5px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .ctrl-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 10px;
+  }
+  .ctrl-row:last-child { margin-bottom: 0; }
+  .ctrl-row label {
+    font-size: 13px; color: var(--text-primary);
+    white-space: nowrap; min-width: 140px;
+  }
+  .ctrl-row input[type=range] { flex: 1; }
+  .ctrl-row span {
+    font-size: 13px; font-weight: 500;
+    min-width: 52px; text-align: right;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+  }
+  .ctrl-desc {
+    font-size: 11px; color: var(--text-secondary);
+    margin-top: 6px; font-style: italic;
+  }
+  .btn {
+    padding: 6px 14px; font-size: 13px; font-weight: 500;
+    background: transparent; color: var(--text-primary);
+    border: 0.5px solid var(--border); border-radius: 8px;
+    cursor: pointer; transition: background 0.12s;
+  }
+  .btn:hover { background: #f5f5f5; }
+  .card {
+    background: var(--surface-2);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+  }
+  .card-title { font-size: 13px; font-weight: 500; color: var(--text-primary); margin-bottom: 4px; }
+  .card-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 10px; }
+  #chart { display: block; width: 100%; height: 320px; }
+  .legend {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    margin-top: 8px; justify-content: center;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .legend-line { width: 14px; height: 2px; flex-shrink: 0; }
+  .legend-cross { font-size: 14px; line-height: 1; color: #C03A2B; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<div class="controls">
+  <div class="ctrl-row">
+    <label>Between-group scale τ</label>
+    <input type="range" min="0" max="3" value="1" step="0.05" id="tau-slider">
+    <span id="tau-out">1.00</span>
+    <button class="btn" id="resample">Resample</button>
+  </div>
+  <div class="ctrl-desc">
+    Small τ → estimates shrink toward the population mean (like complete pooling).
+    Large τ → estimates stay at their observed group means (like no pooling).
+    Click Resample to draw a fresh dataset with new true group means.
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Six groups with uneven sample sizes</div>
+  <div class="card-sub" id="chart-sub">Circles = shrunken estimates; crosses = true group means</div>
+  <canvas id="chart"></canvas>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#2a78d6"></div>Unpooled (raw)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#e39627"></div>Partial pooled</div>
+    <div class="legend-item"><div class="legend-line" style="background:#1baf7a"></div>Population mean μ</div>
+    <div class="legend-item"><span class="legend-cross">×</span>&nbsp;True group mean</div>
+  </div>
+</div>
+
+<script>
+const UNPOOL = '#2a78d6', PART = '#e39627', POP = '#1baf7a', TRUE = '#C03A2B', GRAY = '#888780';
+
+const nGroups = 6;
+const ns = [2, 3, 4, 6, 30, 50];
+const popMu = 5.0;
+const withinSD = 1.0;
+const betweenSD = 1.5;  // true SD of group means around popMu
+
+// Mulberry32 PRNG so results are reproducible per seed
+function mulberry32(seed) {
+  return function() {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = seed;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function normalRand(rng) {
+  const u1 = 1 - rng();
+  const u2 = rng();
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+// Dataset state — regenerated on Resample
+let trueMeans, data, obsMeans, obsSE, pooledMean;
+
+function generateData(seed) {
+  const rng = mulberry32(seed);
+  trueMeans = [];
+  for (let g = 0; g < nGroups; g++) {
+    trueMeans.push(popMu + betweenSD * normalRand(rng));
+  }
+  data = [];
+  for (let g = 0; g < nGroups; g++) {
+    const obs = [];
+    for (let i = 0; i < ns[g]; i++) {
+      obs.push(trueMeans[g] + withinSD * normalRand(rng));
+    }
+    data.push(obs);
+  }
+  obsMeans = data.map(arr => arr.reduce((a,b)=>a+b,0)/arr.length);
+  obsSE = data.map(arr => {
+    const n = arr.length;
+    if (n < 2) return withinSD;
+    const m = arr.reduce((a,b)=>a+b,0)/n;
+    const v = arr.reduce((a,b)=>a+(b-m)*(b-m),0)/(n-1);
+    return Math.sqrt(v / n);
+  });
+  const allObs = data.flat();
+  pooledMean = allObs.reduce((a,b)=>a+b,0)/allObs.length;
+}
+
+function partialPool(tau) {
+  const sigma2 = withinSD * withinSD;
+  const tau2 = tau * tau;
+  const out = [];
+  for (let g = 0; g < nGroups; g++) {
+    const wGroup = ns[g] / sigma2;
+    const wPop = tau2 > 0 ? 1 / tau2 : Infinity;
+    const est = (wGroup * obsMeans[g] + wPop * pooledMean) / (wGroup + wPop);
+    out.push(est);
+  }
+  return out;
+}
+
+const chart = document.getElementById('chart');
+const ctx = chart.getContext('2d');
+
+function sizeCanvas() {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = chart.getBoundingClientRect();
+  chart.width = rect.width * dpr;
+  chart.height = rect.height * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { w: rect.width, h: rect.height };
+}
+
+function draw() {
+  const tau = +document.getElementById('tau-slider').value;
+  const partialEst = partialPool(tau);
+
+  const { w, h } = sizeCanvas();
+  const pad = { top: 12, right: 30, bottom: 42, left: 44 };
+  const pw = w - pad.left - pad.right;
+  const ph = h - pad.top - pad.bottom;
+
+  ctx.clearRect(0, 0, w, h);
+
+  // Auto-fit Y range to data across group means, unpooled CIs, and true means
+  const allY = [];
+  for (let g = 0; g < nGroups; g++) {
+    allY.push(obsMeans[g] - 1.96 * obsSE[g]);
+    allY.push(obsMeans[g] + 1.96 * obsSE[g]);
+    allY.push(trueMeans[g]);
+    allY.push(partialEst[g]);
+  }
+  allY.push(popMu);
+  const dataMin = Math.min(...allY);
+  const dataMax = Math.max(...allY);
+  const range = dataMax - dataMin;
+  const yMin = Math.floor((dataMin - range * 0.1));
+  const yMax = Math.ceil((dataMax + range * 0.1));
+
+  const yToPx = (y) => pad.top + ph * (1 - (y - yMin) / (yMax - yMin));
+  const groupSpacing = pw / nGroups;
+
+  // Y gridlines
+  ctx.strokeStyle = 'rgba(128,128,128,0.15)';
+  ctx.lineWidth = 1;
+  ctx.fillStyle = GRAY;
+  ctx.font = '10px system-ui';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+  for (let y = yMin; y <= yMax; y++) {
+    const py = yToPx(y);
+    ctx.beginPath();
+    ctx.moveTo(pad.left, py);
+    ctx.lineTo(pad.left + pw, py);
+    ctx.stroke();
+    ctx.fillText(y.toString(), pad.left - 6, py);
+  }
+
+  // Population mean line
+  ctx.strokeStyle = POP;
+  ctx.lineWidth = 2;
+  ctx.setLineDash([5, 4]);
+  const popPy = yToPx(popMu);
+  ctx.beginPath();
+  ctx.moveTo(pad.left, popPy);
+  ctx.lineTo(pad.left + pw, popPy);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = POP;
+  ctx.font = '10px system-ui';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(`μ=${popMu}`, pad.left + pw + 3, popPy);
+
+  // For each group
+  for (let g = 0; g < nGroups; g++) {
+    const cx = pad.left + (g + 0.5) * groupSpacing;
+    const cxLeft = cx - 8;
+    const cxRight = cx + 8;
+
+    const upy = yToPx(obsMeans[g]);
+    ctx.strokeStyle = UNPOOL;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(cxLeft, yToPx(obsMeans[g] - 1.96 * obsSE[g]));
+    ctx.lineTo(cxLeft, yToPx(obsMeans[g] + 1.96 * obsSE[g]));
+    ctx.stroke();
+    ctx.fillStyle = UNPOOL;
+    ctx.beginPath();
+    ctx.arc(cxLeft, upy, 5, 0, 2*Math.PI);
+    ctx.fill();
+
+    const ppy = yToPx(partialEst[g]);
+    ctx.fillStyle = PART;
+    ctx.beginPath();
+    ctx.arc(cxRight, ppy, 5, 0, 2*Math.PI);
+    ctx.fill();
+
+    ctx.strokeStyle = 'rgba(120,120,120,0.4)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([2, 2]);
+    ctx.beginPath();
+    ctx.moveTo(cxLeft, upy);
+    ctx.lineTo(cxRight, ppy);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.strokeStyle = TRUE;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cx - 5, yToPx(trueMeans[g]) - 5);
+    ctx.lineTo(cx + 5, yToPx(trueMeans[g]) + 5);
+    ctx.moveTo(cx + 5, yToPx(trueMeans[g]) - 5);
+    ctx.lineTo(cx - 5, yToPx(trueMeans[g]) + 5);
+    ctx.stroke();
+
+    ctx.fillStyle = GRAY;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.font = '11px system-ui';
+    ctx.fillText(`G${g+1}`, cx, pad.top + ph + 4);
+    ctx.font = '10px system-ui';
+    ctx.fillText(`n=${ns[g]}`, cx, pad.top + ph + 18);
+  }
+
+  ctx.save();
+  ctx.translate(12, pad.top + ph/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillStyle = GRAY;
+  ctx.font = '10px system-ui';
+  ctx.fillText('Group estimate', 0, 0);
+  ctx.restore();
+
+  let mode;
+  if (tau < 0.15) mode = ' — near complete pooling (all estimates ≈ μ)';
+  else if (tau > 2.5) mode = ' — near no pooling (estimates ≈ raw means)';
+  else mode = ' — partial pooling in effect';
+  document.getElementById('chart-sub').textContent =
+    `τ = ${tau.toFixed(2)}${mode}`;
+}
+
+// Initial seed and event wiring
+let currentSeed = 42;
+generateData(currentSeed);
+
+document.getElementById('tau-slider').addEventListener('input', (e) => {
+  document.getElementById('tau-out').textContent = (+e.target.value).toFixed(2);
+  draw();
+});
+
+document.getElementById('resample').addEventListener('click', () => {
+  currentSeed = Math.floor(Math.random() * 1e9);
+  generateData(currentSeed);
+  draw();
+});
+
+draw();
+window.addEventListener('resize', draw);
+</script>
+
+</body>
+</html>

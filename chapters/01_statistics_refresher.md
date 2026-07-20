@@ -2,9 +2,9 @@
 
 Remember your favorite class in high school and/or college? Well, luckily, this is not that class. In fact, I am really going to breeze through this section because neither myself or you guys *need* to be a statistician. We are engineers and inspectors who often assume pi equals 3. The concepts of the theory are important though, so bear with me. 
 
-## Statistics introduction
+## Statistics Introduction
 
-### Why use statistics?
+### Why Use Statistics?
 
 Statistics is the discipline of **reasoning under uncertainty**. Without it, data is just numbers.
 
@@ -13,7 +13,7 @@ Statistics is the discipline of **reasoning under uncertainty**. Without it, dat
 - **Infer** — make inferences about a population from the sample.
 - **Predict** — model and predict future behavior from available data.
 
-### Why understand statistics?
+### Why Understand Statistics?
 
 Statistics are powerful and easily misused. Common pitfalls:
 
@@ -22,7 +22,7 @@ Statistics are powerful and easily misused. Common pitfalls:
 - **Correlation ≠ causation** — variables may appear correlated without any causal relationship.
 - **Understand the underlying model** — all models are wrong, but some are useful, and some are more useful than others.
 
-## Responsible statistics
+## Responsible Statistics
 
 The difference between deceptive and responsible reporting:
 
@@ -37,9 +37,14 @@ Key principles:
 - **Measured vs. inferred** — report what is observed vs. what is estimated or assumed.
 - **Document assumptions** — distributional assumptions, data cleaning, software versions, etc...
 
-## The Rumsfeld matrix
+## The Rumsfeld Matrix
 
-> *There are known knowns; there are things we know we know. We also know there are known unknowns; that is to say, we know there are some things we do not know. But there are also unknown unknowns—the ones we don't know we don't know*
+
+```{epigraph}
+*There are known knowns; there are things we know we know. We also know there are known unknowns; that is to say, we know there are some things we do not know. But there are also unknown unknowns—the ones we don't know we don't know*
+
+-- Donald Rumsfeld
+```
 
 Remember this guy? Well the concept has been around for longer than him, but I remember watching the news when he said this, and thinking to myself, *"What?"*. When you really think about it though, it makes sense, and it really helps when predictions do not match reality. You can have a great model completely fall apart because of some random unknown that would have been impossible to guess.
 
@@ -83,7 +88,17 @@ Poor whale just wants to be sampled
 The general flow of statistics.
 ```
 
-## Samples and populations
+<br><br>
+Statistics always starts with data, which can then be described. The probability comes in when fitting to a distribution or another assumption, and after an acceptable fit, then inferences can be drawn about the population. Predictions come afterwards if time-dependent. 
+
+```{epigraph}
+All models are wrong, but some are useful
+
+-- George Box
+```
+
+
+## Samples and Populations
 
 - **Population** — every member of the group of interest. Usually impractical to measure in full.
 - **Sample** — a subset chosen to represent the population; what is actually measured.
@@ -98,7 +113,7 @@ The general flow of statistics.
 Variables within a population and a sample
 ```
 
-### Notation: parameters vs. statistics
+### Notation: Parameters vs. Statistics
 
 | | Population (parameter) | Sample (statistic) |
 |--|--|--|
@@ -107,16 +122,18 @@ Variables within a population and a sample
 | Variance | $\sigma^2$ | $s^2$ |
 | Std deviation | $\sigma$ | $s$ |
 
-## Sampling methods and bias
+## Sampling Methods and Bias
 
-### Common sampling methods
+It would be easy to do the math if we knew population data. However, because collecting population data is usually challenging, sampling is done to make collecting the data practicable. 
+
+### Common Sampling Methods
 
 - **Simple random** — every unit equally likely.
 - **Stratified** — sample within strata (lower variance).
 - **Cluster** — sample whole groups (cheaper).
 - **Systematic** — every $k$-th element.
 
-### Sampling bias
+### Sampling Bias
 
 A sample is meant to represent the population, but truly representative samples may not always be possible. **Bias is not always bad**, but be aware of it.
 
@@ -171,9 +188,9 @@ Read left → right with increasing $n$: at $n=2$ the sampling distribution of t
 The CLT is *not* a statement about the data — it's a statement about the **sample mean**. Your raw data can be wildly non-normal; the means of repeated samples will still tend toward normality.
 ```
 
-## Descriptive statistics
+## Descriptive Statistics
 
-### Measures of central tendency
+### Measures of Central Tendency
 
 - **Mean** — sensitive to outliers. Best for symmetric, unimodal distributions.
 - **Median** — robust to outliers. Always at the 50th percentile.
@@ -190,7 +207,7 @@ Measures of central tendency
 
 On a skewed sample, the three measures separate. The mean is pulled by the long right tail, while the median sits at the 50th percentile regardless. The mode is the most common value.
 
-### Measures of variability
+### Measures of Variability
 
 - **Variance and standard deviation** — average distance from the mean. Most common spread statistic. Sensitive to outliers.
 - **Range** — entire spread including outliers. Very sensitive to outliers.
@@ -213,7 +230,7 @@ Two different distributions with the same mean, but different variability
 
 Two distributions with the same mean but different spread. The wider $\sigma=12$ distribution has the same center but covers much more ground — the boxplot underneath shows the contrast in IQR clearly.
 
-### Coefficient of variation (CV)
+### Coefficient of Variation (CV)
 
 Standard deviation in absolute units depends on the scale of the variable. To compare spread across variables on different scales, normalize:
 
@@ -225,7 +242,7 @@ CV is unitless, often reported as a percentage. It's particularly useful in insp
 **Rule of thumb in CML work:** A CV < 10% within a TML is generally acceptable. Higher CV suggests localized corrosion, measurement issues, or improper grouping.
 ```
 
-### Shape: skewness
+### Shape: Skewness
 
 Skewness measures **asymmetry**:
 
@@ -246,7 +263,7 @@ Types of skew
 
 Note where the mean (dashed line) sits relative to the median (solid line) in each case. The position of mean relative to median is a quick visual check for skew direction.
 
-### Shape: kurtosis
+### Shape: Kurtosis
 
 Kurtosis measures **tail weight** — how often extreme values appear:
 
@@ -267,7 +284,7 @@ Types of kurtosis
 
 Heavy-tailed distributions produce extreme outliers far more often than a Normal would predict. This matters in reliability work — a thickness reading 5σ below the fitted mean is almost impossible under a Normal model, but could be a one-in-a-thousand event under a t-distribution.
 
-## Expectation, variance, and moments
+## Expectation, Variance, and Moments
 
 For a random variable $X$, the **expectation** (mean) is
 
@@ -279,7 +296,7 @@ $$\text{Var}(X) = E[(X - E[X])^2] = E[X^2] - E[X]^2$$
 
 These are the **first two moments** of the distribution. Higher moments give skew (3rd) and kurtosis (4th).
 
-### Linearity of expectation
+### Linearity of Expectation
 
 For any constants $a, b$ and random variables $X, Y$:
 
@@ -291,7 +308,7 @@ $$\text{Var}(aX + bY) = a^2\,\text{Var}(X) + b^2\,\text{Var}(Y) + 2ab\,\text{Cov
 
 If $X$ and $Y$ are independent, $\text{Cov}(X, Y) = 0$ and the cross-term vanishes.
 
-## Independence and covariance
+## Independence and Covariance
 
 Two random variables $X$ and $Y$ are **independent** if knowing one tells you nothing about the other:
 
@@ -311,7 +328,7 @@ $$\rho_{X,Y} = \frac{\text{Cov}(X, Y)}{\sigma_X \sigma_Y}$$
 
 Independence matters for inspection data because most statistical methods assume observations are independent. CML readings on the same circuit are often *not* independent — they share environment, material, and operating history. This is one of the motivations for the hierarchical Bayesian models in chapter 4.
 
-## Plotting data
+## Plotting Data
 
 ### Histogram
 
@@ -329,10 +346,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+binsize = 25 #try and see how it looks with 3 and 200
+
 np.random.seed(42)
 data = np.random.normal(loc=50, scale=10, size=500)
 
-sns.histplot(data, kde=True, color='blue', alpha=0.6)
+sns.histplot(data, bins=binsize, kde=True, color='blue', alpha=0.6)
 plt.show()
 ```
 
@@ -381,7 +400,7 @@ The horizontal lines at 25%, 50%, and 75% make it easy to read off the quartiles
 
 Differences in shape, shift, and spread all show up in one view.
 
-### Probability plots
+### Probability Plots
 
 Check normality (or fit to other distributions) by visually checking linearity.
 
@@ -396,24 +415,24 @@ pg.qqplot(data, dist='norm', confidence=0.95)
 :width: 500px
 :align: center
 
-PP plot
+QQ plot
 ```
 
 A good fit produces a straight line along the diagonal. Systematic curvature suggests the candidate distribution doesn't match — try a different one, or look for sub-populations that should be clustered separately.
 
 ## Probability
 
-### Core concept
+### Core Concept
 
 Probability describes the likelihood of an event occurring. In inspection, it represents the chance that a given thickness value or corrosion rate occurs within the circuit population.
 
-### Frequentist definition
+### Frequentist Definition
 
 $P(A)$ is the limit of the fraction of $m$ outcomes in $A$ and $n$ total outcomes as $n \to \infty$. *Long-run frequency interpretation.*
 
 $$P(A) = \lim_{n \to \infty} \frac{m}{n}$$
 
-### Kolmogorov's three axioms
+### Kolmogorov's Three Axioms
 
 Probabilities are valid measures of likelihood if they satisfy:
 
@@ -444,7 +463,7 @@ Like any set, $A \cup B$, $A \cap B$, and $A - B$ do not contain duplicate eleme
 Different set operations
 ```
 
-### Probability rules
+### Probability Rules
 
 - **Complement:** $P(A^c) = 1 - P(A)$
 - **Addition:** $P(A \cup B) = P(A) + P(B) - P(A \cap B)$
@@ -452,7 +471,7 @@ Different set operations
 - **Conditional:** $P(A \mid B) = P(A \cap B) / P(B)$
 - **Law of total probability:** $P(A) = \sum_i P(A \mid B_i) P(B_i)$
 
-### Bayes' theorem
+### Bayes' Theorem
 
 The single most important formula in modern statistics:
 
@@ -460,7 +479,7 @@ $$P(A \mid B) = \frac{P(B \mid A)\,P(A)}{P(B)}$$
 
 It tells you how to *update* your belief about $A$ after observing $B$. The prior $P(A)$ becomes the posterior $P(A \mid B)$, mediated by the likelihood $P(B \mid A)$.
 
-#### A worked example: medical testing
+#### A Worked Example: Medical Testing
 
 Suppose a disease affects 1 in 1,000 people. A diagnostic test has:
 
@@ -487,7 +506,7 @@ $$P(\text{disease} \mid +) = \frac{0.00099}{0.05094} \approx 0.019 \approx 2\%$$
 
 The same logic applies to inspection: a single low thickness reading at a randomly chosen CML doesn't tell you much if your prior belief is that most of the circuit is fine. You need to update on the base rate of corroding CMLs, not just the reading itself.
 
-## Probability distributions
+## Probability Distributions
 
 A **probability distribution** describes the likelihood of different outcomes in a random experiment.
 
@@ -496,7 +515,7 @@ A **probability distribution** describes the likelihood of different outcomes in
 - **PDF** — probability density function (continuous distributions): density at each value.
 - **CDF** — cumulative distribution function: $P(X \le x)$.
 
-### Distribution roadmap
+### Distribution Summary
 
 | Variable type | Support | Distributions |
 |--|--|--|
@@ -517,7 +536,7 @@ The rest of this chapter walks through each in turn.
 Summary of a selection of probability distributions
 ```
 
-## Discrete distributions
+## Discrete Distributions
 
 ### Discrete Uniform
 
@@ -615,7 +634,7 @@ The fact that mean equals variance is the distinctive Poisson property — usefu
 Poisson Distribution
 ```
 
-## Continuous distributions
+## Continuous Distributions
 
 ### Continuous Uniform
 
@@ -823,7 +842,7 @@ Hazard rate behavior:
 Weibull Distribution
 ```
 
-## Relationships between distributions
+## Relationships Between Distributions
 
 Distributions form a connected web. Key relationships:
 
@@ -847,7 +866,7 @@ Transformed distributions are often used as **conjugate priors** for Bayesian an
 Relationships between select distributions
 ```
 
-## Choosing the right distribution
+## Choosing the Right Distribution
 
 Selecting the correct distribution dictates the performance of inferences and predictions:
 
@@ -866,7 +885,7 @@ Selecting the correct distribution dictates the performance of inferences and pr
 | Proportions/probabilities | Beta |
 | Time to failure | Weibull |
 
-## Fitting distributions
+## Fitting Distributions
 
 ### Method of Moments (MoM)
 
@@ -965,7 +984,7 @@ MLE fit to Weibull
 ```
 
 
-## Properties of estimators
+## Properties of Estimators
 
 What makes one estimator better than another? Four criteria:
 
@@ -974,7 +993,7 @@ What makes one estimator better than another? Four criteria:
 - **Efficient:** lowest variance among unbiased estimators.
 - **Robust:** not overly sensitive to outliers or assumption violations.
 
-### Bias-variance tradeoff
+### Bias-Variance Tradeoff
 
 The mean squared error of any estimator decomposes:
 
@@ -993,7 +1012,7 @@ A slightly biased estimator with much lower variance often produces better overa
 
 In CML work, a hierarchical Bayesian model deliberately introduces bias by pulling individual CML estimates toward a population mean — accepting bias to gain enormous variance reductions on data-poor CMLs.
 
-## Goodness of fit
+## Goodness of Fit
 
 Compare an empirical distribution against the theoretical one. P-P and Q-Q plots emphasize different parts:
 
@@ -1021,14 +1040,14 @@ PP Plot
 QQ Plot
 ```
 
-### Statistical tests
+### Statistical Tests
 
 Tests give a p-value for whether the fit is acceptable. $H_0$: data was drawn from the candidate distribution. Large test statistic → reject $H_0$ → fit is poor.
 
 - **Kolmogorov–Smirnov (KS)** — sensitive to the center.
 - **Anderson–Darling (AD)** — weighted KS; extra weight to the tails.
 
-### Information criteria
+### Information Criteria
 
 Rank competing distributions on the same data. Reward fit, penalize complexity. **Lower is better.**
 
@@ -1037,7 +1056,7 @@ $$\text{BIC} = k\ln(n) - 2\ln(\hat{L})$$
 
 $k$ = parameters, $n$ = sample size, $\hat{L}$ = maximum likelihood. BIC penalizes complexity more heavily as $n$ grows.
 
-## Confidence intervals
+## Confidence Intervals
 
 A 95% CI means: if we repeated the procedure many times, ~95% of the intervals would contain the true $\mu$.
 
@@ -1070,7 +1089,7 @@ lo, hi = np.percentile(boot_means, [2.5, 97.5])
 
 The bootstrap distribution of the estimator. Take the 2.5% and 97.5% percentiles to form the 95% CI.
 
-## Hypothesis testing
+## Hypothesis Testing
 
 The classical framework:
 
@@ -1080,14 +1099,14 @@ The classical framework:
 4. **Compare to $\alpha$** — typically 0.05.
 5. **Reject or fail to reject** — never "accept" $H_0$.
 
-### Common tests
+### Common Tests
 
 - **One-sample t-test** — is the mean a target value?
 - **Two-sample t-test** — do two group means differ?
 - **Paired t-test** — before/after on same units.
 - **Chi-squared** — categorical associations.
 
-### What p does NOT tell you
+### What p Does NOT Tell You
 
 Common misreadings:
 
@@ -1096,7 +1115,7 @@ Common misreadings:
 - ✗ "A smaller p means a bigger effect."
 - ✗ "p = 0.049 and p = 0.051 are categorically different."
 
-## On the p-value and error estimation
+## On the p-value and Error Estimation
 
 |                        | $H_0$ true | $H_0$ false |
 |------------------------|------------|-------------|
@@ -1124,18 +1143,20 @@ Types of Error
 Types of Error
 ```
 
-### What you actually want vs. what p gives you
+### What p Gives You
 
 - **What p gives you:** $P(\text{significant} \mid H_0 \text{ true})$
 - **What you actually want:** $P(H_0 \text{ true} \mid \text{significant})$
 
 This gap is one of the main reasons Bayesian methods are worth knowing.
 
-## Censored and truncated data
+## Censored and Truncated Data
 
 ### Censoring
 
-Value is bounded but not exact.
+Value is bounded but not exact. Censored data is any data for which we do not know the exact event time.
+
+Censoring is quite common in reliability and life statistics. — e.g. a test is conducted on pumps and 5 pumps fail, but 2 pumps are still running. 
 
 - **Right-censored:** $X > c$ (subject still "alive" at study end).
 - **Left-censored:** $X < c$ (below detection limit).
@@ -1158,13 +1179,17 @@ Some data will inherently be censored or truncated. This course will not go exce
 The key difference: **censored data contributes partial information; truncated data is missing entirely.** Ignoring either produces biased estimates. In CML work, dropping "growth" readings (readings thicker than the previous one) is a form of truncation that biases corrosion rate estimates upward — see chapter 2.
 ```
 
+## Fits and Testing Thoughts
+
+All of these model comparisons and tests are **supporting evidence**, not statements of fact. As a statistics practitioner, you can imagine yourself as a lawyer with your intended audience being the judge and the jury. You do tests and find supporting evidence to make your case. In all situations, whether the p-values or acceptance criteria can be used for your case really just *depends*. Just because a model fails a goodness-of-fit test does not mean that the model is inherently wrong. Maybe the sampling was wrong, or there was not enough data. Maybe it passes the KS test, but not the AD test — that means you reject right? — no, what if you do not care about tail behavior? The goal is to understand the data and come to a reasonable judgement, not to pass a test.
 
 ## Statistics Refresher Exercises
 
+*IF* are good on time, we will go through some of these examples. However, with the pace of this course, this is likely better done on your own. 
+
 The following exercises use a heat exchanger tube wall-loss dataset — 500 tubes inspected on the same bundle, with wall loss reported in mils.
 
-**Download the dataset:** [EVA_HEX-example.xlsx](../_static/data/EVA_HEX-example.xlsx)
-and put it in your project folder.
+**Download the dataset:** <a href="../_static/EVA_HEX-example.xlsx" download>EVA_HEX-example.xlsx</a> and put it in your project folder.
 
 Load it and extract the `loss_in` column as your sample. Wall loss is a strictly positive, right-skewed quantity where the **maximum values** matter most — a classic setting for **extreme value analysis (EVA)** and the **Gumbel distribution**.
 
@@ -1226,7 +1251,7 @@ Two clues already point to a right-skewed distribution before we plot anything:
 
 2. **Distance from Q3 to max is much larger than from min to Q1.** The upper quarter of the data spans from 15.55 to 22.91 — a range of 7.36. The lower quarter spans from 9.67 to 12.30 — a range of only 2.63. The right side of the distribution stretches nearly three times as far as the left.
 
-Both signs point to a right-skewed distribution — exactly what we'd expect for wall-loss data, where most tubes corrode at typical rates but a few have local conditions producing much higher loss. This preview matters: it tells us **not** to try Normal (symmetric) and suggests we should reach for a right-skewed positive distribution like Gumbel, Log-Normal, or GEV.
+Both signs point to a right-skewed distribution
 ````
 
 ````{exercise}
@@ -1234,7 +1259,6 @@ Both signs point to a right-skewed distribution — exactly what we'd expect for
 
 Plot a histogram of the wall-loss data using **seaborn**, with a smoothed density (KDE) curve overlaid. Add reference lines for the mean and median so the skew becomes visually obvious.
 
-Style the plot cleanly: transparent background, remove the top and right spines, no gridlines, a legend outside the plot area.
 ````
 
 ````{solution} eva-histogram
@@ -1250,8 +1274,6 @@ import seaborn as sns
 
 df = pd.read_excel('EVA_HEX-example.xlsx')
 x = df['loss_in']
-
-sns.set_style('ticks')
 
 fig, ax = plt.subplots(figsize=(7, 4.5))
 fig.patch.set_alpha(0)
@@ -1272,14 +1294,13 @@ ax.set_xlabel('Wall loss (mils)')
 ax.set_ylabel('Count')
 ax.legend(bbox_to_anchor=(1.01, 1), loc='upper left', frameon=False)
 
-# House style
-ax.patch.set_alpha(0)
-ax.grid(False)
-ax.spines['top'].set_visible(False)
-ax.spines['right'].set_visible(False)
-
-plt.tight_layout(rect=[0, 0, 0.82, 1])
 plt.show()
+```
+
+```{image} ../images/1.26.2.png
+:alt: Plot of Solution
+:width: 500px
+:align: center
 ```
 
 **What the plot shows.**
@@ -1290,7 +1311,6 @@ plt.show()
 - No apparent multi-modality — the distribution looks unimodal, which supports fitting a single parametric family rather than a mixture.
 - The KDE overlay traces a smooth right-skewed curve consistent with Gumbel or Log-Normal candidates.
 
-The visual makes clear why Normal would be a poor fit: no symmetric bell shape here, but a distinct right tail. This is the setup for the fitting exercises that follow.
 ````
 
 The Gumbel (right-tailed, Type I extreme value) distribution has:
@@ -1446,12 +1466,12 @@ All three methods agree closely — parameters within 2% of each other, 99th per
 - **MoM and LSE are essentially identical** here because the sample mean and variance align with what a well-behaved Gumbel would produce.
 - **MLE differs slightly** in $\hat\beta$ (2.05 vs 2.00) because it optimizes the likelihood over all observations rather than matching summary statistics; it weights tail observations a bit more heavily, producing a marginally wider scale.
 
-**For RBI decisions**, MLE is generally the preferred choice for extreme value work. It uses all information in the sample, is asymptotically efficient, and has well-understood uncertainty via bootstrap or asymptotic likelihood theory (as we'll see in the next exercises). But given how closely the three methods agree here, any of them would give a defensible answer.
+**For Integrity Decisions**, MLE is generally the preferred choice for extreme value work. It uses all information in the sample, is asymptotically efficient, and has well-understood uncertainty via bootstrap or asymptotic likelihood theory (as we'll see in the next exercises). But given how closely the three methods agree here, any of them would give a defensible answer.
 
 **Contrast with problematic data.** If the three methods had *disagreed* substantially — say, MLE producing a $\hat\beta$ 50% larger than MoM — that disagreement itself would be diagnostic. It would tell you the data probably isn't really Gumbel and something more flexible (GEV, Log-Normal, mixture model) is warranted. Here, the agreement is a first sign the Gumbel assumption is reasonable. We'll confirm formally in the AD test.
 ````
 
-Now that you have a fitted Gumbel distribution, two natural questions follow: **how uncertain are the parameter estimates**, and **does the Gumbel actually fit the data well**? The next two exercises answer these.
+Now that you have a fitted Gumbel distribution, what's next is determining: **how uncertain are the parameter estimates**, and **does the Gumbel actually fit the data well**? The next two exercises answer these.
 
 ````{exercise}
 :label: gumbel-bootstrap
@@ -1513,7 +1533,7 @@ print(f"beta = {beta_hat:.3f}  SE = {beta_boot.std():.3f}  95% CI [{beta_lo:.3f}
 
 **Discussion.**
 
-Both parameters are precisely estimated with $n=500$ — CIs are narrow — but $\hat\mu$ is *proportionally* far more precise than $\hat\beta$: the CI for $\mu$ spans about 2.7% of its point estimate, while the CI for $\beta$ spans about 12%. This is a general pattern: **location parameters converge faster than scale parameters** as $n$ grows, because scale estimation depends on tail behavior which stabilizes more slowly.
+Both parameters are estimated with $n=500$ — CIs are narrow — but $\hat\mu$ is *proportionally* far more precise than $\hat\beta$: the CI for $\mu$ spans about 2.7% of its point estimate, while the CI for $\beta$ spans about 12%. This is a general pattern: **location parameters converge faster than scale parameters** as $n$ grows, because scale estimation depends on tail behavior which stabilizes more slowly.
 
 For practical inspection use, this means the "typical" wall loss ($\mu \approx 13$ mils) is very well pinned down, but there's meaningful uncertainty in the spread. Any extreme quantile prediction (like the 99th percentile of 22.4 mils from [](#gumbel-mle)) inherits this uncertainty and should be reported with a credible range, not as a single number. A conservative practitioner would use the upper CI bound on $\beta$ when computing risk-driven quantiles.
 ````
@@ -1560,13 +1580,11 @@ $$A^2 = 0.459$$
 
 The test statistic $A^2 = 0.46$ sits below every standard critical value. **We fail to reject the null hypothesis** at any conventional significance level — the data is consistent with having been drawn from a Gumbel distribution. The fit is good.
 
-**Sanity check with the Normal.** Running the same test against `dist='norm'` gives $A^2 = 5.11$ — vastly above the 1% critical value of 1.03. Normal would be **strongly rejected**. Even though wall loss has a bell-ish center, the right-tail behavior clearly departs from Normal — exactly what Gumbel is designed to capture.
 
 **What this tells us.**
 
-- The Gumbel model is a defensible choice for this bundle. The three-method parameter agreement from [](#gumbel-mle) is corroborated by the formal goodness-of-fit result.
-- The tight bootstrap CIs from [](#gumbel-bootstrap) can be reported with confidence — the CI machinery assumes the model family is right, and AD confirms that assumption.
+- The Gumbel model *may* be a good choice for this bundle. The three-method parameter agreement from [](#gumbel-mle) is corroborated by the formal goodness-of-fit result.
+- The tight bootstrap CIs from [](#gumbel-bootstrap) can be reported with confidence — the bootstrap CI assumes the model family is right, and AD confirms that assumption.
 - The 99th percentile prediction of ~22.4 mils from the MLE fit, combined with the bootstrap uncertainty in $\beta$, is the right basis for an RBI decision about this bundle.
 
-**A word on the AD critical values.** The critical values depend on which distribution you're testing. `scipy.stats.anderson()` supports Normal, Exponential, Log-Normal, Gumbel (both tails), and Weibull, and uses distribution-specific asymptotic tables — this is why the numeric critical values differ between the Gumbel and Normal calls above. For distributions not in that list, you'd need to compute critical values via parametric bootstrap under the null.
 ````

@@ -52,7 +52,7 @@ Statistics without understanding leads to misuse; practice without theory leads 
 - Will not cover every possible scenario or edge case.
 - Covers: Python walkthroughs, real inspection data, coded examples.
 
-## Prerequisites and learning objectives
+## Prerequisites and Learning Objectives
 
 ### Prerequisites
 
@@ -77,7 +77,7 @@ By the end of this course you should be able to:
 
 Pretty ambitious goals of this class, right? Well I'm an ambitious guy, so let's see how this goes. Strap in and enjoy the ride.
 
-## The answer to everything in statistics: *It Depends*
+## The Answer to Everything in Statistics: *It Depends*
 
 This is going to be annoying, but 90% of the questions you may think about asking, especially when it comes to applying statistical concepts is, *it depends*. There is usually no one right answer, and there is usually more than one way to arrive at a similar answer. Analyses of the same data may lead to different answers. Knowing statistics doesn't *give* you the answer — it lets you **make more informed analyses** and pick better methods based on the available data or ask the right questions when receiving an analysis. 
 

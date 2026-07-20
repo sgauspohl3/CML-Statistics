@@ -1,14 +1,51 @@
 # Example — Bayesian CML Analysis
 
-The same SWS feed circuit from chapter 3a, now analyzed Bayesian.
+## Download Data
+A complete walkthrough of the Bayesian workflow on a real piping circuit. This is the same as in Chapter 4. 
 
-## The circuit (recap)
+Please download the dataset used in this example and place in your project folder:
+<a href="../_static/TR_596-example2.xlsx" download>TR_596-example2.xlsx</a>
 
-- SWS feed — recently re-circuitized.
-- Primarily 4" and 6" SCH40 carbon steel piping.
-- Potential for sour water corrosion (erosion) and ammonium bisulfide corrosion.
+<br><br>
 
-Same data, same circuit. Only the modeling approach changes.
+The accompanying P&ID and Isometric drawings
+<a href="../_static/SWS-PID.pdf" download>SWS-PID.pdf</a>
+<a href="../_static/SWS-ISOs.pdf" download>SWS-ISOs.pdf</a>
+
+```{note}
+The same circuit is reanalyzed in chapter 6 using Bayesian methods.
+```
+
+## The Circuit: SWS-FEED
+
+- Recently re-circuitized as the company switched from line-based to circuit-based inspections.
+- Primarily **4" and 6" SCH40 carbon steel piping**, with a few SCH80 and SBC.
+- Damage mechanisms of concern: **sour water corrosion (erosion)** and **ammonium bisulfide corrosion** in parts.
+- SBCs and drain lines have already been removed for your convenience. 
+
+
+### Supporting Documents
+
+#### P&ID
+
+```{figure} ../images/PFD.png
+:name: PFD2
+:alt: PFD for Example
+:width: 700px
+:align: center
+
+P&ID of example circuit SWS-FEED, Sour water feed.
+```
+
+#### ISOs
+
+```{raw} html
+   <iframe src="../_static/isometric_gallery.html"
+           width="100%" height="500"
+           style="border:none;">
+   </iframe>
+```
+
 
 ## Model in NumPyro
 
@@ -39,15 +76,24 @@ Where did we get the priors from? Good question.
 
 **Structure:**
 
-- **$T_0$ per CML** — drawn from a Normal prior centered on the nominal thickness for that component type, with a width reflecting manufacturing tolerance.
+- **$T_0$ per CML** — drawn from a Normal prior centered on the nominal thickness for that component type, with a width reflecting manufacturing tolerance (+/- 12.5% is 6 $\sigma$).
 - **$C_r$ per CML** — drawn from a Gamma prior shared across all CMLs (this is the "pool").
-- **$\sigma$** — measurement noise; Half-Normal.
-- **Likelihood** — observed thickness ~ Normal($T_0 - C_r \cdot t$, $\sigma$).
+- **$\sigma$** — measurement noise; Half-Normal with up to 30mil variance
+- **Likelihood** — observed thickness ~ Normal($T_0 - C_r \cdot t$, $\sigma$). — linear relationship
+
+```{figure} ../images/numpyro-plate.png
+:name: numpyro-plate1
+:alt: NumPyro model
+:width: 800px
+:align: center
+
+Visual representation of partial pooled model.
+```
 
 ## On Corrosion Rate Priors
-A good idea to have a library of corrosion rate distributions. When observing corrosion in your facility's IDMS system, attribute CMLs to certain damage mechanisms. Try to cluster and find fits for specific damage mechanisms at certain ranges of conditions. 
+A good idea to have a library of corrosion rate distributions. When observing corrosion in your facility's IDMS system, attribute CMLs to certain damage mechanisms. Try to cluster and find fits for specific damage mechanisms at certain ranges of conditions. If this is not possible, try to calculate best and worst case corrosion rates for the damage mechanism of interest, and then create a distribution that contains 95% of its area within those two bounds.
 
-## Clustering by corrosion zones
+## Clustering by Corrosion Zones
 
 Clustering by zone is similar to clustering by feature type, but with a caveat:
 
@@ -57,14 +103,34 @@ If clustering by corrosion zone, consider **separating the circuit** because the
 The example below clusters only by feature.
 ```
 
+```{figure} ../images/numpyro-plate2.png
+:name: numpyro-plate2
+:alt: NumPyro model2
+:width: 800px
+:align: center
+
+Visual representation of partial pooled model clustered by corrosion zone.
+```
+
 ## Prior Predictive Checks
 
 NumPyro does not have built in prior predictive inference like PyMC or libraries outside of Python. The prior predictive check was ran in PyMC and the results are below:
 
-All of the priors look good, but variance might be a little low. 
+All of the priors look good, but variance might be a little low. Below is an example prior predictive check from PyMC
+
+```{figure} ../images/example-bhm-prior-predictive.png
+:name: example-bhm-prior-predictive
+:alt: example-bhm-prior-predictive
+:width: 800px
+:align: center
+
+Prior predictive checks using PyMC
+```
+
+Prior predictive checks are not always required, but it can help save a lot of computational time from divergences in later inferences.
 
 
-## Running the model
+## Running the Model
 
 ```python
 from numpyro.infer import MCMC, NUTS, Predictive
@@ -110,7 +176,7 @@ idata = az.from_numpyro(
 )
 ```
 
-## Analyzing results
+## Analyzing Results
 
 Standard ArviZ artifacts for diagnosing and interpreting the fit:
 
@@ -120,11 +186,73 @@ Standard ArviZ artifacts for diagnosing and interpreting the fit:
 - **Residuals** by CML and over time.
 - **Chains** — visual confirmation of convergence.
 
-```{note}
-This section will be expanded with rendered ArviZ plots in the final version. Each of the five "Analyzing Results" slides in the deck becomes one subsection with the plot, its interpretation, and what to look for.
+```{note} The graphs are below, but the clean version of the code to produce the charts have not been finished yet. 
+This will be available at a later date.
 ```
 
-## Final results
+```{figure} ../images/example-bhm-forest-global.png
+:name: example-bhm-forest-global
+:alt: example-bhm-forest-global
+:width: 800px
+:align: center
+
+Global prior vs posterior for global variables
+```
+
+The model looks good here as far as overall priors. Let's look a bit deeper at individual CML posterior rates.
+
+<br><br>
+
+```{figure} ../images/example-bhm-forest.png
+:name: example-bhm-forest
+:alt: example-bhm-forest
+:width: 800px
+:align: center
+
+Forest plot of posterior corrosion rates by CML
+```
+
+This looks a little busy, so let's separate by cluster.
+
+<br><br>
+
+```{figure} ../images/example-bhm-forest-cluster.png
+:name: example-bhm-forest-cluster
+:alt: example-bhm-forest-cluster
+:width: 800px
+:align: center
+
+Global prior vs posterior for posterior corrosion rates by CML, separated by cluster
+```
+
+This is easy to read. Anything that we see with a higher than expected corrosion rate?
+
+<br><br>
+
+```{figure} ../images/example-bhm-trajectory.png
+:name: example-bhm-trajectory
+:alt: example-bhm-trajectory
+:width: 800px
+:align: center
+
+Selection of 6 CML trajectories with 94% HDI filled in
+```
+
+The model produces bands that are expected, though some of the fittings have readings that do not fit within the model, residuals. Let's take a look at some residuals.
+
+```{figure} ../images/example-bhm-rope.png
+:name: example-bhm-rope
+:alt: example-bhm-rope
+:width: 800px
+:align: center
+
+Residuals across features
+```
+
+It seems some of the fittings had higher residuals. 
+
+
+## Final Results
 
 Per-CML retirement schedule, sorted by lower HDI bound:
 
@@ -147,4 +275,18 @@ Per-CML retirement schedule, sorted by lower HDI bound:
 The frequentist worst-case scenario suggested ~40 CMLs would retire by 2035. The Bayesian model, leveraging the same data plus engineering knowledge of nominal thicknesses and the population of corrosion rates, produces a much more nuanced — and credible — schedule.
 
 This is not because Bayesian methods are magic; it's because they let you encode prior knowledge and produce per-CML uncertainty rather than forcing you to pick one rate and one thickness.
+```
+
+## Try on Your Own
+
+```{exercise}
+:label: cml-057-retirement
+
+What is the expected retirement date (lower HDI) of CML 057?
+```
+
+```{solution} cml-057-retirement
+:class: dropdown
+
+*[2068]*
 ```

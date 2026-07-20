@@ -1,8 +1,23 @@
 # Example — Frequentist CML Analysis
 
+
+## Download Data
 A complete walkthrough of the frequentist workflow on a real piping circuit.
 
-## The circuit: SWS feed
+Please download the dataset used in this example and place in your project folder:
+<a href="../_static/TR_596-example2.xlsx" download>TR_596-example2.xlsx</a>
+
+<br><br>
+
+The accompanying P&ID and Isometric drawings
+<a href="../_static/SWS-PID.pdf" download>SWS-PID.pdf</a>
+<a href="../_static/SWS-ISOs.pdf" download>SWS-ISOs.pdf</a>
+
+```{note}
+The same circuit is reanalyzed in chapter 6 using Bayesian methods.
+```
+
+## The Circuit: SWS-FEED
 
 - Recently re-circuitized as the company switched from line-based to circuit-based inspections.
 - Primarily **4" and 6" SCH40 carbon steel piping**, with a few SCH80 and SBC.
@@ -10,7 +25,7 @@ A complete walkthrough of the frequentist workflow on a real piping circuit.
 - SBCs and drain lines have already been removed for your convenience. 
 
 
-### Supporting documents
+### Supporting Documents
 
 #### P&ID
 
@@ -20,7 +35,7 @@ A complete walkthrough of the frequentist workflow on a real piping circuit.
 :width: 700px
 :align: center
 
-PFD of example
+P&ID of example circuit SWS-FEED, Sour water feed.
 ```
 
 #### ISOs
@@ -33,14 +48,7 @@ PFD of example
 ```
 
 
-The dataset used in this example is available for download:
-<a href="../_static/TR_596-example2.xlsx" download>TR_596-example2.xlsx</a>
-
-```{note}
-The same circuit is reanalyzed in chapter 6 using Bayesian methods.
-```
-
-## Data cleanup
+## Data Cleanup
 
 Create corrosion rates for all measurements by pairing each reading with its predecessor at the same TML.
 
@@ -68,9 +76,9 @@ rates['delta_time']      = rates['Time'] - rates['prev_time']
 rates['corrosion_rate']  = -1 * rates['delta_thickness'] / rates['delta_time']
 ```
 
-## Exploratory data analysis
+## Exploratory Data Analysis
 
-### Scatterplot of all readings vs. time
+### Scatterplot of All Readings vs. Time
 
 Color by feature to see whether populations behave differently:
 
@@ -91,7 +99,6 @@ sns.scatterplot(
 ax.set_xlabel('Time (years)')
 ax.set_ylabel('Thickness')
 ax.set_title(f'All thickness readings vs. time, by feature  (n={len(df)})')
-ax.legend(title='Feature', bbox_to_anchor=(1.02, 1), loc='upper left')
 plt.show()
 ```
 
@@ -104,7 +111,7 @@ plt.show()
 Scatterplot of all thickness readings
 ```
 
-### Highest corrosion rate areas
+### Highest Corrosion Rate Areas
 
 ```python
 top10 = result.sort_values('corrosion_rate', ascending=False).head(10).reset_index(drop=True)
@@ -118,7 +125,7 @@ top10.to_excel('top10_corrosion.xlsx', index=False)
 | 021.D.09 | 021 | 6" SCH40 FIT | 0.008557 |
 | ... | ... | ... | ... |
 
-### Lowest remaining thickness
+### Lowest Remaining Thickness
 
 ```python
 df['rca'] = df['measurement'] - df['t_min']
@@ -128,11 +135,20 @@ closest.to_excel('closest_to_tmin.xlsx', index=False)
 
 Identifies CMLs already operating near retirement thickness.
 
-### Histogram of all corrosion rates
+### Histogram of All Corrosion Rates
 
 ```python
 sns.histplot(data=result, x='corrosion_rate', kde=True, color='blue', alpha=0.6)
 plt.show()
+```
+
+```{figure} ../images/example-cr-hist.png
+:name: example-cr-hist
+:alt: CR Histogram
+:width: 600px
+:align: center
+
+Histogram of all corrosion rates
 ```
 
 ```{note}
@@ -149,7 +165,16 @@ sns.histplot(data=rates, x='corrosion_rate', kde=True, color='blue', alpha=0.6)
 plt.show()
 ```
 
-## Feature clustering
+```{figure} ../images/example-cr-hist2.png
+:name: example-cr-hist2
+:alt: CR Histogram2
+:width: 600px
+:align: center
+
+Histogram of all corrosion rates after growth is removed
+```
+
+## Feature Clustering
 
 Cluster by feature: combination of NPS, schedule, and component type.
 
@@ -164,9 +189,20 @@ Cluster by feature: combination of NPS, schedule, and component type.
 
 Replot scatterplots and corrosion rate distributions by cluster. Also compare **LTCR vs. STCR** within each cluster.
 
-## Determine representative corrosion rate(s)
 
-### Boxplot by cluster
+```{figure} ../images/example-scatter-cluster.png
+:name: example-scatter-cluster
+:alt: scatter by cluster
+:width: 600px
+:align: center
+
+Set of scatterplot and regression lines by cluster
+```
+
+
+## Determine Representative Corrosion Rate(s)
+
+### Boxplot by Cluster
 
 ```python
 order = rates.groupby('Feature')['corrosion_rate'].median().sort_values().index.tolist()
@@ -185,11 +221,30 @@ ax.axvline(0, color='red', linestyle='--', linewidth=1, alpha=0.7, label='no cha
 ax.set_xlabel('Corrosion rate (" / year)')
 ax.set_ylabel('Feature')
 ax.set_title('Corrosion rate distribution by feature')
-plt.tight_layout()
 plt.show()
 ```
 
-### Normal fit per feature
+```{figure} ../images/example-cr-box1.png
+:name: example-cr-box1
+:alt: CR Boxplot by Cluster
+:width: 600px
+:align: center
+
+Box plot of corrosion rates by cluster
+```
+
+<br><br>
+
+```{figure} ../images/example-cr-box2.png
+:name: example-cr-box2
+:alt: CR Boxplot by Cluster - Growth Removed
+:width: 600px
+:align: center
+
+Box plot of corrosion rates by cluster after removing growth
+```
+
+### Normal Fit per Feature
 
 ```python
 from scipy import stats
@@ -221,7 +276,17 @@ plt.show()
 **Normal is generally a poor fit** for corrosion rates. Rates are bounded below at zero and right-skewed — a Gamma fits much better.
 ```
 
-### Gamma fit per feature
+
+```{figure} ../images/example-cr-hist3.png
+:name: example-cr-hist3
+:alt: Normal fit for corrosion rate
+:width: 600px
+:align: center
+
+Set of histograms for normal fit of corrosion rates
+```
+
+### Gamma Fit per Feature
 
 ```python
 for ax, feat in zip(axes, features):
@@ -235,7 +300,16 @@ for ax, feat in zip(axes, features):
 
 **Generally a good fit** for corrosion rate data.
 
-### Gamma fit summary
+```{figure} ../images/example-cr-hist4.png
+:name: example-cr-hist4
+:alt: Gamma fit for corrosion rate
+:width: 600px
+:align: center
+
+Set of histograms for gamma fit of corrosion rates
+```
+
+### Gamma Fit Summary
 
 | Feature | n | shape | scale | mode | median | p2.5 | p97.5 |
 |--|--|--|--|--|--|--|--|
@@ -246,9 +320,9 @@ for ax, feat in zip(axes, features):
 | 6" SCH40 FIT | 578 | 2.38 | 0.000986 | 0.00136 | 0.00202 | 0.000364 | 0.00613 |
 | 6" SCH40 PIPE | 108 | 2.18 | 0.000573 | 0.000676 | 0.00106 | 0.000172 | 0.00337 |
 
-## Determine representative minimum thickness
+## Determine Representative Minimum Thickness
 
-### Normal fit per feature (current thickness)
+### Normal Fit per Feature (Current Thickness)
 
 ```python
 features = sorted(current['Feature'].unique())
@@ -265,6 +339,15 @@ for ax, feat in zip(axes, features):
 ```
 
 **Normal is generally a good fit** for current thickness — except 6" SCH40 FIT, due to high corrosion. In that case, the corrosion-rate features (Gamma) will dominate the remaining-life answer.
+
+```{figure} ../images/example-t-hist1.png
+:name: example-t-hist1
+:alt: Normal fit for thickness
+:width: 600px
+:align: center
+
+Set of histograms for normal fit of current thickness
+```
 
 ### Fitting alternatives for 6" SCH40 FIT
 
@@ -298,7 +381,16 @@ for name, dist in candidates.items():
 
 **Skew-Normal wins** on AIC/BIC. Still not a great fit — but the best of the candidates.
 
-## Determine remaining life
+```{figure} ../images/example-t-hist2.png
+:name: example-t-hist2
+:alt: Skew-Normal fit for corrosion rate
+:width: 600px
+:align: center
+
+Alternative fit for 6" SCH40 FIT
+```
+
+## Determine Remaining Life
 
 Combine the four scenarios:
 
@@ -311,7 +403,7 @@ Combine the four scenarios:
 | 6" SCH40 FIT | 30.31 | 11.60 | 9.77 | 3.74 |
 | 6" SCH40 PIPE | 60.63 | 22.48 | 36.11 | 13.39 |
 
-## Applying the worst-case corrosion rate to each TML
+## Applying the Worst-Case Corrosion Rate to Each TML
 
 If you naively apply the worst-case CR to every TML:
 
@@ -320,8 +412,32 @@ If you naively apply the worst-case CR to every TML:
 
 This is **unrealistic** since the majority of the circuit is not corroding substantially.
 
-```{important}
-**Only apply the worst case where appropriate** — such as at the reducers before the pump, and at some of the tees where conditions justify it. Blanket application of worst-case scenarios produces over-conservative retirement schedules that destroy program credibility.
+```{figure} ../images/example-worst-case.png
+:name: example-worst-case
+:alt: Worst Case Freq
+:width: 600px
+:align: center
 
-This is the central tension of frequentist analysis on inspection data: you must pick a scenario, and that scenario applies globally to a population that is not actually homogeneous. The Bayesian chapter shows the alternative.
+Bar chart of how many CMLs would meet retirement date before 2035 (10 years from now) based on worst case frequentist analysis
+```
+
+```{important}
+**Only apply the worst case where appropriate** — such as at the reducers before the pump, and at some of the tees where conditions justify it. Blanket application of worst-case scenarios produces over-conservative retirement schedules that waste money and inspection time.
+
+There are a lot more ways to skin this cat. This is just **one** way to perform a frequentist analysis. We only have time for one way anyways. Maybe at a later date, I will add other methodologies. 
+```
+
+## Try on Your Own
+
+
+```{exercise}
+:label: cml-057-retirement
+
+What is the expected retirement date (using highest 97.5% corrosion rate) of CML 057?
+```
+
+```{solution} cml-057-retirement
+:class: dropdown
+
+*[2033]*
 ```

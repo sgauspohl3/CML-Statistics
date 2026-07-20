@@ -1,16 +1,19 @@
 # Bayesian Statistical Analysis
 
-## End-to-end Bayesian workflow
+## End-to-End Bayesian Workflow
 
-```{image} ../images/flow-bayesian.png
+```{figure} ../images/flow-bayesian.png
+:name: flow-bayesian
 :alt: Bayesian Workflow
 :width: 700px
 :align: center
+
+End-to-end Bayesian analysis workflow
 ```
 
 Each box is iterative — failed diagnostics or bad posterior predictive checks send you back to model definition.
 
-## Bayes' theorem
+## Bayes' Theorem
 
 $$P(H \mid E) = \frac{P(E \mid H) \cdot P(H)}{P(E)}$$
 
@@ -27,23 +30,23 @@ Posterior ∝ Likelihood × Prior
 
 In inspection: prior is what you expected the corrosion rate to be; likelihood is what the readings actually showed; posterior is your updated belief — used for predictions about remaining life.
 
-## Forward propagation vs. inference
+## Forward Propagation vs. Inference
 
 Bayes' theorem solves the **inverse problem**: going from observed data back to parameters.
 
-### Forward (parameters → data)
+### Forward (Darameters to Data)
 
 Given known or assumed parameter values, compute the distribution of observable outcomes. Straightforward — requires only sampling from the likelihood.
 
 $$H \text{ known} \to E \text{ predicted}, \quad \text{sample from } p(E \mid H)$$
 
-### Inverse / Inference (data → parameters)
+### Inverse / Inference (Data to Parameters)
 
 Given observed data, infer the distribution of unknown parameters. The **core Bayesian task** — and the harder direction.
 
 $$E \text{ observed} \to H \text{ inferred}, \quad \text{recover } p(H \mid E) \text{ via Bayes}$$
 
-## Computing the posterior
+## Computing the Posterior
 
 How $p(H \mid E)$ is computed depends on model complexity:
 
@@ -53,9 +56,20 @@ How $p(H \mid E)$ is computed depends on model complexity:
 | **Numerical** | Low dimension (≤ 2 parameters). | Evaluate the evidence integral on a grid and normalize. `scipy.integrate.quad / dblquad`. |
 | **MCMC** | Multi-parameter, hierarchical models. | Sample directly from the posterior — no closed form needed. NUTS (NumPyro, PyMC, Stan); JAGS (Gibbs). |
 
-## A worked conjugate update — Beta-Binomial
+## A Worked Conjugate Update — Beta-Binomial
 
-The simplest closed-form Bayesian update, and a useful intuition pump.
+The simplest closed-form Bayesian update. See the widget below and use the sliders to see how prior, likelihood, and posterior interact with each other. Sliders for prior $\alpha$ and $\beta$, plus the observed data (successes and failures). Live overlay of prior, likelihood, and posterior.
+
+- Watch a strong prior get overwhelmed by lots of data.
+- Watch a weak prior update dramatically on even one observation.
+- See how skew of the posterior tracks skew of the prior + data combo.
+
+```{raw} html
+<iframe src="../_static/beta_binomial_update.html"
+        width="100%" height="640"
+        style="border:none;">
+</iframe>
+```
 
 ### Setup
 
@@ -83,28 +97,41 @@ $$\text{Beta}(2 + 7, 2 + 3) = \text{Beta}(9, 5)$$
 - Posterior mode: $(9-1)/(9+5-2) = 8/12 \approx 0.67$
 - Much narrower than the prior — the data dominates.
 
-```{image} ../images/conjugate_beta_binomial.png
+```{figure} ../images/conjugate_beta_binomial.png
+:name: beta-binomial
 :alt: Beta-Binomial conjugate update
 :width: 700px
 :align: center
+
+Example of Beta-Binomial conjugate update
 ```
 
 The visualization shows all three pieces: the wide prior, the likelihood (scaled for overlay), and the posterior — a weighted compromise. Notice that the posterior peak sits between the prior peak (0.5) and the data's maximum likelihood estimate (0.7), closer to the data because we had 10 observations and only 4 "pseudo-observations" worth of prior.
 
-### Why this matters
+### Why This Matters
 
-The mechanics are clean: $\alpha$ and $\beta$ are interpretable as **pseudo-counts of successes and failures**. A $\text{Beta}(2, 2)$ prior is equivalent to having seen 1 prior success and 1 prior failure (the +1 in each parameter comes from the symmetry to a uniform). Real data accumulates on top of those pseudo-counts.
+The math is clean: $\alpha$ and $\beta$ are interpretable as **pseudo-counts of successes and failures**. A $\text{Beta}(2, 2)$ prior is equivalent to having seen 1 prior success and 1 prior failure (the +1 in each parameter comes from the symmetry to a uniform). Real data accumulates on top of those pseudo-counts.
 
 This intuition extends. Most conjugate pairs work the same way — pick a prior that summarizes your domain knowledge as if it were data, then let the actual data update it.
 
 ```{note}
-**When does conjugacy still matter?** In production work, MCMC handles complex models, but conjugate updates are useful for:
-- Setting priors with interpretable strength (e.g., "I have prior beliefs worth about 5 observations").
-- Sanity-checking model components before running MCMC on the full hierarchical structure.
-- Online updates where speed matters.
+**When does conjugacy still matter?** It can be very helpful when distributions work out as a pair of conjugates, but that rarely happens, and MCMC is generally used for real-world applications.
 ```
 
 ## Markov Chain Monte Carlo
+
+The idea behind MCMC is easiest to see in its simple cousin: plain old Monte Carlo. 
+Suppose we want to estimate $\pi$. Drop random points in a unit square, and count the fraction that land inside the inscribed circle. That fraction converges to π/4 — no MCMC needed, because we can sample the target distribution directly. MCMC extends this idea to distributions we can't sample from directly, using a Markov chain whose stationary distribution is the one we want.
+
+```{raw} html
+<iframe src="../_static/pi_monte_carlo.html"
+        width="100%" height="620"
+        style="border:none;">
+</iframe>
+```
+
+- **Monte Carlo** — independent random draws. What this widget does. Each point is drawn independently from a uniform distribution.
+- **Markov Chain Monte Carlo** — the next sample depends on the current one via a transition rule. Used for sampling from complicated distributions where independent sampling is impossible.
 
 ### Simplified MCMC
 
@@ -114,13 +141,16 @@ This intuition extends. Most conjugate pairs work the same way — pick a prior 
 - Posterior estimated from the final cumulative sample of the Markov chain.
 - Generally **impossible to solve analytically** — that's why we sample.
 
-```{image} ../images/mcmc.png
+```{figure} ../images/mcmc.png
+:name: mcmc
 :alt: Random Walk
 :width: 700px
 :align: center
+
+Visualization of a random walk
 ```
 
-### Not all MCMC is the same
+### Not All MCMC is the Same
 
 | Method | Strength | Weakness | Tools |
 |--|--|--|--|
@@ -133,7 +163,7 @@ This intuition extends. Most conjugate pairs work the same way — pick a prior 
 NUTS (No U-Turn Sampler) is HMC that auto-picks trajectory length and stops when the path doubles back. Step size auto-tunes during warm-up. **This is the workhorse of modern Bayesian inference.**
 ```
 
-## How to choose a prior
+## How to Choose a Prior
 
 Each strategy enables certain features in the overall model — this is a **key decision point**.
 
@@ -144,7 +174,7 @@ Each strategy enables certain features in the overall model — this is a **key 
 | **Maximum entropy** | The most uncertain distribution consistent with what you know. Encodes constraints without smuggling in extra structure. | Given only a known mean, MaxEnt gives the Exponential. |
 | **Weakly informative** | Mild regularization. Rules out absurd values; keeps the data in charge. **Pragmatic default for modern Bayesian workflows.** | Normal(0, 2.5) on standardized regression coefficients. |
 
-## Everything is a distribution
+## Everything is a Distribution
 
 In a Bayesian model, every quantity is uncertain — and every quantity has a distribution:
 
@@ -154,11 +184,24 @@ In a Bayesian model, every quantity is uncertain — and every quantity has a di
 
 This is the conceptual shift from frequentist work. The output of analysis is not point estimates plus error bars; it is **distributions of beliefs**.
 
-## Predictive distributions
+```{figure} ../images/bayes2.png
+:name: bayes2
+:alt: bayes2
+:width: 700px
+:align: center
 
-The posterior is not the only output. The model can also generate data it expects to see.
+Everything is a distribution if you look for it.
+```
 
-### Prior predictive
+## Target Acceptance
+
+In the world of manufacturing, often times you might hear about "six sigma", and being within the six standard deviations above and below expectation. That is 99%. Forget that in the Bayesian world. Unless your model is perfect, it is probably going to diverge. That's why you will typically see 94% HDI. Why 94% and not 95% like typical frequentist applications? Beats me, but I would guess it has something to do with the Bayesians being different. 
+
+## Predictive Distributions
+
+The posterior is not the only output. The model can also generate data it expects to see. This is very useful if you want to simulate data as well. 
+
+### Prior Predictive
 
 $$p(Y^*) = \int p(Y^* \mid \theta) \, p(\theta) \, d\theta$$
 
@@ -166,7 +209,7 @@ Sample parameters from the prior, then sample data through the likelihood. Tells
 
 **Use to:** catch absurd implications; calibrate priors with domain experts.
 
-#### Prior predictive check on the SWS feed model
+#### Prior Predictive Check on the SWS-FEED Model
 
 Before running MCMC on the example circuit, ask: what does the model predict if we just sample from the priors?
 
@@ -197,7 +240,7 @@ plot_distribution(prior_predictive_y)
 # Compare against domain knowledge: t_nom, t_min, typical mpy
 ```
 
-### Posterior predictive
+### Posterior Predictive
 
 $$p(\tilde Y \mid Y) = \int p(\tilde Y \mid \theta) \, p(\theta \mid Y) \, d\theta$$
 
@@ -205,7 +248,7 @@ Sample parameters from the posterior, then sample data through the likelihood. P
 
 **Use to:** check fit; generate forecasts; score the model.
 
-## Before and after inference
+## Before and After Inference
 
 Specifying a model and pressing "sample" is **not** the workflow — it's only a part of it.
 
@@ -217,9 +260,9 @@ A complete Bayesian analysis includes:
 - **Across models** — model comparison. How does each candidate generalize? Should you average instead of pick?
 - **Communication** — visual and numerical summaries tailored to the audience. *Posteriors are easier to share than p-values.*
 
-## Diagnosing model inference
+## Diagnosing Model Inference
 
-If the sampler didn't converge, every downstream conclusion is suspect. **Check the chains first.**
+If the sampler didn't converge, essentially your model did not work. **Check the chains first.**
 
 | Diagnostic | What it is | Watch for |
 |--|--|--|
@@ -230,21 +273,24 @@ If the sampler didn't converge, every downstream conclusion is suspect. **Check 
 | **Rank plots** | If chains agree, ranks of draws across chains should be ~uniform per bin. | Stair-step rank histograms → chains exploring different regions. |
 | **Divergences (HMC)** | Symptoms of pathological posterior geometry. Don't ignore — even a few signal trouble. | Funnel posteriors in hierarchical models — reparameterize. |
 
-## The funnel pathology and reparameterization
+## The Funnel Pathology and Reparameterization
 
 The most common geometric pathology in hierarchical Bayesian models is **Neal's funnel** — a posterior shape that looks like a narrow horn opening into a wide bell.
 
-```{image} ../images/funnel.png
+```{figure} ../images/funnel.png
+:name: funnel
 :alt: Neal's funnel
 :width: 600px
 :align: center
+
+Looks just like a funnel right?
 ```
 
 It happens because hierarchical models have parameters at multiple scales: a group-level standard deviation $\tau$ and individual-level deviations $\eta_i$. Their joint posterior looks like a funnel — when $\tau$ is small, the $\eta_i$ are tightly constrained near zero (narrow neck); when $\tau$ is large, they spread out (wide mouth).
 
 NUTS struggles in this geometry. The step size that works at the wide end is too large for the narrow end (rejections + divergences), and the step size that works at the narrow end is too small for the wide end (autocorrelation).
 
-### The fix: non-centered parameterization
+### The Fix: Non-Centered Parameterization
 
 Instead of:
 
@@ -269,7 +315,7 @@ eta = numpyro.deterministic("eta", mu + tau * eta_std)
 **Rule of thumb:** if your hierarchical model has divergences, reach for non-centered parameterization first. It fixes the funnel pathology more often than any other single change.
 ```
 
-## Comparing models
+## Comparing Models
 
 Estimate each model's out-of-sample predictive accuracy and combine when it helps.
 
@@ -285,27 +331,63 @@ Estimate each model's out-of-sample predictive accuracy and combine when it help
 
 When groups are present in data, **pooling** decisions are one of the most consequential modeling choices you make. There are three approaches.
 
-### Unpooled (no pooling)
+The widget below gives an example of pooling effects. Use the slider to move towards or awy from the population. 
+
+```{raw} html
+<iframe src="../_static/partial_pooling.html"
+        width="100%" height="520"
+        style="border:none;">
+</iframe>
+```
+
+
+### Unpooled (No Pooling)
 
 Fit each group separately. No information shared.
 
 $$\theta_g \sim \text{independent prior} \quad \text{for each group } g$$
 
-**When it works:** plenty of data per group; you genuinely believe the groups don't share structure.
+**When to use:** plenty of data per group; you genuinely believe the groups don't share structure.
 
-**Failure mode:** data-poor groups have wide credible intervals dominated by the prior. With $n=2$ readings on a CML, the unpooled posterior is barely better than the prior.
+**Issues:** data-poor groups have wide credible intervals dominated by the prior. With $n=2$ readings on a CML, the unpooled posterior is barely better than the prior.
 
-### Pooled (complete pooling)
+```{figure} ../images/unpooled.png
+:name: unpooled-data
+:alt: Unpooled Data
+:width: 400px
+:align: center
+
+Example of complete unpooling
+```
+
+### Pooled (Complete Pooling)
 
 One set of parameters for everyone. Group identity ignored.
 
 $$\theta \sim \text{prior} \quad \text{(shared)}$$
 
-**When it works:** the groups are truly identical, or you have no reason to suspect they differ.
+**When to use:** the groups are truly identical, or you have no reason to suspect they differ.
 
-**Failure mode:** if groups *do* differ, you're forcing them all to look the same. Real corrosive zones get masked by the average of the whole circuit.
+**Issues:** if groups *do* differ, you're forcing them all to look the same. Real corrosive zones get masked by the average of the whole circuit.
 
-### Partial pooling (hierarchical)
+Fit each group separately. No information shared.
+
+$$\theta_g \sim \text{independent prior} \quad \text{for each group } g$$
+
+**When to use:** plenty of data per group; you genuinely believe the groups don't share structure.
+
+**Issues:** data-poor groups have wide credible intervals dominated by the prior. With $n=2$ readings on a CML, the unpooled posterior is barely better than the prior.
+
+```{figure} ../images/pooled.png
+:name: pooled-data
+:alt: pooled-data
+:width: 400px
+:align: center
+
+Example of complete pooling
+```
+
+### Partial Pooling (Hierarchical)
 
 The middle ground. Each group has its own parameter, but those parameters are drawn from a shared distribution whose own parameters are also estimated.
 
@@ -314,12 +396,24 @@ $$\theta_g \sim \text{Normal}(\mu, \tau) \quad \text{for each group } g$$
 
 The data tells the model how similar the groups are, via $\tau$. Small $\tau$ → groups are nearly identical → behaves like complete pooling. Large $\tau$ → groups are very different → behaves like no pooling.
 
-### The shrinkage effect
+```{figure} ../images/partialpooled.png
+:name: partial-pooled
+:alt: partial-pooling
+:width: 400px
+:align: center
 
-```{image} ../images/pooling.png
+Example of partial pooled
+```
+
+### The Shrinkage Effect
+
+```{figure} ../images/pooling.png
+:name: pooling
 :alt: Pooling comparison
 :width: 800px
 :align: center
+
+Unpooled vs Pooled vs Partial Pooled
 ```
 
 This is the central insight of hierarchical modeling. Look at the figure:
@@ -328,11 +422,13 @@ This is the central insight of hierarchical modeling. Look at the figure:
 - **Pooled (middle):** every group gets the same point estimate at the overall mean. This works for G5 and G6 (close to truth) but fails for G1 and G4 (truth is far from the pool mean).
 - **Partial pooling (right):** estimates for small groups are **shrunk toward the pooled mean** — but only as much as the data warrants. G5 and G6 (large $n$) barely move from their unpooled estimates. G1 and G4 (small $n$) get pulled substantially toward the population mean.
 
-### Why partial pooling shines in CML work
+
+
+### Why Partial Pooling is Effective for CMLs
 
 Real piping circuits have wildly uneven sampling:
 
-- A few well-instrumented CMLs with 50+ readings spanning decades.
+- A few well-instrumented CMLs with 10+ readings spanning decades.
 - Many CMLs with 3-5 readings.
 - Newly-installed CMLs with 1-2 readings.
 
@@ -342,7 +438,7 @@ Real piping circuits have wildly uneven sampling:
 
 The Bayesian example in chapter 4a uses partial pooling on per-CML corrosion rates. The shrinkage stabilizes the data-poor CMLs without forcing them to match the data-rich ones — a balance frequentist methods can only awkwardly approximate.
 
-## Hierarchical partial-pooled model
+## Hierarchical Partial-Pooled Model
 
 The model used in the example chapter is a **hierarchical partial-pooled** model:
 
@@ -363,7 +459,21 @@ i × j: observations
 
 Parameters at the CML level (e.g., $T_0$, $C_r$ per CML) are drawn from group-level distributions whose parameters are themselves estimated.
 
-## Determine relevant details
+```{figure} ../images/numpyro-plate.png
+:name: numpyro-plate
+:alt: NumPyro model
+:width: 800px
+:align: center
+
+Visual representation of partial pooled model.
+```
+
+### Why Linear
+
+At the level of data typically present for CMLs, utilizing anything other than a line could potentially over-fit the model. An over-fit model may still be useful for inference data, but will be useless for predictive models. 
+
+
+## Determine Relevant Details
 
 From the posterior, derive the things you actually need:
 
@@ -372,14 +482,18 @@ From the posterior, derive the things you actually need:
 - **Residuals** — observed minus posterior predictive median.
 - **Model diagnostics** — convergence and predictive checks summarized for the report.
 
-## Probabilistic programming languages
+
+## Probabilistic Programming Languages
+
+For Python, PyMC and NumPyro are the most common choices. NumPyro is typically faster, but PyMC is easier to use. This class uses NumPyro due to speed limitations. PyMC did have a recent update which allowed use of a NumPyro sampler which would speed things up, but there was not enough time to refactor the code. 
+
 
 | Tool | Style | Notes |
 |--|--|--|
 | **PyMC** | `with` context manager; NUTS by default. | Easier to use; more documentation. |
 | **NumPyro** | Plain function + JAX; explicit `obs`/`sample` plates. | Faster; requires less computing power. |
 
-### PyMC example
+### PyMC Example
 
 ```python
 import pymc as pm
@@ -403,7 +517,7 @@ with pm.Model() as model:
     idata = pm.sample(1000, tune=1000, chains=4, target_accept=0.9)
 ```
 
-### NumPyro example
+### NumPyro Example
 
 ```python
 import numpyro
@@ -434,11 +548,66 @@ mcmc.run(random.PRNGKey(0), t, T0_prior_mean, y=y)
 - Parallel chains: NumPyro requires `set_host_device_count` before any JAX operation.
 ```
 
-## Beyond the basic model
+## Expected Results
 
-The model used in chapter 4a is a Normal-Gamma hierarchical model — simple, fast, and good enough for most CML circuits. But the Bayesian toolkit has more to offer when the data demands it.
+These are just some of the things from an inference model you might encounter. We will touch more on these in the example later.
 
-### Categorical and Dirichlet distributions
+**Diagnostic Plots**
+
+```{figure} ../images/bhm-diagnostic.png
+:name: bhm-diagnostic
+:alt: bhm-diagnostic
+:width: 300px
+:align: center
+
+Chains
+```
+
+<br><br>
+
+**Posterior Forest Plots**
+
+```{figure} ../images/bhm-forest.png
+:name: bhm-forest
+:alt: bhm-forest
+:width: 500px
+:align: center
+
+Forest plot of posterior corrosion rates. A clear outlier is shown.
+```
+
+<br><br>
+
+**Trajectory Plots**
+
+```{figure} ../images/bhm-trajectory.png
+:name: bhm-trajectory
+:alt: bhm-trajectory
+:width: 600px
+:align: center
+
+Trajectory plot showing estimated remaining life of CML with observed readings and 94% HDI.
+```
+
+<br><br>
+
+**Residual Plots**
+
+```{figure} ../images/bhm-rope.png
+:name: bhm-rope
+:alt: bhm-rope
+:width: 600px
+:align: center
+
+Residual plot for model.
+```
+
+
+## Beyond the Basic Model
+
+The model used in chapter 6 is a Normal-Gamma hierarchical model — simple, fast, and good enough for most CML circuits. But the Bayesian toolkit has more to offer when the data demands it. Keep in mind, it can also be *ANY* model you can dream of. If you want to use a normal distribution for corrosion rate, go for it. It may not work, but it can be done. 
+
+### Categorical and Dirichlet Distributions
 
 Some inspection data is categorical, not numerical: damage mechanism class, root cause category, corrosion morphology type. The **Categorical** distribution handles single categorical outcomes, and the **Dirichlet** is its multi-category conjugate prior (generalization of the Beta to more than two outcomes).
 
@@ -448,9 +617,18 @@ Some inspection data is categorical, not numerical: damage mechanism class, root
 
 When the relationship between predictors and outcomes is unknown and possibly non-linear, **BART** offers a flexible nonparametric Bayesian approach. It fits a sum of weak decision trees with priors on tree depth and leaf values.
 
-*When you'd reach for it:* if you suspect corrosion rate depends on a combination of process variables (temperature, sulfur content, velocity) in a complicated way that no simple parametric model captures.
+*When you'd reach for it:* if you suspect corrosion rate depends on a combination of process variables like corrosion under insulation (insulation, temperature, coating age) in a complicated way that no simple parametric model captures.
 
-### Time series models
+```{figure} ../images/bart_cui_tree.png
+:name: bart-cui-tree
+:alt: BART
+:width: 800px
+:align: center
+
+Part of a BART tree for a CUI model
+```
+
+### Time Series Models
 
 Time series methods (autoregressive models, state-space models, Gaussian processes) become relevant when:
 
@@ -458,13 +636,13 @@ Time series methods (autoregressive models, state-space models, Gaussian process
 - Process upsets cause step-changes in corrosion rate.
 - You want to forecast future thickness, not just estimate average rate.
 
-The linear-trend model in chapter 4a is effectively a degenerate time series — it assumes a single constant rate. Real data sometimes shows acceleration, deceleration, or seasonality that a richer time series model would capture.
+The linear-trend model in chapter 6 is effectively a degenerate time series — it assumes a single constant rate. Real data sometimes shows acceleration, deceleration, or seasonality that a richer time series model would capture.
 
 ```{note}
 These are **mentions, not recommendations.** For most CML programs, the basic hierarchical model in chapter 6 is the right tool. Reach for these extensions only when the basic model demonstrably fails — diagnosed via posterior predictive checks that fail in specific, interpretable ways.
 ```
 
-## A note on Bayesian decision theory
+## A Note on Bayesian Decision Theory
 
 This course focuses on **inference** — figuring out the distribution of parameters from data. But once you have a posterior, you often have to make a **decision**: replace this CML now, schedule the next inspection, choose between maintenance strategies.
 

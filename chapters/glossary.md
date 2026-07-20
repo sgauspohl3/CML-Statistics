@@ -6,7 +6,7 @@ This glossary covers terminology used throughout the book. It is split into thre
 
 ```{glossary}
 CML
-  **Corrosion Monitoring Location.** A designated location on a piping circuit or pressure vessel where thickness measurements are taken on a recurring basis. A CML is a logical entity — the *place* being monitored — and may contain multiple TMLs.
+  **Corrosion Monitoring Location.** A designated area on piping systems where periodic examinations are conducted to directly assess and monitor the condition of the piping system using a variety of examination methods and techniques based on damage mechanism susceptibility. A CML is a logical entity — the *place* being monitored — and may contain multiple TMLs.
 
 TML
   **Thickness Monitoring Location.** A specific physical point within a CML where a measurement is recorded. A single CML can contain several TMLs (e.g., 12 o'clock, 3 o'clock, 6 o'clock, 9 o'clock on a pipe section).

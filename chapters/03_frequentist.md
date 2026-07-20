@@ -1,8 +1,8 @@
 # Frequentist Statistical Analysis
 
-## API standards allowing statistical analysis
+## API Standards Allowing Statistical Analysis
 
-API standards permit statistical methods but don't prescribe a methodology — the verbiage is loose, requiring documentation and caution.
+API standards permit statistical methods but do not prescribe a methodology — the verbiage is loose, requiring documentation and caution.
 
 ### API 510 §7.2.2
 
@@ -30,13 +30,13 @@ Before any pooled analysis, the CMLs in a group must be **exchangeable**. This i
 A set of random variables is exchangeable if their joint distribution is unchanged by any permutation of their labels.
 ```
 
-In plain terms: if you relabeled CML-007 as CML-042 and vice versa, would the analysis still be valid? If yes, they're exchangeable. If no — for example because CML-007 sits in a high-velocity zone and CML-042 is in a dead leg — they're not, and forcing them into the same population corrupts both.
+In English: if you swapped CML-007 as CML-042 and vice versa, would the analysis still be valid? If yes, they're exchangeable. If no — for example because CML-007 sits in a high-velocity zone and CML-042 is in a dead leg — they're not, and forcing them into the same population corrupts both.
 
-### Why exchangeability matters
+### Why Exchangeability Matters
 
 A frequentist fit to a non-exchangeable population produces a multi-modal distribution that no parametric family captures well. The Bayesian hierarchical models in chapter 5 require exchangeability *within each level* of the hierarchy — the CMLs are exchangeable *given* their feature type, but the feature types themselves are not exchangeable with each other.
 
-### Practical check
+### Practical Check
 
 Group your CMLs by:
 
@@ -51,7 +51,7 @@ Within each resulting group, the CMLs should be exchangeable. The 88-CML example
 **Exchangeability is a modeling assumption, not a property of the data.** You're stating that the CMLs in a group are similar enough to share a common distribution. If that statement is wrong, all downstream inference is wrong.
 ```
 
-## The frequentist workflow
+## The Frequentist Workflow
 
 ```{figure} ../images/flow-frequentist.png
 :name: flow-frequentist
@@ -64,7 +64,7 @@ General frequentist statistical workflow
 
 Each step is iterative — testing a poor fit may send you back to clustering, cleaning, or even data collection.
 
-## Data cleanup
+## Data Cleanup
 
 Before any statistical analysis, prepare the dataset:
 
@@ -76,7 +76,7 @@ Before any statistical analysis, prepare the dataset:
 - **Identify out-of-place features and analyze separately** — SBC, dead legs, mix points.
 - **Flags and problem areas** — from simpler upstream analysis.
 
-## Exploratory data analysis
+## Exploratory Data Analysis
 
 EDA is the first contact with cleaned data — visualize before modeling.
 
@@ -98,13 +98,13 @@ Standard EDA artifacts on inspection data:
 The best place to start with analysis is with a scatterplot
 ```
 
-## Feature clustering and distribution fitting
+## Feature Clustering and Distribution Fitting
 
-### Grouping criteria
+### Grouping Criteria
 
 | Variable | Group by |
 |--|--|
-| Thickness measurements | NPS, schedule, component type, replacements |
+| Measured Thickness | NPS, schedule, component type, replacements |
 | Corrosion rates | NPS, component type, zone, orientation, outliers |
 
 
@@ -117,7 +117,7 @@ The best place to start with analysis is with a scatterplot
 Violin plots between first and last readings can show the distribution and where some measurement error may be occurring. 
 ```
 
-### Distribution fitting
+### Distribution Fitting
 
 Two main targets:
 
@@ -138,11 +138,11 @@ Two main targets:
 **You generally cannot fit until after clustering.** Mixing populations produces multi-modal distributions that no single parametric family fits well.
 ```
 
-## Why Gamma (not Normal) for corrosion rates
+## Why Gamma (not Normal) for Corrosion Rates
 
-The frequentist analysis in chapter 4 fits **Gamma** to corrosion rates and **Normal** to current thickness. Why?
+The frequentist analysis in chapter 4 fits **Gamma** to corrosion rates and **Normal** to current thickness. *Why?* Gamma is bounded above 0, much like real life *real* corrosion rates
 
-### Physical reasoning
+### Physical Reasoning
 
 Corrosion rates have three properties that rule out the Normal:
 
@@ -158,7 +158,11 @@ The Gamma distribution has all three:
 - Naturally right-skewed (skewness $= 2/\sqrt{\alpha}$).
 - Mode at $(\alpha - 1)\beta$ for $\alpha > 1$, typically near zero for inspection data.
 
-### Why Normal is fine for thickness
+## Regression
+
+Regression is possible on single CML estimates as well as clustered feature. Most standard regression utilizes standard error (assuming normality). However, regression may not capture concerning CMLs unless residuals are clear, and outliers are iteratively removed to their own distribution. This class will not focus too much on regression. It is useful and can be done, but looking at the underlying distribution is typically more useful. 
+
+### Why Normal is Fine for Thickness
 
 Current thickness, in contrast:
 
@@ -172,7 +176,7 @@ So Normal works for thickness *most of the time*. The exception is heavily corro
 **The fit follows the physics.** When a distribution choice doesn't work, ask what physical property of the data the candidate distribution is failing to capture. Negative values, hard bounds, skewness, and tail behavior are the usual culprits.
 ```
 
-## Method of Moments for Gamma — full derivation
+## Method of Moments for Gamma — Full Derivation
 
 The MoM estimators for the Gamma are simple enough to derive by hand.
 
@@ -206,11 +210,11 @@ This is why MoM is fast and computationally simple — no optimization required,
 MoM doesn't guarantee a sensible result if the data is small or contaminated. For Gamma, sample variance must be positive (always is for $n \ge 2$ with distinct values), but the resulting $\hat\alpha$ can be unreasonably small if the data has a lot of zeros or near-zeros. Use MoM as a **starting estimate**, then refine with MLE.
 ```
 
-## Determine remaining life
+## Determine Remaining Life
 
 Get the representative corrosion rate and minimum remaining thickness from the fitted distributions.
 
-### Choosing the scenario
+### Choosing the Scenario
 
 You must select which thickness and which corrosion rate to combine. **Worst $t$ × worst CR is generally over-conservative.**
 
@@ -224,5 +228,5 @@ You must select which thickness and which corrosion rate to combine. **Worst $t$
 Scenario choice should reflect the **risk tolerance and physical reality** of the circuit. Use the worst case only where it's appropriate — e.g., at reducers before a pump, or specific tees with known aggressive damage.
 
 ```{note}
-This is the core decision in frequentist remaining-life work. The Bayesian chapter shows how a hierarchical model can produce a more nuanced answer per-CML rather than asking you to pick one of four global scenarios.
+This is the core decision in cml analysis useing frequentis methods. The Bayesian chapter shows how a hierarchical model can produce a more nuanced answer per-CML rather than asking you to pick one of four global scenarios.
 ```

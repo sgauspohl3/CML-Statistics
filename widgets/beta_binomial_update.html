@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beta-Binomial conjugate update</title>
+<style>
+  :root {
+    --surface-1: #ffffff;
+    --surface-2: #ffffff;
+    --border: #d0d0d0;
+    --text-primary: #1a1a1a;
+    --text-secondary: #5a5a5a;
+  }
+  html, body {
+    margin: 0;
+    padding: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: transparent;
+    color: var(--text-primary);
+  }
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .ctrl-block {
+    padding: 12px 16px;
+    background: var(--surface-1);
+    border-radius: 12px;
+    border: 0.5px solid var(--border);
+  }
+  .ctrl-block-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+  .ctrl-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 8px;
+  }
+  .ctrl-row:last-child { margin-bottom: 0; }
+  .ctrl-row label {
+    font-size: 13px; color: var(--text-primary);
+    white-space: nowrap; min-width: 60px;
+  }
+  .ctrl-row input[type=range] { flex: 1; }
+  .ctrl-row span {
+    font-size: 13px; font-weight: 500;
+    min-width: 32px; text-align: right;
+    color: var(--text-primary);
+  }
+  .card {
+    background: var(--surface-2);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+  }
+  .card-title { font-size: 13px; font-weight: 500; color: var(--text-primary); margin-bottom: 4px; }
+  .card-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 10px; min-height: 16px; }
+  #chart { display: block; width: 100%; height: 320px; }
+  .legend {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    margin-top: 10px; justify-content: center;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+  .legend-swatch { width: 14px; height: 3px; border-radius: 2px; }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 0.5px solid var(--border);
+  }
+  .stat { text-align: center; }
+  .stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.4px; }
+  .stat-value { font-size: 15px; font-weight: 500; margin-top: 3px; font-variant-numeric: tabular-nums; }
+  .stat-desc { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  @media (max-width: 640px) { .controls { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="controls">
+  <div class="ctrl-block">
+    <div class="ctrl-block-title">Prior: Beta(α, β)</div>
+    <div class="ctrl-row">
+      <label>α (prior successes)</label>
+      <input type="range" min="0.5" max="30" value="2" step="0.5" id="alpha-slider">
+      <span id="alpha-out">2</span>
+    </div>
+    <div class="ctrl-row">
+      <label>β (prior failures)</label>
+      <input type="range" min="0.5" max="30" value="2" step="0.5" id="beta-slider">
+      <span id="beta-out">2</span>
+    </div>
+  </div>
+  <div class="ctrl-block">
+    <div class="ctrl-block-title">Data: observed trials</div>
+    <div class="ctrl-row">
+      <label>successes</label>
+      <input type="range" min="0" max="100" value="7" step="1" id="s-slider">
+      <span id="s-out">7</span>
+    </div>
+    <div class="ctrl-row">
+      <label>failures</label>
+      <input type="range" min="0" max="100" value="3" step="1" id="f-slider">
+      <span id="f-out">3</span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Prior, likelihood, posterior</div>
+  <div class="card-sub" id="chart-sub">Posterior = Prior × Likelihood (up to a constant)</div>
+  <canvas id="chart"></canvas>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-swatch" style="background:#2a78d6"></div>Prior</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#1baf7a"></div>Likelihood (scaled)</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#e34948"></div>Posterior</div>
+  </div>
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-label">Prior mean</div>
+      <div class="stat-value" id="stat-prior">0.500</div>
+      <div class="stat-desc" id="stat-prior-desc">α / (α+β)</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">MLE</div>
+      <div class="stat-value" id="stat-mle">0.700</div>
+      <div class="stat-desc" id="stat-mle-desc">s / (s+f)</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Posterior mean</div>
+      <div class="stat-value" id="stat-post">0.643</div>
+      <div class="stat-desc" id="stat-post-desc">Beta(α+s, β+f)</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const BLUE = '#2a78d6', RED = '#e34948', GREEN = '#1baf7a', GRAY = '#888780';
+
+const chart = document.getElementById('chart');
+const ctx = chart.getContext('2d');
+
+// log-gamma via Lanczos approximation — needed for Beta PDF and Binomial coefficient
+function logGamma(z) {
+  const g = 7;
+  const c = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+             771.32342877765313, -176.61502916214059, 12.507343278686905,
+             -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+  if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI*z)) - logGamma(1 - z);
+  z -= 1;
+  let x = c[0];
+  for (let i = 1; i < g+2; i++) x += c[i] / (z + i);
+  const t = z + g + 0.5;
+  return 0.5*Math.log(2*Math.PI) + (z+0.5)*Math.log(t) - t + Math.log(x);
+}
+
+function logBeta(a, b) {
+  return logGamma(a) + logGamma(b) - logGamma(a+b);
+}
+
+// log Beta PDF at x with params (a, b)
+function logBetaPDF(x, a, b) {
+  if (x <= 0 || x >= 1) return -Infinity;
+  return (a-1)*Math.log(x) + (b-1)*Math.log(1-x) - logBeta(a, b);
+}
+
+function betaPDF(x, a, b) {
+  const lp = logBetaPDF(x, a, b);
+  return isFinite(lp) ? Math.exp(lp) : 0;
+}
+
+// log Binomial likelihood (proportional; we drop the constant)
+function logBinomLik(theta, s, f) {
+  if (theta <= 0 || theta >= 1) return -Infinity;
+  return s*Math.log(theta) + f*Math.log(1-theta);
+}
+
+function sizeCanvas() {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = chart.getBoundingClientRect();
+  chart.width = rect.width * dpr;
+  chart.height = rect.height * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { w: rect.width, h: rect.height };
+}
+
+function draw() {
+  const alpha = +document.getElementById('alpha-slider').value;
+  const beta = +document.getElementById('beta-slider').value;
+  const s = +document.getElementById('s-slider').value;
+  const f = +document.getElementById('f-slider').value;
+
+  const { w, h } = sizeCanvas();
+  const pad = { top: 12, right: 12, bottom: 34, left: 44 };
+  const pw = w - pad.left - pad.right;
+  const ph = h - pad.top - pad.bottom;
+
+  ctx.clearRect(0, 0, w, h);
+
+  // Evaluate three curves on a grid
+  const N = 400;
+  const xs = new Array(N);
+  const prior = new Array(N);
+  const lik = new Array(N);
+  const post = new Array(N);
+
+  for (let i = 0; i < N; i++) {
+    const x = (i + 0.5) / N;
+    xs[i] = x;
+    prior[i] = betaPDF(x, alpha, beta);
+    // likelihood on log scale (subtract max later for numerical stability)
+    lik[i] = logBinomLik(x, s, f);
+    // posterior: Beta(alpha + s, beta + f)
+    post[i] = betaPDF(x, alpha + s, beta + f);
+  }
+
+  // Normalize likelihood: exp(log_lik - max) so it's on comparable scale, then scale so max = max(prior, post) * 0.9
+  const maxLL = lik.reduce((a, b) => Math.max(a, b), -Infinity);
+  const likExp = lik.map(v => (isFinite(v) ? Math.exp(v - maxLL) : 0));
+
+  // Y max for plotting
+  const priorMax = prior.reduce((a, b) => Math.max(a, b), 0);
+  const postMax = post.reduce((a, b) => Math.max(a, b), 0);
+  const yMax = Math.max(priorMax, postMax) * 1.1 || 1;
+
+  // Rescale likelihood to fit
+  const likMax = likExp.reduce((a, b) => Math.max(a, b), 0);
+  const likScaled = likMax > 0 ? likExp.map(v => v / likMax * yMax * 0.85) : likExp;
+
+  const xToPx = (x) => pad.left + pw * x;
+  const yToPx = (y) => pad.top + ph * (1 - y / yMax);
+
+  // Y gridlines
+  ctx.strokeStyle = 'rgba(128,128,128,0.15)';
+  ctx.lineWidth = 1;
+  const yTicks = 4;
+  ctx.fillStyle = GRAY;
+  ctx.font = '10px system-ui';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+  for (let t = 0; t <= yTicks; t++) {
+    const y = t * yMax / yTicks;
+    const py = yToPx(y);
+    ctx.beginPath();
+    ctx.moveTo(pad.left, py);
+    ctx.lineTo(pad.left + pw, py);
+    ctx.stroke();
+    ctx.fillText(y.toFixed(1), pad.left - 6, py);
+  }
+
+  // X ticks
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  for (let t = 0; t <= 5; t++) {
+    const x = t / 5;
+    const px = xToPx(x);
+    ctx.beginPath();
+    ctx.moveTo(px, pad.top + ph);
+    ctx.lineTo(px, pad.top + ph + 3);
+    ctx.strokeStyle = GRAY;
+    ctx.stroke();
+    ctx.fillStyle = GRAY;
+    ctx.fillText(x.toFixed(1), px, pad.top + ph + 5);
+  }
+
+  // Axis labels
+  ctx.fillStyle = GRAY;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText('θ (probability of success)', pad.left + pw/2, h - 4);
+
+  ctx.save();
+  ctx.translate(12, pad.top + ph/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillText('Density', 0, 0);
+  ctx.restore();
+
+  // Draw a curve
+  function drawCurve(vals, color, fill) {
+    ctx.beginPath();
+    for (let i = 0; i < N; i++) {
+      const px = xToPx(xs[i]);
+      const py = yToPx(vals[i]);
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    if (fill) {
+      ctx.lineTo(xToPx(xs[N-1]), yToPx(0));
+      ctx.lineTo(xToPx(xs[0]), yToPx(0));
+      ctx.closePath();
+      ctx.fillStyle = color + '22';
+      ctx.fill();
+    }
+    ctx.beginPath();
+    for (let i = 0; i < N; i++) {
+      const px = xToPx(xs[i]);
+      const py = yToPx(vals[i]);
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+  }
+
+  drawCurve(prior, BLUE, true);
+  if (s + f > 0) drawCurve(likScaled, GREEN, true);
+  drawCurve(post, RED, true);
+
+  // Stats
+  const priorMean = alpha / (alpha + beta);
+  const mle = (s + f) > 0 ? s / (s + f) : NaN;
+  const postMean = (alpha + s) / (alpha + beta + s + f);
+
+  document.getElementById('stat-prior').textContent = priorMean.toFixed(3);
+  document.getElementById('stat-mle').textContent = isFinite(mle) ? mle.toFixed(3) : '—';
+  document.getElementById('stat-post').textContent = postMean.toFixed(3);
+  document.getElementById('stat-prior-desc').textContent = `α=${alpha} / (α+β)=${alpha+beta}`;
+  document.getElementById('stat-mle-desc').textContent = (s+f) > 0 ? `${s} / ${s+f}` : 'no data';
+  document.getElementById('stat-post-desc').textContent = `Beta(${(alpha+s).toFixed(1)}, ${(beta+f).toFixed(1)})`;
+
+  document.getElementById('chart-sub').textContent =
+    (s + f) === 0
+      ? `Beta(${alpha}, ${beta}) prior. Add data to see the posterior shift.`
+      : `Beta(${alpha}, ${beta}) prior + ${s} successes and ${f} failures → Beta(${(alpha+s).toFixed(1)}, ${(beta+f).toFixed(1)}) posterior`;
+}
+
+['alpha-slider', 'beta-slider', 's-slider', 'f-slider'].forEach(id => {
+  const slider = document.getElementById(id);
+  const out = document.getElementById(id.replace('-slider', '-out'));
+  slider.addEventListener('input', () => {
+    out.textContent = slider.value;
+    draw();
+  });
+});
+
+draw();
+window.addEventListener('resize', draw);
+</script>
+
+</body>
+</html>

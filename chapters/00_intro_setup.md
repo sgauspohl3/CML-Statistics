@@ -274,6 +274,18 @@ fig.show()
 Your very second plot!
 ```
 
+## A Note on Software Usage
+
+Statistical analysis is typically performed with the assistance of software such as Microsoft Excel, Python, R, MATLAB, Minitab, or other commercial tools. However, different tools may produce different answers, despite a common set of data. Different answers do not necessarily mean one is correct and the other is incorrect. Both answers are technically correct, but understanding how software arrives at an answer is prerequisite to defending that number in an integrity decision. 
+Some common examples of software dependent variation are listed below:
+
+-	**Sample Statistics**: Sample standard deviation does not always have the same divisor. In Python, the NumPy library std() command uses n (population form) by default, whereas the Pandas library std() uses n-1 (Bessel corrected sample form). Microsoft Excel’s STDEV.S also uses n-1. For large sample sizes, the difference is negligible, but the effect grows with decreasing sample size.
+-	**Plotting Positions and Probability Plots**: Empirical cumulative probability assigned to the ith order statistic varies by convention. In Python, the SciPy library probplot() function calculates plotting positions using the formula (i-0.4)/(n-0.2) (Cunnane) by default, though the method can be programmed to the user’s choice. Minitab calculates plotting positions using the formula (i-0.3)/(n+0.4) (Bernard) by default. While Minitab has some flexibility in plotting positions, the formulas are limited to Bernard, Herd-Johnson, and Kaplan-Meir only. If utilizing the empirical cumulative density function to estimate parameters, the choice of plotting positions will carry through to any calculation utilizing those estimated parameters.   
+-	**Distribution Parametrizations**: Distributions may be parametrized differently when using different software packages. In Python, the SciPy library parametrizes a gamma distribution with the shape and scale parameters, whereas in the Python library PyMC (for Bayesian analysis), the gamma distribution is parametrized as shape and rate (rate = 1/scale). 
+-	**Optimization Convergence**: Maximum Likelihood Estimation (MLE) for distributions that cannot be solved analytically, such as Weibull, Gumbel, and Gamma) require numerical methods. Different software may have different optimization algorithms, solver tolerances, and default starting values, which can converge to different local maxima.    
+-	**Confidence Intervals**: Most software packaged utilize Wald intervals when calculating a confidence interval. However, they do differ slightly in their methods of calculation. In the R library fitdistrplus, confidence intervals are calculated using a Hessian matrix (second-order derivatives of optimizer) formulated with a numerical solution. MATLAB uses a Hessian matrix calculated analytically. While generally negligible in different, these do produce differing values. Packages for specific applications such as in the R library extRemes utilize the profile likelihood method of calculating confidence intervals, whereas in the Python library SciPy does not provide a confidence interval by default.    
+
+
 
 ### Additional references
 
