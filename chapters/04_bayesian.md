@@ -34,9 +34,9 @@ In inspection: prior is what you expected the corrosion rate to be; likelihood i
 
 Bayes' theorem solves the **inverse problem**: going from observed data back to parameters.
 
-### Forward (Darameters to Data)
+### Forward (Parameters to Data)
 
-Given known or assumed parameter values, compute the distribution of observable outcomes. Straightforward — requires only sampling from the likelihood.
+Given known or assumed parameter values, compute the distribution of observable outcomes. Straight forward — requires only sampling from the likelihood.
 
 $$H \text{ known} \to E \text{ predicted}, \quad \text{sample from } p(E \mid H)$$
 
@@ -58,7 +58,7 @@ How $p(H \mid E)$ is computed depends on model complexity:
 
 ## A Worked Conjugate Update — Beta-Binomial
 
-The simplest closed-form Bayesian update. See the widget below and use the sliders to see how prior, likelihood, and posterior interact with each other. Sliders for prior $\alpha$ and $\beta$, plus the observed data (successes and failures). Live overlay of prior, likelihood, and posterior.
+The simplest closed-form Bayesian update. See the widget below and use the sliders to see how prior, likelihood, and posterior interact with each other. Sliders for prior $\alpha$ (success) and $\beta$ (failure), plus the observed data (successes and failures). Live overlay of prior, likelihood, and posterior.
 
 - Watch a strong prior get overwhelmed by lots of data.
 - Watch a weak prior update dramatically on even one observation.
@@ -83,7 +83,7 @@ We then run 10 trials and observe 7 successes. The likelihood is Binomial:
 
 $$P(7 \mid 10, \theta) = \binom{10}{7} \theta^7 (1-\theta)^3$$
 
-### The update
+### The Update
 
 The Beta is the **conjugate prior** for the Binomial — meaning posterior is also Beta, with a beautifully simple update rule:
 
@@ -605,19 +605,27 @@ Residual plot for model.
 
 ## Beyond the Basic Model
 
-The model used in chapter 6 is a Normal-Gamma hierarchical model — simple, fast, and good enough for most CML circuits. But the Bayesian toolkit has more to offer when the data demands it. Keep in mind, it can also be *ANY* model you can dream of. If you want to use a normal distribution for corrosion rate, go for it. It may not work, but it can be done. 
+The model used in chapter 6 is a Normal-Gamma hierarchical linear model — simple, fast, and good enough for most CML analyses. The Bayesian toolkit is flexible to the available data and expectations. Keep in mind, it can also be *ANY* model you can dream of. If you want to use a normal distribution for corrosion rate, go for it. It may not work, but it can be done. 
+
+```{warning}
+More complex models than the data demands may cause divergence. Only model factors you know and understand.
+```
+
+```{note}
+These are **mentions, not recommendations.** For most CML programs, the basic hierarchical linear model in chapter 6 is adequate. These methods are only necessary when the data calls for it.
+```
 
 ### Categorical and Dirichlet Distributions
 
-Some inspection data is categorical, not numerical: damage mechanism class, root cause category, corrosion morphology type. The **Categorical** distribution handles single categorical outcomes, and the **Dirichlet** is its multi-category conjugate prior (generalization of the Beta to more than two outcomes).
+Some inspection data is categorical, not numerical: damage state, morphology, dominant mechanism, material/specification to name a few. The **Categorical** distribution handles single categorical outcomes, and the **Dirichlet** is its multi-category conjugate prior (generalization of the Beta to more than two outcomes).
 
-*When you'd reach for it:* modeling the probability distribution over damage mechanisms in a circuit, or learning the mix of "general" / "pitting" / "MIC" corrosion patterns from a labeled dataset.
+*When to apply:* modeling different categorical inputs or outputs in the same data set.
 
 ### Bayesian Additive Regression Trees (BART)
 
 When the relationship between predictors and outcomes is unknown and possibly non-linear, **BART** offers a flexible nonparametric Bayesian approach. It fits a sum of weak decision trees with priors on tree depth and leaf values.
 
-*When you'd reach for it:* if you suspect corrosion rate depends on a combination of process variables like corrosion under insulation (insulation, temperature, coating age) in a complicated way that no simple parametric model captures.
+*When to apply:* if you suspect corrosion rate depends on a combination of process variables like corrosion under insulation (insulation, temperature, coating age).
 
 ```{figure} ../images/bart_cui_tree.png
 :name: bart-cui-tree
@@ -630,17 +638,14 @@ Part of a BART tree for a CUI model
 
 ### Time Series Models
 
-Time series methods (autoregressive models, state-space models, Gaussian processes) become relevant when:
+Typically with the amount of data available for CMLs, time series are not applicable. Time series methods (autoregressive models, Gaussian processes) become relevant when:
 
 - Inspection cadence is fine-grained enough to detect time trends.
+- Permanent UT sensors are installed.
 - Process upsets cause step-changes in corrosion rate.
-- You want to forecast future thickness, not just estimate average rate.
 
-The linear-trend model in chapter 6 is effectively a degenerate time series — it assumes a single constant rate. Real data sometimes shows acceleration, deceleration, or seasonality that a richer time series model would capture.
+The hierarchical linear model in chapter 6 is effectively a degenerate time series — it assumes a single constant rate. Real data sometimes shows acceleration, deceleration, or seasonality that a time seris model might capture.
 
-```{note}
-These are **mentions, not recommendations.** For most CML programs, the basic hierarchical model in chapter 6 is the right tool. Reach for these extensions only when the basic model demonstrably fails — diagnosed via posterior predictive checks that fail in specific, interpretable ways.
-```
 
 ## A Note on Bayesian Decision Theory
 
@@ -653,7 +658,7 @@ $$a^* = \arg\max_a \int U(a, \theta) \, p(\theta \mid Y) \, d\theta$$
 For CML work, this would mean weighing the cost of replacement against the probability and consequence of leak, weighted by the posterior on corrosion rate.
 
 ```{note}
-**This course doesn't go further into decision theory** — it's a substantial subject on its own. But know that the posterior is *not the final answer*; it's the input to whatever decision you actually need to make. Treating the posterior as the deliverable, rather than as the input to a decision, is a common gap in practice.
+**This course doesn't go further into decision theory** — it is a substantial subject on its own. But know that the posterior is *not the final answer*; it is the input to whatever decision you actually need to make.
 
-For further reading: *Bayesian Modeling and Computation in Python* (Martin, Kumar, Lao) chapter on decision-theoretic concepts, and the broader literature on risk-based inspection (API RP 580/581) for the inspection-specific framing.
+For further reading: *Bayesian Modeling and Computation in Python* (Martin, Kumar, Lao) chapter on decision-theory concepts.
 ```

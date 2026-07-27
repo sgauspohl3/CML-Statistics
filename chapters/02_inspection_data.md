@@ -37,7 +37,7 @@ Group by:
 - Flow regime & geometry
 
 ```{warning}
-**Under-group** → multi-modal data, inflated variance, masks aggressive segments.
+**Under-group** → multi-modal data, inflated variance.
 
 **Over-group** → small $n$ per circuit, wide uncertainty, limits pooled methods.
 ```
@@ -311,7 +311,7 @@ Typical CV at a single test point: **~10%** — for 6" SCH40 pipe, this is ± 0.
 UT Grid and UT Scan provide intermediate options — area coverage with quantitative readings.
 
 ```{important}
-**Method → Data Quality → Analysis Validity.** The inspection method chosen determines baseline variability, the ability to detect localized damage, and the ability to size defects.
+**Method → Data Quality → Analysis.** The inspection method chosen determines baseline variability, the ability to detect localized damage, and the ability to size defects.
 ```
 
 ```{figure} ../images/cml-rt-variability.png
@@ -350,6 +350,8 @@ $$\text{POD} \approx \frac{\text{transducer area}}{\text{CML area}} = \frac{\pi 
 per single placement. Most of the surface is never sampled — this is what motivates **grid inspection** and **adequate sample size**.
 
 ### Inspection Effectiveness Categories (API RP 581)
+
+Inspection effectiveness is determined by the ability to quantify the true damage state. It is not a statement of inspection coverage, but a statement about whether the true damage state was identified.
 
 | Category | Effectiveness | Confidence |
 |--|--|--|

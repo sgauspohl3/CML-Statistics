@@ -6,19 +6,19 @@ This glossary covers terminology used throughout the book. It is split into thre
 
 ```{glossary}
 CML
-  **Corrosion Monitoring Location.** A designated area on piping systems where periodic examinations are conducted to directly assess and monitor the condition of the piping system using a variety of examination methods and techniques based on damage mechanism susceptibility. A CML is a logical entity — the *place* being monitored — and may contain multiple TMLs.
+  **Corrosion Monitoring Location.** A designated area where periodic examinations are conducted to directly assess and monitor the condition of the asset, potentially using a variety of examination methods and techniques based on damage mechanism susceptibility. A CML is a logical entity — the *place* being monitored — and may contain multiple TMLs and MPs.
 
 TML
-  **Thickness Monitoring Location.** A specific physical point within a CML where a measurement is recorded. A single CML can contain several TMLs (e.g., 12 o'clock, 3 o'clock, 6 o'clock, 9 o'clock on a pipe section).
+  **Thickness Monitoring Location.** A specific physical point within a CML where a measurement is recorded. A single CML can contain several TMLs (e.g., clock positions 00, 03, 06, 09).
 
 MP
-  **Measurement Point.** An individual UT reading taken at a TML. Multiple MPs per TML reduce measurement noise.
+  **Measurement Point.** An individual reading taken at a TML. Multiple MPs per TML reduce measurement noise.
 
 NPS
   **Nominal Pipe Size.** Standard pipe size designation (e.g., 4", 6", 24"). Determines outer diameter but not wall thickness.
 
 SCH
-  **Schedule.** Standard wall thickness classification (SCH 10, 40, 80, 160, XS, XXS). Determines nominal wall thickness for a given NPS.
+  **Schedule.** Standard wall thickness classification (SCH 10, 40, 80, 160, XH, XXH). Determines nominal wall thickness for a given NPS.
 
 SBC
   **Small Bore Connection.** Piping branches typically ≤ 2" NPS off a main line. Often used for instrument taps, drains, vents. Statistically distinct from the main line and usually analyzed separately.
@@ -30,27 +30,24 @@ UT
   **Ultrasonic Testing.** Non-destructive method using sound waves to measure thickness. The most common method for CML inspection.
 
 RT
-  **Radiographic Testing.** Non-destructive method using X-rays or gamma rays. Provides a profile view rather than a point measurement.
-
-PAUT
-  **Phased Array Ultrasonic Testing.** UT variant that uses a multi-element transducer for area scanning. Offers better coverage than spot UT.
+  **Radiographic Testing.** Non-destructive method using X-rays. Provides a profile view rather than a point measurement.
 
 AUT
-  **Automated Ultrasonic Testing.** UT performed by an automated scanner rather than a hand-held probe. Provides repeatable area coverage.
+  **Automated Ultrasonic Testing.** UT performed by an automated scanner rather than a hand-held probe.
 
 STCR
-  **Short-Term Corrosion Rate.** Corrosion rate computed from the second-to-last and last thickness readings. Sensitive to recent changes.
+  **Short-Term Corrosion Rate.** Corrosion rate computed from the second-to-last and last thickness readings.
 
 LTCR
-  **Long-Term Corrosion Rate.** Corrosion rate computed from the first (baseline) and last thickness readings. Stable estimate for planning.
+  **Long-Term Corrosion Rate.** Corrosion rate computed from the first (baseline) and last thickness readings.
 
-t_nom
-  **Nominal thickness.** Manufacturer's specified wall thickness for a given NPS and schedule, before any corrosion or wear.
+$t_nom$
+  **Nominal thickness.** Manufacturer's specified wall thickness for a given NPS and schedule.
 
-t_min
-  **Minimum required thickness.** The thinnest wall the component can safely have under design conditions. Below this, the component must be retired or repaired.
+$t_min$
+  **Minimum required thickness.** The thinnest wall the component can safely have under design conditions.
 
-t_actual
+$t_actual$
   **Current thickness.** The most recent measured wall thickness at a CML.
 
 CR
@@ -60,13 +57,13 @@ mpy
   **Mils per year.** A mil is 0.001 inch. The standard unit for corrosion rate in US oil and gas inspection. 5 mpy = 0.005 in/yr.
 
 POD
-  **Probability of Detection.** The probability that an inspection technique detects a flaw of a given size. A key input to risk-based inspection.
+  **Probability of Detection.** The probability that an inspection technique detects a flaw of a given size.
 
 RBI
-  **Risk-Based Inspection.** A methodology that allocates inspection effort based on calculated risk (probability of failure × consequence of failure). Codified in API RP 580 and API RP 581.
+  **Risk-Based Inspection.** A methodology that allocates inspection effort based on calculated risk.
 
 EVA
-  **Extreme Value Analysis.** Statistical methods for analyzing the maxima or minima of a dataset, rather than the bulk. Useful for predicting worst-case pit depths.
+  **Extreme Value Analysis.** Statistical methods for analyzing the maxima or minima of a dataset, rather than the bulk.
 
 CV
   **Coefficient of Variation.** Sample standard deviation divided by sample mean ($s / \bar{x}$). Unitless measure of relative spread. A CV < 10% within a TML is generally acceptable.
@@ -77,36 +74,36 @@ API 510
 API 570
   **API Piping Inspection Code.** Standard for in-service inspection, repair, alteration, and rerating of piping systems.
 
-API 574
-  **API Inspection Practices for Piping System Components.** Recommended practice for inspecting piping components in operating service.
+API RP 574
+  **API Recommended Practice for Piping System Components.** Recommended practice for inspecting piping components in operating service.
 
 API RP 580
   **API Risk-Based Inspection.** Recommended practice giving the framework and minimum requirements for an RBI program.
 
 API RP 581
-  **API Risk-Based Inspection Methodology.** Quantitative methodology for implementing RBI.
+  **API Risk-Based Inspection Methodology.** Semi-Quantitative methodology for implementing RBI.
 
-Damage mechanism
-  The underlying physical or chemical process causing material degradation. Examples: general corrosion, pitting, MIC (microbiologically influenced corrosion), CUI (corrosion under insulation), erosion-corrosion.
+Damage Mechanism
+  The underlying physical or chemical process causing material degradation.
 
-Dead leg
+Deadleg
   A section of piping with little or no flow. Often subject to higher corrosion rates due to stagnant water accumulation, microbial activity, or trapped reactive species.
 
 Mix point
-  A location where two streams of different chemistry, temperature, or phase combine. Often shows accelerated corrosion downstream.
+  A location where two streams of different chemistry, temperature, or phase combine.
 
 Injection point
-  A location where chemicals or process fluids are injected into a piping circuit. Often shows enhanced corrosion in a defined downstream zone.
+  A location where chemicals or process fluids are injected into a piping circuit.
 ```
 
-## Statistics and modeling terms
+## Statistics and Modeling Terms
 
 ```{glossary}
 PMF
   **Probability Mass Function.** Function giving the probability that a discrete random variable takes a particular value: $P(X = x)$.
 
 PDF
-  **Probability Density Function.** Function describing the relative likelihood of values for a continuous random variable. Density at a point, not probability.
+  **Probability Density Function.** Function describing the relative likelihood of values for a continuous random variable.
 
 CDF
   **Cumulative Distribution Function.** Function giving the probability that a random variable is less than or equal to a value: $F(x) = P(X \le x)$.
@@ -115,22 +112,22 @@ ECDF
   **Empirical Cumulative Distribution Function.** The CDF computed directly from data — each observation becomes a step.
 
 CLT
-  **Central Limit Theorem.** Result stating that the distribution of the sample mean approaches Normal as $n \to \infty$, regardless of the underlying distribution (assuming finite variance).
+  **Central Limit Theorem.** Result stating that the distribution of the sample means approach Normal as $n \to \infty$, regardless of the underlying distribution (assuming finite variance).
 
 LLN
   **Law of Large Numbers.** Result stating that the sample mean converges to the population mean as sample size increases.
 
 CI
-  **Confidence Interval** (frequentist) or **Credible Interval** (Bayesian). The two are NOT interchangeable — see chapter 1 and chapter 4 for the distinction.
+  **Confidence Interval** (frequentist) or **Credible Interval** (Bayesian). The two are NOT interchangeable — see chapter 1 and chapter 5 for the distinction.
 
 MoM
-  **Method of Moments.** A parameter estimation method that sets sample moments equal to population moments and solves. Fast but generally the least precise.
+  **Method of Moments.** A parameter estimation method that sets sample moments equal to population moments and solves.
 
 MLE
-  **Maximum Likelihood Estimation.** Parameter estimation by maximizing the probability of the observed data under the assumed distribution. Asymptotically efficient — the workhorse of frequentist statistics.
+  **Maximum Likelihood Estimation.** Parameter estimation by maximizing the probability of the observed data under the assumed distribution.
 
 LSE
-  **Least Squares Estimation.** Parameter estimation by minimizing the sum of squared residuals. For linear regression with Normal errors, LSE equals MLE.
+  **Least Squares Estimation.** Parameter estimation by minimizing the sum of squared residuals.
 
 AIC
   **Akaike Information Criterion.** Model comparison metric: $\text{AIC} = 2k - 2\ln(\hat{L})$. Lower is better. Penalizes complexity less than BIC.
@@ -171,7 +168,7 @@ MCSE
 HDI
   **Highest Density Interval.** The narrowest credible interval containing a given probability mass (e.g., 94% HDI). Differs from a quantile-based interval when the posterior is skewed.
 
-Conjugate prior
+Conjugate Prior
   A prior distribution that, combined with a given likelihood, produces a posterior in the same family as the prior. Example: Beta is conjugate to Binomial.
 
 Posterior
@@ -201,7 +198,7 @@ Pooling
 Shrinkage
   The effect of pulling individual group estimates toward a population mean. The signature behavior of hierarchical Bayesian models.
 
-Hierarchical model
+Hierarchical Model
   A Bayesian model in which parameters at one level are themselves drawn from distributions whose parameters are estimated. Enables partial pooling.
 
 Divergence
@@ -210,7 +207,7 @@ Divergence
 Funnel
   A pathological posterior shape common in hierarchical models, where group-level standard deviation and individual deviations create varying-curvature geometry. Fixed by non-centered parameterization.
 
-Non-centered parameterization
+Non-Centered Parameterization
   A reparameterization of a hierarchical model that separates the location and scale of individual parameters from their standardized values. Cures the funnel pathology.
 
 LOO-CV
@@ -342,13 +339,5 @@ $\text{Poisson}(\lambda)$
 
 $\text{Bernoulli}(p)$
   Bernoulli distribution.
-
-$T_0$
-  In the example CML model: thickness of a CML at time of installation.
-
-$C_r$
-  In the example CML model: corrosion rate of a CML, expressed in inches per year (positive = thinning).
-
-$t$
-  Time, typically years in service.
+  
 ```
