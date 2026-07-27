@@ -171,4 +171,3 @@ Course developed by Samuel Gauspohl (Accenture, Industry X) for the API Inspecti
 
 Linkedin: www.linkedin.com/in/samuel-gauspohl
 
-<!--Contact: samuel.gauspohl@accenture.com-->

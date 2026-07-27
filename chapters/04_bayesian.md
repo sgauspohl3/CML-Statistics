@@ -462,7 +462,7 @@ Parameters at the CML level (e.g., $T_0$, $C_r$ per CML) are drawn from group-le
 ```{figure} ../images/numpyro-plate.png
 :name: numpyro-plate
 :alt: NumPyro model
-:width: 800px
+:width: 600px
 :align: center
 
 Visual representation of partial pooled model.
