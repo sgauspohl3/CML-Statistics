@@ -1061,7 +1061,7 @@ $k$ = parameters, $n$ = sample size, $\hat{L}$ = maximum likelihood. BIC penaliz
 A 95% CI means: if we repeated the procedure many times, ~95% of the intervals would contain the true $\mu$.
 
 ```{warning}
-**Confidence intervals are about the procedure, not the parameter.** A specific 95% CI does NOT mean "there's a 95% probability the true value lies in this interval." That's a Bayesian credible interval — a different concept covered in chapter 4.
+**Confidence intervals are about the procedure, not the parameter.** A specific 95% CI does NOT mean "there's a 95% probability the true value lies in this interval." That's a Bayesian credible interval — a different concept covered in chapter 6.
 ```
 
 | Method | Strengths | Weakness |

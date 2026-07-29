@@ -41,13 +41,13 @@ STCR
 LTCR
   **Long-Term Corrosion Rate.** Corrosion rate computed from the first (baseline) and last thickness readings.
 
-$t_nom$
+$t_{nom}$
   **Nominal thickness.** Manufacturer's specified wall thickness for a given NPS and schedule.
 
-$t_min$
+$t_{min}$
   **Minimum required thickness.** The thinnest wall the component can safely have under design conditions.
 
-$t_actual$
+$t_{actual}$
   **Current thickness.** The most recent measured wall thickness at a CML.
 
 CR

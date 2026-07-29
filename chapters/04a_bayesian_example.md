@@ -84,7 +84,7 @@ Where did we get the priors from? Good question.
 ```{figure} ../images/numpyro-plate.png
 :name: numpyro-plate1
 :alt: NumPyro model
-:width: 800px
+:width: 600px
 :align: center
 
 Visual representation of partial pooled model.
@@ -106,7 +106,7 @@ The example below clusters only by feature.
 ```{figure} ../images/numpyro-plate2.png
 :name: numpyro-plate2
 :alt: NumPyro model2
-:width: 800px
+:width: 600px
 :align: center
 
 Visual representation of partial pooled model clustered by corrosion zone.
